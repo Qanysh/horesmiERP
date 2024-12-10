@@ -11,8 +11,27 @@
     <nav class="container mx-auto my-3">
       <div class="flex items-center space-x-3">
         <span class="text-2xl font-bold text-blue-800">ERP SYSTEM</span>
-        <p class="text-xl text-gray-500">|</p>
-        <ul class="flex justify-start space-x-6">
+        <button
+          id="menu-toggle"
+          class="md:hidden p-2 text-gray-700 hover:text-blue-700"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
+        </button>
+        <p class="text-xl text-gray-500 hidden md:flex">|</p>
+        <ul id="menu" class="md:space-x-6 space-x-3 hidden md:flex">
           <li
             class="relative group text-gray-700 hover:text-blue-700 transition"
           >
@@ -179,13 +198,15 @@
             </ul>
           </li>
         </ul>
-        <p class="text-xl text-gray-500">|</p>
-        <a href="" class="text-blue-800 hover:text-blue-600 transition"
+        <p class="text-xl text-gray-500 hidden md:flex">|</p>
+        <a
+          href=""
+          class="text-blue-800 hover:text-blue-600 transition hidden md:flex"
           >Все отчеты</a
         >
-        <p class="text-lg text-gray-500">|</p>
+        <p class="text-lg text-gray-500 hidden md:flex">|</p>
       </div>
-      <div class="flex items-center space-x-6 mt-2">
+      <div class="hidden md:flex items-center space-x-6 mt-2">
         <a href="" class="text-blue-800 hover:text-blue-600 transition"
           >Customers</a
         >
@@ -208,6 +229,27 @@
           >Sales orders</a
         >
       </div>
+      <!-- Для мобилок гамбургер кнопка -->
+      <div id="mobile-menu" class="md:hidden flex flex-col space-y-4 mt-4">
+        <a href="#" class="text-blue-800 hover:text-blue-600 transition"
+          >Finance</a
+        >
+        <a href="#" class="text-blue-800 hover:text-blue-600 transition"
+          >Cash Management</a
+        >
+        <a href="#" class="text-blue-800 hover:text-blue-600 transition"
+          >Sales</a
+        >
+        <a href="#" class="text-blue-800 hover:text-blue-600 transition"
+          >Purchasing</a
+        >
+        <a href="#" class="text-blue-800 hover:text-blue-600 transition"
+          >Shopify</a
+        >
+        <a href="#" class="text-blue-800 hover:text-blue-600 transition"
+          >Все отчеты</a
+        >
+      </div>
     </nav>
 
     <!-- Hero section -->
@@ -215,7 +257,7 @@
     <section
       class="container mx-auto bg-gray-100 rounded-xl h-72 shadow-lg flex flex-row justify-between items-center"
     >
-      <div class="w-96 px-4 py-5">
+      <div class="px-4 py-5 mx-auto w-auto md:w-96 md:mx-0">
         <h3 class="font-semibold text-xl text-blue-800">Начало работы!</h3>
         <h1 class="font-semibold text-3xl text-gray-800">
           Знакомьтесь с <b class="font-bold text-blue-800">ERP System</b> от
@@ -232,7 +274,7 @@
           Показать что-то
         </a>
       </div>
-      <div class="w-80 flex items-center justify-center">
+      <div class="hidden md:flex w-80 items-center justify-center">
         <img
           src="/frontend/img/pc.png"
           alt="Демонстрация ERP System"
@@ -240,5 +282,250 @@
         />
       </div>
     </section>
+
+    <!-- Main section -->
+
+    <section class="container mx-auto my-10">
+      <h1 class="text-center font-bold text-2xl md:text-start">Activities</h1>
+      <hr class="my-4" />
+      <div
+        class="grid grid-cols-1 gap-5 justify-items-center md:grid-cols-2 md:justify-items-center lg:grid-cols-2 lg:gap-x-64 xl:grid-cols-3 xl:gap-x-48"
+      >
+        <!-- Block 1 -->
+        <div
+          class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+        >
+          <a href="#">
+            <h5
+              class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+            >
+              Noteworthy technology acquisitions 2021
+            </h5>
+          </a>
+          <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+            Here are the biggest enterprise technology acquisitions of 2021 so
+            far, in reverse chronological order.
+          </p>
+          <a
+            href="#"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            Read more
+            <svg
+              class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 10"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M1 5h12m0 0L9 1m4 4L9 9"
+              />
+            </svg>
+          </a>
+        </div>
+        <!-- Block 2 -->
+        <div
+          class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+        >
+          <a href="#">
+            <h5
+              class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+            >
+              Noteworthy technology acquisitions 2021
+            </h5>
+          </a>
+          <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+            Here are the biggest enterprise technology acquisitions of 2021 so
+            far, in reverse chronological order.
+          </p>
+          <a
+            href="#"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            Read more
+            <svg
+              class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 10"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M1 5h12m0 0L9 1m4 4L9 9"
+              />
+            </svg>
+          </a>
+        </div>
+        <!-- Block 3 -->
+        <div
+          class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+        >
+          <a href="#">
+            <h5
+              class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+            >
+              Noteworthy technology acquisitions 2021
+            </h5>
+          </a>
+          <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+            Here are the biggest enterprise technology acquisitions of 2021 so
+            far, in reverse chronological order.
+          </p>
+          <a
+            href="#"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            Read more
+            <svg
+              class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 10"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M1 5h12m0 0L9 1m4 4L9 9"
+              />
+            </svg>
+          </a>
+        </div>
+        <!-- Block 4 -->
+        <div
+          class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+        >
+          <a href="#">
+            <h5
+              class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+            >
+              Noteworthy technology acquisitions 2021
+            </h5>
+          </a>
+          <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+            Here are the biggest enterprise technology acquisitions of 2021 so
+            far, in reverse chronological order.
+          </p>
+          <a
+            href="#"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            Read more
+            <svg
+              class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 10"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M1 5h12m0 0L9 1m4 4L9 9"
+              />
+            </svg>
+          </a>
+        </div>
+        <!-- Block 5 -->
+        <div
+          class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+        >
+          <a href="#">
+            <h5
+              class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+            >
+              Noteworthy technology acquisitions 2021
+            </h5>
+          </a>
+          <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+            Here are the biggest enterprise technology acquisitions of 2021 so
+            far, in reverse chronological order.
+          </p>
+          <a
+            href="#"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            Read more
+            <svg
+              class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 10"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M1 5h12m0 0L9 1m4 4L9 9"
+              />
+            </svg>
+          </a>
+        </div>
+        <!-- Block 6 -->
+        <div
+          class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+        >
+          <a href="#">
+            <h5
+              class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+            >
+              Noteworthy technology acquisitions 2021
+            </h5>
+          </a>
+          <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+            Here are the biggest enterprise technology acquisitions of 2021 so
+            far, in reverse chronological order.
+          </p>
+          <a
+            href="#"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            Read more
+            <svg
+              class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 10"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M1 5h12m0 0L9 1m4 4L9 9"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+    <script>
+      // Ожидаем, когда страница загрузится
+      document.addEventListener("DOMContentLoaded", function () {
+        const menuToggle = document.getElementById("menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        // Добавляем обработчик клика для кнопки гамбургера
+        menuToggle.addEventListener("click", function () {
+          mobileMenu.classList.toggle("hidden");
+        });
+      });
+    </script>
   </body>
 </html>
