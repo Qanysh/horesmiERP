@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const customerRoutes = require('./routes/customerRoutes');
+const itemRoutes = require('./routes/itemRoutes');
 const errorMiddleware = require ('./middleware/errorMiddleware');
 
 require('dotenv').config();
@@ -15,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use('/customers', customerRoutes);
+app.use('/items', itemRoutes);
 
 app.use(errorMiddleware);
 
