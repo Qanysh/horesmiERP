@@ -16,9 +16,9 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/auth', authRoutes);
-app.use('/customers', customerRoutes);
-app.use('/items', itemRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/items', itemRoutes);
 
 app.use(errorMiddleware);
 
