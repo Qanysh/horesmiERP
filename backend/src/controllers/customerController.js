@@ -3,27 +3,34 @@ const Customer = require('../models/customer');
 exports.getAllCustomers = async function(req, res) {
     try {
         Customer.getAllCustomers((err, customers) => {
-            res.render('customers', { customers });
+            if (err) {
+                console.error('Error fetching customers:', err);
+                return res.status(500).json({ error: 'Error fetching customers data' });
+            }
+            res.json(customers); // Отправляем данные JSON на фронтенд
         });
-    } catch {
-        console.log('Error fetching customers:', err);
-        res.status(500).send('Error fetching customers data');
-    };
+    } catch (err) {
+        console.error('Unexpected error fetching customers:', err);
+        res.status(500).json({ error: 'Unexpected error' });
+    }
 };
 
 exports.getCustomerById = async function(req, res) {
-        Customer.getCustomerById([req.params.no], (err, customerCard) => {
-            if (!customerCard) {
-                return res.status(400).send('Customer not found!')
-            }
-            let customer = customerCard[0];
-            res.render('customerCard', { customer });
-        });
+    Customer.getCustomerById([req.params.no], (err, customerCard) => {
+        if (err) {
+            console.error('Error fetching customer:', err);
+            return res.status(500).json({ error: 'Error fetching customer' });
+        }
+        if (!customerCard || customerCard.length === 0) {
+            return res.status(404).json({ error: 'Customer not found' });
+        }
+        res.json(customerCard[0]); // Отправляем данные одного клиента JSON
+    });
 };
 
 exports.createCustomer = function(req, res) {
     const newCustomer = {
-        no: req.body.no, // Извлечение данных из req.body
+        no: req.body.no,
         name: req.body.name,
         balance: req.body.balance,
         creditLimit: req.body.creditLimit,
@@ -38,18 +45,17 @@ exports.createCustomer = function(req, res) {
     };
 
     if (!newCustomer.no || !newCustomer.name) {
-        return res.status(400).send('Missing required fields');
+        return res.status(400).json({ error: 'Missing required fields' });
     }
 
     Customer.createCustomer(newCustomer, (err, result) => {
         if (err) {
             console.error('Error creating customer:', err);
-            return res.status(500).send('Failed to create customer');
+            return res.status(500).json({ error: 'Failed to create customer' });
         }
-        res.redirect('/customers');
+        res.status(201).json({ message: 'Customer created successfully', customer: newCustomer });
     });
 };
-
 
 exports.updateCustomer = function(req, res) {
     const updatedCustomer = {
@@ -67,22 +73,24 @@ exports.updateCustomer = function(req, res) {
     };
 
     if (!req.params.no) {
-        return res.status(400).send('Customer ID is missing');
+        return res.status(400).json({ error: 'Customer ID is missing' });
     }
 
     Customer.updateCustomer(req.params.no, updatedCustomer, (err, result) => {
         if (err) {
             console.error('Error updating customer:', err);
-            return res.status(500).send('Failed to update customer');
+            return res.status(500).json({ error: 'Failed to update customer' });
         }
-        res.redirect('/customers');
+        res.json({ message: 'Customer updated successfully', customer: updatedCustomer });
     });
 };
 
-
 exports.deleteCustomer = function(req, res) {
     Customer.deleteCustomer(req.params.no, (err, result) => {
-        if(err) throw err;
-        res.redirect('/customers');
+        if (err) {
+            console.error('Error deleting customer:', err);
+            return res.status(500).json({ error: 'Failed to delete customer' });
+        }
+        res.json({ message: 'Customer deleted successfully' });
     });
 };

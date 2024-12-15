@@ -4,11 +4,15 @@ const Item = require('../models/item');
 exports.getAllItems = async function(req, res) {
     try {
         Item.getAllItems((err, items) => {
-            res.render('items', { items });
+            if (err) {
+                console.error('Error fetching items:', err);
+                return res.status(500).json({ error: 'Error fetching items data' });
+            }
+            res.json(items); // Отправляем JSON с данными
         });
     } catch (err) {
-        console.error('Error fetching items:', err);
-        res.status(500).send('Error fetching items data');
+        console.error('Unexpected error fetching items:', err);
+        res.status(500).json({ error: 'Unexpected error fetching items' });
     }
 };
 
@@ -16,15 +20,18 @@ exports.getAllItems = async function(req, res) {
 exports.getItemById = async function(req, res) {
     try {
         Item.getItemById(req.params.item_no, (err, item) => {
-            if (err || !item) {
+            if (err) {
                 console.error('Error fetching item:', err);
-                return res.status(400).send('Item not found');
+                return res.status(500).json({ error: 'Error fetching item' });
             }
-            res.render('itemCard', { item: item[0] });
+            if (!item || item.length === 0) {
+                return res.status(404).json({ error: 'Item not found' });
+            }
+            res.json(item[0]); // Отправляем данные одного элемента JSON
         });
     } catch (err) {
-        console.error('Error fetching item:', err);
-        res.status(500).send('Error fetching item');
+        console.error('Unexpected error fetching item:', err);
+        res.status(500).json({ error: 'Unexpected error fetching item' });
     }
 };
 
@@ -43,15 +50,15 @@ exports.createItem = function(req, res) {
     };
 
     if (!newItem.item_type || !newItem.description) {
-        return res.status(400).send('Missing required fields');
+        return res.status(400).json({ error: 'Missing required fields' });
     }
 
     Item.createItem(newItem, (err, result) => {
         if (err) {
             console.error('Error creating item:', err);
-            return res.status(500).send('Failed to create item');
+            return res.status(500).json({ error: 'Failed to create item' });
         }
-        res.redirect('/items');
+        res.status(201).json({ message: 'Item created successfully', item: newItem });
     });
 };
 
@@ -69,15 +76,15 @@ exports.updateItem = function(req, res) {
     };
 
     if (!req.params.item_no) {
-        return res.status(400).send('Item ID is missing');
+        return res.status(400).json({ error: 'Item ID is missing' });
     }
 
     Item.updateItem(req.params.item_no, updatedItem, (err, result) => {
         if (err) {
             console.error('Error updating item:', err);
-            return res.status(500).send('Failed to update item');
+            return res.status(500).json({ error: 'Failed to update item' });
         }
-        res.redirect('/items');
+        res.json({ message: 'Item updated successfully', item: updatedItem });
     });
 };
 
@@ -86,8 +93,8 @@ exports.deleteItem = function(req, res) {
     Item.deleteItem(req.params.item_no, (err, result) => {
         if (err) {
             console.error('Error deleting item:', err);
-            return res.status(500).send('Failed to delete item');
+            return res.status(500).json({ error: 'Failed to delete item' });
         }
-        res.redirect('/items');
+        res.json({ message: 'Item deleted successfully' });
     });
 };
