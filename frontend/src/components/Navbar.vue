@@ -1,12 +1,12 @@
 <script setup>
-
+import { RouterLink } from 'vue-router'
 </script>
 
 <template>
   <!-- Navbar -->
   <nav class="container mx-auto my-3">
     <div class="flex items-center space-x-3">
-      <span class="text-2xl font-bold text-blue-800">ERP SYSTEM</span>
+      <RouterLink to="/" class="text-2xl font-bold text-blue-800">ERP SYSTEM</RouterLink>
       <button id="menu-toggle" class="md:hidden p-2 text-gray-700 hover:text-blue-700">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -76,7 +76,7 @@
               </a>
             </li>
             <li>
-              <a href="#"
+              <a href="/"
                 class="block px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-b-lg transition">
                 Customers
               </a>
@@ -133,10 +133,11 @@
       <p class="text-xl text-gray-500 hidden md:flex">|</p>
       <a href="" class="text-blue-800 hover:text-blue-600 transition hidden md:flex">Все отчеты</a>
       <p class="text-lg text-gray-500 hidden md:flex">|</p>
+
     </div>
     <div class="hidden md:flex items-center space-x-6 mt-2">
-      <a href="" class="text-blue-800 hover:text-blue-600 transition">Customers</a>
-      <a href="" class="text-blue-800 hover:text-blue-600 transition">Vendors</a>
+      <RouterLink to="/customers" class="text-blue-800 hover:text-blue-600 transition">Customers </RouterLink>
+      <RouterLink to="/vendors" class="text-blue-800 hover:text-blue-600 transition">Vendors</RouterLink>
       <a href="" class="text-blue-800 hover:text-blue-600 transition">Items</a>
       <a href="" class="text-blue-800 hover:text-blue-600 transition">Bank accounts</a>
       <a href="" class="text-blue-800 hover:text-blue-600 transition">Chart of Accounts</a>
