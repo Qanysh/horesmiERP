@@ -1,53 +1,48 @@
 <script setup>
-import { defineProps } from 'vue'
-
-
-
 defineProps({
-    customer: Object
-})
+    customer: Object,
+});
 </script>
 
 <template>
     <tbody>
         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                {{ customer.Number }}
+                {{ customer.no }}
             </th>
             <td class="px-6 py-4">
-                {{ customer.Name }}
+                {{ customer.name }}
             </td>
             <td class="px-6 py-4">
-                {{ customer.Balance }}
+                {{ customer.balance }}
             </td>
             <td class="px-6 py-4">
-                {{ customer.CreditLimit }}
+                {{ customer.creditLimit }}
             </td>
             <td class="px-6 py-4">
-                {{ customer.TotalSales }}
+                {{ customer.totalSales }}
             </td>
             <td class="px-6 py-4">
-                {{ customer.Costs }}
+                {{ customer.costs }}
             </td>
             <td class="px-6 py-4">
-                {{ customer.Address }}
+                {{ customer.address }}
             </td>
             <td class="px-6 py-4">
-                {{ customer.Country }}
+                {{ customer.country }}
             </td>
             <td class="px-6 py-4">
-                {{ customer.City }}
+                {{ customer.city }}
             </td>
             <td class="px-6 py-4">
-                {{ customer.Phone }}
+                {{ customer.phone }}
             </td>
             <td class="px-6 py-4">
-                {{ customer.Email }}
+                {{ customer.email }}
             </td>
             <td class="px-6 py-4">
-                {{ customer.ContactName }}
+                {{ customer.contactName }}
             </td>
         </tr>
-
     </tbody>
 </template>

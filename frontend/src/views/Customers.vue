@@ -1,9 +1,33 @@
 <script setup>
-import CustomerTable from '@/components/CustomerTable.vue'
-import CustomerData from '@/CustomerData.json'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import CustomerTable from '@/components/CustomerTable.vue';
+import API_URL from "@/config/index.js";
 
-const customers = ref(CustomerData)
+
+// Reactive variables
+const customers = ref([]);   // Array to store the fetched customers
+const error = ref(null);      // Variable to store error messages
+const loading = ref();    // Variable to track loading state
+
+// Function to fetch customers data 
+const fetchCustomers = async () => {
+    loading.value = true
+    try {
+        const response = await axios.get(`${API_URL}/customers`);
+        customers.value = response.data; // Store the response data in the 'customers' array
+    } catch (err) {
+        error.value = 'Error fetching data'; // Set error message in case of failure
+        console.error(err);
+    } finally {
+        loading.value = false; // Stop loading once data is fetched or an error occurs
+    }
+};
+
+// Fetch data when the component is mounted
+onMounted(() => {
+    fetchCustomers();
+});
 </script>
 
 <template>
@@ -25,8 +49,9 @@ const customers = ref(CustomerData)
                     <th scope="col" class="px-6 py-3">Contact name</th>
                 </tr>
             </thead>
-            <CustomerTable v-for:="customer in customers" :key="customer.id" :customer="customer" />
+
+            <!-- Customer Table - v-for for rendering customer rows -->
+            <CustomerTable v-for="customer in customers" :key="customer.id" :customer />
         </table>
     </div>
-
 </template>

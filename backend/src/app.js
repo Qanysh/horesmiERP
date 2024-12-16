@@ -5,11 +5,13 @@ const authRoutes = require('./routes/authRoutes');
 const customerRoutes = require('./routes/customerRoutes');
 const itemRoutes = require('./routes/itemRoutes');
 const errorMiddleware = require ('./middleware/errorMiddleware');
+const cors = require('cors');
 
 require('dotenv').config();
 
 const app = express();
 const port = 3000;
+app.use(cors());
 
 app.set('view engine', 'ejs');
 

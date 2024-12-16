@@ -6,7 +6,7 @@ import { RouterLink } from 'vue-router'
   <!-- Navbar -->
   <nav class="container mx-auto my-3">
     <div class="flex items-center space-x-3">
-      <RouterLink to="/" class="text-2xl font-bold text-blue-800">ERP SYSTEM</RouterLink>
+      <RouterLink to="/" class="text-2xl font-bold text-blue-800">HORESMI</RouterLink>
       <button id="menu-toggle" class="md:hidden p-2 text-gray-700 hover:text-blue-700">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -138,7 +138,7 @@ import { RouterLink } from 'vue-router'
     <div class="hidden md:flex items-center space-x-6 mt-2">
       <RouterLink to="/customers" class="text-blue-800 hover:text-blue-600 transition">Customers </RouterLink>
       <RouterLink to="/vendors" class="text-blue-800 hover:text-blue-600 transition">Vendors</RouterLink>
-      <a href="" class="text-blue-800 hover:text-blue-600 transition">Items</a>
+      <RouterLink to="/items" class="text-blue-800 hover:text-blue-600 transition">Items</RouterLink>
       <a href="" class="text-blue-800 hover:text-blue-600 transition">Bank accounts</a>
       <a href="" class="text-blue-800 hover:text-blue-600 transition">Chart of Accounts</a>
       <a href="" class="text-blue-800 hover:text-blue-600 transition">Purchase orders</a>
