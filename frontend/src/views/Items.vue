@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import API_URL from "@/config/index.js"
 import axios from 'axios';
-import ItemsTable from '@/components/ItemsTable.vue';
+import ItemsTable from '@/components/ItemsTableContent.vue';
 
 const items = ref([]);   // Array to store the fetched customers
 const error = ref(null);      // Variable to store error messages

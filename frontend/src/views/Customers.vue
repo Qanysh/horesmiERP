@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import CustomerTable from '@/components/CustomerTable.vue';
+import CustomerTable from '@/components/CustomerTableContent.vue';
 import API_URL from "@/config/index.js";
 
 
@@ -31,7 +31,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="relative overflow-x-auto container mx-auto">
+    <div class="relative overflow-x-auto container mx-auto z-20">
         <table class="w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400">
             <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
