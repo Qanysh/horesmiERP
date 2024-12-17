@@ -2,11 +2,11 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 
 exports.loginUser = async function(req, res) {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     try {
         const user = await new Promise((resolve, reject) => {
-            User.getUserByUsername(username, (err, result) => {
+            User.getUserByEmail(email, (err, result) => {
                 if (err) return reject(err);
                 resolve(result);
             });
@@ -15,7 +15,10 @@ exports.loginUser = async function(req, res) {
         if (Array.isArray(user) && user.length > 0) {
             const isMatch = await bcrypt.compare(password, user[0].password);
             if (isMatch) {
-                res.redirect('/customers'); // Успешная аутентификация
+                req.session.userId = user[0].id;
+                req.session.isAdmin = user[0].admin;
+                // res.redirect('/customers');
+                res.status(200).send('Success login');
             } else {
                 res.status(401).send('Incorrect password');
             }

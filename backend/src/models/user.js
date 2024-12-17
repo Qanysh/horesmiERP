@@ -11,6 +11,9 @@ exports.getUserById = function(id, callback){
 exports.getUserByUsername = function(username, callback){
     db.query('SELECT * FROM users WHERE username = ?', [username], callback);
 };
+exports.getUserByEmail = function(email, callback){
+    db.query('SELECT * FROM users WHERE email = ?', [email], callback);
+};
 
 exports.createUser = function(newUser, callback){
     db.query('INSERT INTO users SET ?;', newUser, callback);
