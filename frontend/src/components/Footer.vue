@@ -3,9 +3,7 @@
 </script>
 
 <template>
-    <!-- Footer -->
-
-    <footer class="bg-[#001f3d] h-auto text-white py-10">
+    <footer class="bg-[#001f3d] h-auto text-white py-4">
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Block 1 -->
@@ -20,7 +18,6 @@
                         trusted ERP platform.
                     </p>
                 </div>
-
                 <!-- Block 2 -->
                 <div class="w-32">
                     <h1 class="font-semibold text-xl">COMPANY</h1>
@@ -35,7 +32,6 @@
                         <li><a href="#" class="hover:text-gray-300">Terms of Use</a></li>
                     </ul>
                 </div>
-
                 <!-- Block 3 -->
                 <div>
                     <h1 class="font-semibold text-xl">Mobile number</h1>
