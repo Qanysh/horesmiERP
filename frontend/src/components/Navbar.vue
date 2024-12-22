@@ -1,23 +1,29 @@
 <script setup>
-import { RouterLink } from 'vue-router'
+import { ref } from 'vue';
+import { RouterLink } from 'vue-router';
 import Search from './Search.vue';
+
+const isMobileMenuVisible = ref(false);
+
+const toggleMobileMenu = () => {
+  isMobileMenuVisible.value = !isMobileMenuVisible.value;
+};
 </script>
 
 <template>
-  <!-- Navbar -->
   <nav class="container relative mx-auto my-3">
     <div class="flex justify-between items-center">
       <div class="flex flex-col">
         <div class="flex items-center space-x-3">
           <RouterLink to="/" class="text-2xl font-bold text-blue-800">HORESMI</RouterLink>
-          <button id="menu-toggle" class="md:hidden p-2 text-gray-700 hover:text-blue-700">
+          <button @click="toggleMobileMenu" class="md:hidden p-2 text-gray-700 hover:text-blue-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
               stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
           </button>
           <p class="text-xl text-gray-500 hidden md:flex">|</p>
-          <ul id="menu" class="md:space-x-6 space-x-3 hidden md:flex items-center">
+          <ul class="md:space-x-6 space-x-3 hidden md:flex items-center">
             <li class="upper-menu">
               <span class="cursor-pointer">Finance</span>
             </li>
@@ -40,24 +46,24 @@ import Search from './Search.vue';
         </div>
         <Search />
         <div class="hidden md:flex items-center space-x-6 mt-2">
-          <RouterLink to="/customers" class="lower-menu">Customers </RouterLink>
+          <RouterLink to="/customers" class="lower-menu">Customers</RouterLink>
           <RouterLink to="/vendors" class="lower-menu">Vendors</RouterLink>
           <RouterLink to="/items" class="lower-menu">Items</RouterLink>
-          <a href="" class="lower-menu">Bank accounts</a>
+          <RouterLink to="/users" class="lower-menu">Users</RouterLink>
           <a href="" class="lower-menu">Chart of Accounts</a>
           <a href="" class="lower-menu">Purchase orders</a>
           <a href="" class="lower-menu">Sales orders</a>
         </div>
+        <div v-show="isMobileMenuVisible" id="mobile-menu" class="md:hidden flex flex-col space-y-4 mt-4">
+          <RouterLink to="/customers" class="lower-menu">Customers</RouterLink>
+          <RouterLink to="/vendors" class="lower-menu">Vendors</RouterLink>
+          <RouterLink to="/items" class="lower-menu">Items</RouterLink>
+          <a href="#" class="lower-menu">Purchasing</a>
+          <a href="#" class="lower-menu">Shopify</a>
+          <a href="#" class="lower-menu">Все отчеты</a>
+        </div>
       </div>
-      <!-- Для мобилок гамбургер кнопка -->
-      <div id="mobile-menu" class="md:hidden flex flex-col space-y-4 mt-4">
-        <RouterLink to="/customers" class="lower-menu">Customers</RouterLink>
-        <RouterLink to="/vendors" class="lower-menu">Vendors</RouterLink>
-        <RouterLink to="/items" class="lower-menu">Items</RouterLink>
-        <a href="#" class="lower-menu">Purchasing</a>
-        <a href="#" class="lower-menu">Shopify</a>
-        <a href="#" class="lower-menu">Все отчеты</a>
-      </div>
+
     </div>
   </nav>
 </template>
@@ -71,15 +77,3 @@ import Search from './Search.vue';
   @apply relative text-gray-700 hover:text-blue-700 transition;
 }
 </style>
-<script>
-// Ожидаем, когда страница загрузится
-document.addEventListener("DOMContentLoaded", function () {
-  const menuToggle = document.getElementById("menu-toggle");
-  const mobileMenu = document.getElementById("mobile-menu");
-
-  // Добавляем обработчик клика для кнопки гамбургера
-  menuToggle.addEventListener("click", function () {
-    mobileMenu.classList.toggle("hidden");
-  });
-});
-</script>
