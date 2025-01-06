@@ -3,6 +3,8 @@ import { ref, onMounted, watch } from 'vue';
 import API_URL from "@/config/index.js"
 import axios from 'axios';
 import ItemsTable from '@/components/tables/Item/ItemsTableContent.vue';
+import { filterItems } from '@/utils/filter';
+
 
 const items = ref([]);
 const error = ref(null);
@@ -14,7 +16,7 @@ const filteredItems = ref([]);
 const fetchItems = async () => {
     loading.value = true
     try {
-        await new Promise(resolve => setTimeout(resolve, 500))
+        await new Promise(resolve => setTimeout(resolve, 200))
         const response = await axios.get(`${API_URL}/items`);
         items.value = response.data;
         filterItems()
@@ -27,15 +29,12 @@ const fetchItems = async () => {
     }
 };
 
-const filterItems = () => {
-    filteredItems.value = items.value.filter(item =>
-        item.item_type?.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
+const filterItemsData = () => {
+    filteredItems.value = filterItems(items.value, searchQuery.value);
 };
 
-
 watch(searchQuery, () => {
-    filterItems();
+    filterItemsData();
 })
 
 onMounted(async () => {

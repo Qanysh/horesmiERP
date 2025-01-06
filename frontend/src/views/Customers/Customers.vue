@@ -13,7 +13,7 @@ const loading = ref();
 const fetchCustomers = async () => {
     loading.value = true;
     try {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 200));
         const response = await axios.get(`${API_URL}/customers`);
         customers.value = response.data;
         filterCustomers();
