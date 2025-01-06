@@ -1,34 +1,39 @@
-import { createRouter, createWebHistory} from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
-import Customers from '@/views/Customers.vue'
-import Vendors from '@/views/Vendors.vue'
-import Items from '@/views/Items.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import HomeView from "@/views/Home/HomeView.vue";
+import Customers from "@/views/Customers/Customers.vue";
+import Vendors from "@/views/Vendors/Vendors.vue";
+import Items from "@/views/Items/Items.vue";
+import Users from "@/views/Users/Users.vue";
 
-const router = createRouter ({
-    history: createWebHistory(import.meta.env.BASE_URL),
-    routes: [
-        {
-        path: '/',
-        name:'home',
-        component: HomeView
-    }, 
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
     {
-        path:'/customers',
-        name:'customers',
-        component: Customers
+      path: "/",
+      name: "home",
+      component: HomeView,
     },
     {
-        path: '/vendors',
-        name: 'vendors',
-        component: Vendors
+      path: "/customers",
+      name: "customers",
+      component: Customers,
     },
     {
-        path:'/items',
-        name:'items',
-        component: Items
-    }
-
-]
-})
+      path: "/vendors",
+      name: "vendors",
+      component: Vendors,
+    },
+    {
+      path: "/items",
+      name: "items",
+      component: Items,
+    },
+    {
+      path: "/users",
+      name: "users",
+      component: Users,
+    },
+  ],
+});
 
 export default router;
