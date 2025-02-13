@@ -1,11 +1,15 @@
 const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const authRoutes = require('./routes/authRoutes');
-const customerRoutes = require('./routes/customerRoutes');
-const itemRoutes = require('./routes/itemRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const errorMiddleware = require ('./middlewares/errorMiddleware');
+const authRoutes = require('./src/routes/authRoutes');
+const customerRoutes = require('./src/routes/customerRoutes');
+const vendorRoutes = require('./src/routes/vendorRoutes');
+const itemRoutes = require('./src/routes/itemRoutes');
+const itemLedgerEntryRoutes = require('./src/routes/itemLedgerEntryRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
+const purchaseOrderRoutes = require('./src/routes/purchaseOrderRoutes');
+const salesOrderRoutes = require('./src/routes/salesOrderRoutes');
+const errorMiddleware = require('./src/middlewares/errorMiddleware');
 
 require('dotenv').config();
 
@@ -29,8 +33,12 @@ app.use(session({
 
 app.use('/api/auth', authRoutes);
 app.use('/api/customers', customerRoutes);
+app.use('/api/vendors', vendorRoutes);
 app.use('/api/items', itemRoutes);
+app.use('/api/itemLedgerEntries', itemLedgerEntryRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/purchaseOrders', purchaseOrderRoutes);
+app.use('/api/salesOrders', salesOrderRoutes);
 
 app.use(errorMiddleware);
 
