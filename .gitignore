@@ -3,11 +3,8 @@
 /.pnp
 .pnp.js
 
-# testing
-/coverage
-
-# production
-/build
+/backend/.env
+/frontend/node_modules
 
 # misc
 .DS_Store
