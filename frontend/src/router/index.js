@@ -4,6 +4,7 @@ import Customers from "@/views/Customers/Customers.vue";
 import Vendors from "@/views/Vendors/Vendors.vue";
 import Items from "@/views/Items/Items.vue";
 import Users from "@/views/Users/Users.vue";
+import Login from "@/views/Login.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
       path: "/users",
       name: "users",
       component: Users,
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: Login,
     },
   ],
 });

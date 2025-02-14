@@ -104,45 +104,45 @@
   </section>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      isLoginActive: true,
-      signupForm: {
-        fullName: "",
-        email: "",
-        password: "",
-        terms: false,
-      },
-      loginForm: {
-        email: "",
-        password: "",
-      },
-    };
-  },
-  methods: {
-    toggleForm(isLogin) {
-      this.isLoginActive = isLogin;
-    },
-    handleSignup() {
-      if (!this.signupForm.terms) {
-        alert("Please accept terms and conditions.");
-        return;
-      }
-      console.log("Signup Data:", this.signupForm);
-      alert("Signup Successful!");
-      // Redirect to home after signup or you can route to another page
-      this.$router.push({ name: "home" });
-    },
-    handleLogin() {
-      console.log("Login Data:", this.loginForm);
-      this.$router.push({ name: "home" }); // Redirect to home after login
-    },
-    forgotPassword() {
-      // Redirect to reset password page or handle password reset logic
-      this.$router.push({ name: "reset-password" });
-    },
-  },
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+// State for the form
+const isLoginActive = ref(true);
+const signupForm = ref({
+  fullName: "",
+  email: "",
+  password: "",
+  terms: false,
+});
+const loginForm = ref({
+  email: "",
+  password: "",
+});
+
+const toggleForm = (isLogin) => {
+  isLoginActive.value = isLogin;
+};
+
+const handleSignup = () => {
+  if (!signupForm.value.terms) {
+    alert("Please accept terms and conditions.");
+    return;
+  }
+  console.log("Signup Data:", signupForm.value);
+  alert("Signup Successful!");
+  router.push({ name: "home" });
+};
+
+const handleLogin = () => {
+  console.log("Login Data:", loginForm.value);
+  router.push({ name: "home" });
+};
+
+const forgotPassword = () => {
+  router.push({ name: "reset-password" });
 };
 </script>
