@@ -19,7 +19,7 @@ export const useCustomerStore = defineStore("customer", () => {
   const fetchCustomers = async () => {
     loading.value = true;
     try {
-      const response = await axios.get(`${API_URL}/customers`); // Corrected to /customers
+      const response = await axios.get(`${API_URL}/api/customers`); // Corrected to /customers
       customers.value = response.data;
     } catch (err) {
       error.value = "Error fetching customer data";
@@ -32,7 +32,10 @@ export const useCustomerStore = defineStore("customer", () => {
   const createCustomer = async (newCustomer) => {
     loading.value = true;
     try {
-      const response = await axios.post(`${API_URL}/customers`, newCustomer); // Corrected to /customers
+      const response = await axios.post(
+        `${API_URL}/api/customers`,
+        newCustomer
+      ); // Corrected to /customers
       customers.value.push(response.data.customer);
       return response.data.message;
     } catch (err) {
@@ -48,7 +51,7 @@ export const useCustomerStore = defineStore("customer", () => {
     loading.value = true;
     try {
       const response = await axios.put(
-        `${API_URL}/customers/${customerNo}`,
+        `${API_URL}/api/customers/${customerNo}`,
         updatedCustomer
       ); // Corrected to /customers/:id
       const index = customers.value.findIndex(
@@ -70,7 +73,9 @@ export const useCustomerStore = defineStore("customer", () => {
   const deleteCustomer = async (customerNo) => {
     loading.value = true;
     try {
-      const response = await axios.delete(`${API_URL}/customers/${customerNo}`); // Corrected to /customers/:id
+      const response = await axios.delete(
+        `${API_URL}/api/customers/${customerNo}`
+      ); // Corrected to /customers/:id
       customers.value = customers.value.filter(
         (customer) => customer.no !== customerNo
       );

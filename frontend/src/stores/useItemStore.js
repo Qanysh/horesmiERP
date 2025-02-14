@@ -16,7 +16,7 @@ export const useItemStore = defineStore("item", () => {
     loading.value = true;
     try {
       await new Promise((resolve) => setTimeout(resolve, 200));
-      const response = await axios.get(`${API_URL}/items`);
+      const response = await axios.get(`${API_URL}/api/items`);
       items.value = response.data;
       filterItemsData();
     } catch (err) {
