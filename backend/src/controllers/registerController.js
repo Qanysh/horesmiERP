@@ -17,10 +17,28 @@ async function userExists(username) {
         console.error('Error checking user existence:', error);
         throw error;
     }
-}
+};
+
+async function emailExists(email) {
+    try {
+        const result = await new Promise((resolve, reject) => {
+            User.getUserByEmail(email, (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        });
+        if (Array.isArray(result) && result.length > 0) {
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Error checking email existence:', error);
+        throw error;
+    }
+};
 
 exports.registerUser = async function(req, res) {
-    const { username, password, re_password } = req.body;
+    const { username, email, password, re_password } = req.body;
 
     if (password !== re_password) {
         return res.status(400).json({ error: 'Passwords do not match!' });
@@ -31,11 +49,17 @@ exports.registerUser = async function(req, res) {
     }
 
     try {
+        const emailExistsCheck = await emailExists(email);
+
+        if (emailExistsCheck) {
+            return res.status(400).json({ error: 'User with this email already exists!' });
+        };
+
         const userExistsCheck = await userExists(username);
 
         if (userExistsCheck) {
             return res.status(400).json({ error: 'User already exists!' });
-        }
+        };
 
         const hashed_password = await bcrypt.hash(password, 10);
         const currentDate = new Date();
