@@ -1,11 +1,10 @@
 <script setup>
 import { onMounted } from "vue";
-import { useCustomerStore } from "@/stores/useCustomerStore"; // Import Pinia store
-import CustomerTable from "@/components/tables/Customer/CustomerTableContent.vue"; // Adjust import based on your structure
+import { useCustomerStore } from "@/stores/useCustomerStore";
+import CustomerTable from "@/components/tables/Customer/CustomerTableContent.vue";
 
-const customerStore = useCustomerStore(); // Access the store
+const customerStore = useCustomerStore();
 
-// Fetch customer data on component mount
 onMounted(() => {
   customerStore.fetchCustomers();
 });
@@ -23,12 +22,8 @@ onMounted(() => {
     </div>
 
     <div class="relative overflow-x-auto">
-      <table
-        class="w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400"
-      >
-        <thead
-          class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
-        >
+      <table class="w-full text-left text-sm text-gray-500 rtl:text-right">
+        <thead class="bg-gray-50 text-xs uppercase text-gray-700">
           <tr>
             <th scope="col" class="px-6 py-3">Number</th>
             <th scope="col" class="px-6 py-3">Name</th>
@@ -45,7 +40,6 @@ onMounted(() => {
           </tr>
         </thead>
 
-        <!-- Loading state -->
         <template v-if="customerStore.loading">
           <tr v-for="i in 5" :key="i" class="animate-pulse">
             <td v-for="j in 12" :key="j" class="px-6 py-3">
@@ -54,7 +48,6 @@ onMounted(() => {
           </tr>
         </template>
 
-        <!-- Customer data -->
         <template v-else>
           <CustomerTable
             v-for="customer in customerStore.filteredCustomers"

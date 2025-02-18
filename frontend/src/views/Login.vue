@@ -1,35 +1,84 @@
+<script setup>
+import { useRouter } from "vue-router";
+import { ref } from "vue";
+import { registerUser, loginUser } from "@/utils/authService";
+import { useAuthStore } from "@/stores/useAuthStore";
+
+const isLoginActive = ref(true);
+const username = ref("");
+const email = ref("");
+const password = ref("");
+const re_password = ref("");
+const errorMessages = ref("");
+const router = useRouter();
+
+const authStore = useAuthStore();
+
+const toggleForm = (isLogin) => {
+  isLoginActive.value = isLogin;
+};
+
+const register = async () => {
+  errorMessages.value = "";
+
+  const { errorMessages: registrationError, success } = await registerUser(
+    username.value,
+    email.value,
+    password.value,
+    re_password.value
+  );
+
+  if (registrationError) {
+    errorMessages.value = registrationError;
+  } else if (success) {
+    alert("Signup successful!");
+    toggleForm(true);
+  }
+};
+
+const login = async () => {
+  errorMessages.value = "";
+
+  const {
+    errorMessages: loginError,
+    success,
+    token,
+  } = await loginUser(email.value, password.value);
+
+  if (loginError) {
+    errorMessages.value = loginError;
+  } else if (success) {
+    alert("Login successful!");
+    authStore.setToken(token);
+    router.push("/");
+  }
+};
+</script>
+
 <template>
   <section class="flex justify-center items-center h-screen bg-blue-50">
     <div
       v-if="isLoginActive"
       class="w-full max-w-md p-6 bg-white rounded-lg shadow-lg"
     >
-      <!-- Login Form -->
       <header class="text-center text-xl font-semibold text-gray-800 mb-6">
         Login
       </header>
-      <form @submit.prevent="handleLogin">
+      <form @submit.prevent="login">
         <input
-          v-model="loginForm.email"
+          v-model="email"
           type="email"
           placeholder="Email address"
           class="w-full p-4 mb-4 border border-gray-300 rounded-lg"
           required
         />
         <input
-          v-model="loginForm.password"
+          v-model="password"
           type="password"
           placeholder="Password"
           class="w-full p-4 mb-4 border border-gray-300 rounded-lg"
           required
         />
-        <a
-          href="#"
-          class="text-blue-600 text-sm hover:underline mb-4 inline-block"
-          @click.prevent="forgotPassword"
-        >
-          Forgot password?
-        </a>
         <button
           type="submit"
           class="w-full p-4 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600"
@@ -46,44 +95,44 @@
           Sign up
         </span>
       </p>
+      <p v-if="errorMessages" class="text-red-500 text-center mt-4">
+        {{ errorMessages }}
+      </p>
     </div>
 
-    <!-- SignUp Form -->
     <div v-else class="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
       <header class="text-center text-xl font-semibold text-gray-800 mb-6">
         Sign Up
       </header>
-      <form @submit.prevent="handleSignup">
+      <form @submit.prevent="register">
         <input
-          v-model="signupForm.fullName"
+          v-model="username"
           type="text"
-          placeholder="Full name"
+          placeholder="Username"
           class="w-full p-4 mb-4 border border-gray-300 rounded-lg"
           required
         />
         <input
-          v-model="signupForm.email"
+          v-model="email"
           type="email"
           placeholder="Email address"
           class="w-full p-4 mb-4 border border-gray-300 rounded-lg"
           required
         />
         <input
-          v-model="signupForm.password"
+          v-model="password"
           type="password"
           placeholder="Password"
           class="w-full p-4 mb-4 border border-gray-300 rounded-lg"
           required
         />
-        <div class="flex items-center gap-2">
-          <input
-            v-model="signupForm.terms"
-            type="checkbox"
-            id="signupCheck"
-            class="form-checkbox"
-          />
-          <label for="signupCheck">I accept all terms & conditions</label>
-        </div>
+        <input
+          v-model="re_password"
+          type="password"
+          placeholder="Repeat Password"
+          class="w-full p-4 mb-4 border border-gray-300 rounded-lg"
+          required
+        />
         <button
           type="submit"
           class="w-full p-4 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600"
@@ -91,6 +140,9 @@
           Sign Up
         </button>
       </form>
+      <p v-if="errorMessages" class="text-red-500 text-center mt-4">
+        {{ errorMessages }}
+      </p>
       <p class="text-center mt-4">
         Already have an account?
         <span
@@ -103,46 +155,3 @@
     </div>
   </section>
 </template>
-
-<script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-
-const router = useRouter();
-
-// State for the form
-const isLoginActive = ref(true);
-const signupForm = ref({
-  fullName: "",
-  email: "",
-  password: "",
-  terms: false,
-});
-const loginForm = ref({
-  email: "",
-  password: "",
-});
-
-const toggleForm = (isLogin) => {
-  isLoginActive.value = isLogin;
-};
-
-const handleSignup = () => {
-  if (!signupForm.value.terms) {
-    alert("Please accept terms and conditions.");
-    return;
-  }
-  console.log("Signup Data:", signupForm.value);
-  alert("Signup Successful!");
-  router.push({ name: "home" });
-};
-
-const handleLogin = () => {
-  console.log("Login Data:", loginForm.value);
-  router.push({ name: "home" });
-};
-
-const forgotPassword = () => {
-  router.push({ name: "reset-password" });
-};
-</script>
