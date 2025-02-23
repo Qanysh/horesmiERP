@@ -1,7 +1,7 @@
 <script setup>
-defineProps({
-  item: Object,
-});
+defineProps(["item", "deleteVendor"]);
+
+const emit = defineEmits(["edit-vendor", "delete-vendor"]);
 </script>
 
 <template>
@@ -24,6 +24,14 @@ defineProps({
       <td class="px-6 py-4">{{ item.phone }}</td>
       <td class="px-6 py-4">{{ item.email }}</td>
       <td class="px-6 py-4">{{ item.contactName }}</td>
+      <td class="px-6 py-4 flex gap-2">
+        <button
+          @click="deleteVendor(item.no)"
+          class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+        >
+          Delete
+        </button>
+      </td>
     </tr>
   </tbody>
 </template>
