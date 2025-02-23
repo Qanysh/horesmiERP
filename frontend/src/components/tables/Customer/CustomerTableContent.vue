@@ -46,6 +46,14 @@ defineProps({
       <td class="px-6 py-4">
         {{ customer.contactName }}
       </td>
+      <td>
+        <button
+          @click="$emit('delete')"
+          class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+        >
+          Delete
+        </button>
+      </td>
     </tr>
   </tbody>
 </template>

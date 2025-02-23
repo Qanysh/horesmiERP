@@ -5,6 +5,10 @@ import API_URL from "@/config/index.js";
 
 export const useCustomerStore = defineStore("customer", () => {
   const customers = ref([]);
+  const searchQuery = ref("");
+  const loading = ref(false);
+  const error = ref(null);
+
   const filteredCustomers = computed(() => {
     return customers.value.filter(
       (customer) =>
@@ -12,9 +16,6 @@ export const useCustomerStore = defineStore("customer", () => {
         customer.email.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
   });
-  const searchQuery = ref("");
-  const loading = ref(false);
-  const error = ref(null);
 
   const fetchCustomers = async () => {
     loading.value = true;
@@ -29,6 +30,37 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
+  const createCustomer = async (customerData) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/customers/create`,
+        customerData
+      );
+      customers.value.push(response.data.customer);
+    } catch (err) {
+      error.value = err.response?.data?.error || "Error adding customer";
+      console.error(
+        "Error adding customer:",
+        err.response?.data || err.message
+      );
+    }
+  };
+
+  const deleteCustomer = async (customerNo) => {
+    try {
+      await axios.delete(`${API_URL}/api/customers/delete/${customerNo}`);
+      customers.value = customers.value.filter(
+        (customer) => customer.no !== customerNo
+      );
+    } catch (err) {
+      error.value = err.response?.data?.error || "Error deleting customer";
+      console.error(
+        "Error deleting customer:",
+        err.response?.data || err.message
+      );
+    }
+  };
+
   watch(searchQuery, () => {});
 
   return {
@@ -38,5 +70,7 @@ export const useCustomerStore = defineStore("customer", () => {
     loading,
     error,
     fetchCustomers,
+    createCustomer,
+    deleteCustomer,
   };
 });
