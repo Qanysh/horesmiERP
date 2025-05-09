@@ -1,32 +1,32 @@
 const User = require('../models/user');
-const bcrypt = require('bcryptjs');
+const speakeasy = require('speakeasy');
 
-exports.loginUser = async function(req, res) {
-    const { email, password } = req.body;
-
+exports.loginUser = async function (req, res) {
+    const { userId, token } = req.body;
     try {
+        // Retrieve user from database
         const user = await new Promise((resolve, reject) => {
-            User.getUserByEmail(email, (err, result) => {
+            User.getUserById(userId, (err, result) => {
                 if (err) return reject(err);
                 resolve(result);
             });
         });
-
-        if (Array.isArray(user) && user.length > 0) {
-            const isMatch = await bcrypt.compare(password, user[0].password);
-            if (isMatch) {
-                req.session.userId = user[0].id;
-                req.session.isAdmin = user[0].admin;
-                // res.redirect('/customers');
-                res.status(200).send('Success login');
-            } else {
-                res.status(401).send('Incorrect password');
-            }
+        console.log({ user })
+        const secret = user[0].secret;
+        // Returns true if the token matches
+        const tokenValidates = speakeasy.totp.verify({
+            secret,
+            encoding: 'base32',
+            token,
+            window: 1
+        });
+        if (tokenValidates) {
+            res.json({ validated: true })
         } else {
-            res.status(404).send('User not found');
+            res.json({ validated: false })
         }
     } catch (error) {
-        console.error('Error during user login:', error);
-        res.status(500).send('Server error');
-    }
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving user' })
+    };
 };
