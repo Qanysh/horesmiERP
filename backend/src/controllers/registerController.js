@@ -1,15 +1,45 @@
 const User = require('../models/user');
 const uuid = require('uuid');
 const speakeasy = require('speakeasy');
+const bcrypt = require('bcryptjs');
 
+async function emailExists(email) {
+    try {
+        const result = await new Promise((resolve, reject) => {
+            User.getUserByEmail(email, (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        });
+        if (Array.isArray(result) && result.length > 0) {
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('Error checking email existence:', error);
+        throw error;
+    }
+};
 exports.registerUser = async function (req, res) {
+    const { username, email, company, password, re_password } = req.body;
     const id = uuid.v4();
 
+    if (password !== re_password) {
+        return res.status(400).json({ error: 'Passwords do not match!' });
+    }
+
+    if (password.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters long!' });
+    }
+
+
     try {
-        // const issuer = 'HoresmiERP';
-        const email = req.body.email;
-        const username = req.body.username;
-        const company = req.body.company;
+        const emailExistsCheck = await emailExists(email);
+        if (emailExistsCheck) {
+            return res.status(400).json({ error: 'User with this email already exists!' });
+        };
+        const hashed_password = await bcrypt.hash(password, 10);
+
         const temp_secret = speakeasy.generateSecret();
 
         const newUser = {
@@ -17,9 +47,15 @@ exports.registerUser = async function (req, res) {
             secret: temp_secret.base32,
             username: username,
             email: email,
+            password: hashed_password,
             company: company,
             created_at: new Date(),
+            updated_at: new Date()
         };
+
+        if (!newUser.username || !newUser.password) {
+            return res.status(400).json({ error: 'User data is empty' });
+        }
 
         User.createUser(newUser, (err, result) => {
             if (err) {
