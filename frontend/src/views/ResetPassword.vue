@@ -23,20 +23,17 @@
   </section>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      email: "",
-    };
-  },
-  methods: {
-    handleReset() {
-      console.log("Password reset requested for:", this.email);
-      // Add password reset logic here, then show a confirmation or redirect
-      alert("Password reset link has been sent!");
-      this.$router.push({ name: "login" }); // Redirect back to login page
-    },
-  },
+<script setup>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const email = ref("");
+
+const handleReset = () => {
+  console.log("Password reset requested for:", email.value);
+  alert("Password reset link has been sent!");
+  router.push({ name: "login" });
 };
 </script>

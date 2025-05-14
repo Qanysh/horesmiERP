@@ -2,7 +2,9 @@
 */node_modules
 /.pnp
 .pnp.js
-*.gitignore
+
+/backend/.env
+/frontend/node_modules
 
 # misc
 .DS_Store

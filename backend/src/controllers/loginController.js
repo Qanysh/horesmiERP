@@ -1,32 +1,42 @@
 const User = require('../models/user');
+const speakeasy = require('speakeasy');
 const bcrypt = require('bcryptjs');
 
-exports.loginUser = async function(req, res) {
-    const { email, password } = req.body;
 
+exports.loginUser = async function (req, res) {
+    const { token, email, password } = req.body;
     try {
+        // Retrieve user from database
         const user = await new Promise((resolve, reject) => {
             User.getUserByEmail(email, (err, result) => {
                 if (err) return reject(err);
                 resolve(result);
             });
         });
-
+        console.log({ user })
+        const secret = user[0].secret;
+        // Returns true if the token matches
         if (Array.isArray(user) && user.length > 0) {
             const isMatch = await bcrypt.compare(password, user[0].password);
             if (isMatch) {
-                req.session.userId = user[0].id;
-                req.session.isAdmin = user[0].admin;
-                // res.redirect('/customers');
-                res.status(200).send('Success login');
-            } else {
-                res.status(401).send('Incorrect password');
+                const tokenValidates = speakeasy.totp.verify({
+                    secret,
+                    encoding: 'base32',
+                    token,
+                    window: 1
+                });
+                if (tokenValidates) {
+                    req.session.userId = user[0].id;
+                    req.session.isAdmin = user[0].admin;
+                    req.session.company = user[0].company;
+                    res.json({ validated: true })
+                } else {
+                    res.json({ validated: false })
+                }
             }
-        } else {
-            res.status(404).send('User not found');
         }
     } catch (error) {
-        console.error('Error during user login:', error);
-        res.status(500).send('Server error');
-    }
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving user' })
+    };
 };

@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 
-exports.getAllUsers = async function(req, res) {
+exports.getAllUsers = async function (req, res) {
     try {
         User.getAllUsers((err, users) => {
             if (err) {
@@ -15,13 +15,30 @@ exports.getAllUsers = async function(req, res) {
         res.status(500).json({ error: 'Unexpected error fetching users' });
     }
 };
+exports.getUserById = async function (userId, req, res) {
+    try {
+        User.getUserById(userId, (err, user) => {
+            if (err) {
+                console.error('Error fetching user:', err);
+                return res.status(500).json({ error: 'Error fetching user data' });
+            }
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            res.json(user);
+        });
+    } catch (err) {
+        console.error('Unexpected error fetching user:', err);
+        res.status(500).json({ error: 'Unexpected error fetching user' });
+    }
+};
 
-exports.updateUser = async function(req, res) {
+exports.updateUser = async function (req, res) {
     const password = req.body.password;
     const currentDate = new Date();
 
     const hashed_password = await bcrypt.hash(password, 10);
-    
+
     const updatedUser = {
         id: req.body.id,
         username: req.body.username,
@@ -43,7 +60,7 @@ exports.updateUser = async function(req, res) {
     });
 };
 
-exports.deleteUser = function(req, res) {
+exports.deleteUser = function (req, res) {
     User.deleteUser(req.params.id, (err, result) => {
         if (err) {
             console.error('Error deleting user:', err);
