@@ -16,7 +16,7 @@ exports.getAllSalesOrders = async function (req, res) {
 };
 
 exports.getSalesOrderById = async function (req, res) {
-    SalesOrder.getSalesOrderById([req.params.id], (err, salesOrder) => {
+    SalesOrder.getSalesOrderById([req.params.no], (err, salesOrder) => {
         if (err) {
             console.error('Error fetching salesOrder:', err);
             return res.status(500).json({ error: 'Error fetching salesOrder' });
@@ -30,15 +30,45 @@ exports.getSalesOrderById = async function (req, res) {
 
 exports.createSalesOrder = function (req, res) {
     const newSalesOrder = {
-        orderNo: req.body.orderNo,
-        customerNo: req.body.customerNo,
+        no: req.body.no,
+        sellToCustomerNo: req.body.sellToCustomerNo,
+        sellToCustomerName: req.body.sellToCustomerName,
+        quoteNo: req.body.quoteNo,
+        postingDescription: req.body.postingDescription,
+        sellToAddress: req.body.sellToAddress,
+        sellToAddress2: req.body.sellToAddress2,
+        sellToCity: req.body.sellToCity,
+        sellToCounty: req.body.sellToCounty,
+        sellToPostCode: req.body.sellToPostCode,
+        sellToCountryRegionCode: req.body.sellToCountryRegionCode,
+        sellToContactNo: req.body.sellToContactNo,
+        sellToPhoneNo: req.body.sellToPhoneNo,
+        sellToMobilePhoneNo: req.body.sellToMobilePhoneNo,
+        sellToEmail: req.body.sellToEmail,
+        sellToContact: req.body.sellToContact,
+        noOfArchivedVersions: req.body.noOfArchivedVersions,
+        documentDate: req.body.documentDate,
+        postingDate: req.body.postingDate,
+        vatReportingDate: req.body.vatReportingDate,
         orderDate: req.body.orderDate,
+        dueDate: req.body.dueDate,
+        requestedDeliveryDate: req.body.requestedDeliveryDate,
+        promisedDeliveryDate: req.body.promisedDeliveryDate,
+        externalDocumentNo: req.body.externalDocumentNo,
+        yourReference: req.body.yourReference,
+        salespersonCode: req.body.salespersonCode,
+        campaignNo: req.body.campaignNo,
+        opportunityNo: req.body.opportunityNo,
+        responsibilityCenter: req.body.responsibilityCenter,
+        assignedUserId: req.body.assignedUserId,
+        jobQueueStatus: req.body.jobQueueStatus,
         status: req.body.status,
-        totalAmount: req.body.totalAmount,
-        description: req.body.description,
+        created_at: new Date(),
+        updated_at: new Date()
     };
 
-    if (!newSalesOrder.orderNo || !newSalesOrder.customerNo) {
+
+    if (!newSalesOrder.no || !newSalesOrder.sellToCustomerNo) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -53,19 +83,48 @@ exports.createSalesOrder = function (req, res) {
 
 exports.updateSalesOrder = function (req, res) {
     const updatedSalesOrder = {
-        orderNo: req.body.orderNo,
-        customerNo: req.body.customerNo,
+        no: req.body.no,
+        sellToCustomerNo: req.body.sellToCustomerNo,
+        sellToCustomerName: req.body.sellToCustomerName,
+        quoteNo: req.body.quoteNo,
+        postingDescription: req.body.postingDescription,
+        sellToAddress: req.body.sellToAddress,
+        sellToAddress2: req.body.sellToAddress2,
+        sellToCity: req.body.sellToCity,
+        sellToCounty: req.body.sellToCounty,
+        sellToPostCode: req.body.sellToPostCode,
+        sellToCountryRegionCode: req.body.sellToCountryRegionCode,
+        sellToContactNo: req.body.sellToContactNo,
+        sellToPhoneNo: req.body.sellToPhoneNo,
+        sellToMobilePhoneNo: req.body.sellToMobilePhoneNo,
+        sellToEmail: req.body.sellToEmail,
+        sellToContact: req.body.sellToContact,
+        noOfArchivedVersions: req.body.noOfArchivedVersions,
+        documentDate: req.body.documentDate,
+        postingDate: req.body.postingDate,
+        vatReportingDate: req.body.vatReportingDate,
         orderDate: req.body.orderDate,
+        dueDate: req.body.dueDate,
+        requestedDeliveryDate: req.body.requestedDeliveryDate,
+        promisedDeliveryDate: req.body.promisedDeliveryDate,
+        externalDocumentNo: req.body.externalDocumentNo,
+        yourReference: req.body.yourReference,
+        salespersonCode: req.body.salespersonCode,
+        campaignNo: req.body.campaignNo,
+        opportunityNo: req.body.opportunityNo,
+        responsibilityCenter: req.body.responsibilityCenter,
+        assignedUserId: req.body.assignedUserId,
+        jobQueueStatus: req.body.jobQueueStatus,
         status: req.body.status,
-        totalAmount: req.body.totalAmount,
-        description: req.body.description,
+        created_at: req.body.created_at,
+        updated_at: new Date()
     };
 
-    if (!req.params.id) {
+    if (!req.params.no) {
         return res.status(400).json({ error: 'SalesOrder ID is missing' });
     }
 
-    SalesOrder.updateSalesOrder(req.params.id, updatedSalesOrder, (err, result) => {
+    SalesOrder.updateSalesOrder(req.params.no, updatedSalesOrder, (err, result) => {
         if (err) {
             console.error('Error updating salesOrder:', err);
             return res.status(500).json({ error: 'Failed to update salesOrder' });
@@ -75,7 +134,7 @@ exports.updateSalesOrder = function (req, res) {
 };
 
 exports.deleteSalesOrder = function (req, res) {
-    SalesOrder.deleteSalesOrder(req.params.id, (err, result) => {
+    SalesOrder.deleteSalesOrder(req.params.no, (err, result) => {
         if (err) {
             console.error('Error deleting salesOrder:', err);
             return res.status(500).json({ error: 'Failed to delete salesOrder' });

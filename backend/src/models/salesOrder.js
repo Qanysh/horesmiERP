@@ -1,21 +1,21 @@
 const db = require('../../db/database');
 
 exports.getAllSalesOrders = function (callback) {
-    db.query('SELECT * FROM salesOrders', callback);
+    db.query('SELECT * FROM salesOrder', callback);
 };
 
-exports.getSalesOrderById = function (id, callback) {
-    db.query('SELECT * FROM salesOrders WHERE id = ?', [id], callback);
+exports.getSalesOrderById = function (no, callback) {
+    db.query('SELECT * FROM salesOrder WHERE no = ?', [no], callback);
 };
 
 exports.createSalesOrder = function (newSalesOrder, callback) {
-    db.query('INSERT INTO salesOrders SET ?;', newSalesOrder, callback);
+    db.query('INSERT INTO salesOrder SET ?;', newSalesOrder, callback);
 };
 
-exports.updateSalesOrder = function (id, updatedSalesOrder, callback) {
-    db.query('UPDATE salesOrders SET ? WHERE id = ?', [updatedSalesOrder, id], callback);
+exports.updateSalesOrder = function (no, updatedSalesOrder, callback) {
+    db.query('UPDATE salesOrder SET ? WHERE no = ?', [updatedSalesOrder, no], callback);
 };
 
-exports.deleteSalesOrder = function (id, callback) {
-    db.query('DELETE FROM salesOrders WHERE id = ?', [id], callback);
+exports.deleteSalesOrder = function (no, callback) {
+    db.query('DELETE FROM salesOrder WHERE id = ?', [no], callback);
 };

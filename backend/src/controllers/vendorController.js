@@ -16,7 +16,7 @@ exports.getAllVendors = async function (req, res) {
 };
 
 exports.getVendorById = async function (req, res) {
-    Vendor.getVendorById([req.params.no], (err, vendorCard) => {
+    Vendor.getVendorById([req.params.vendorNo], (err, vendorCard) => {
         if (err) {
             console.error('Error fetching vendor:', err);
             return res.status(500).json({ error: 'Error fetching vendor' });
@@ -30,21 +30,44 @@ exports.getVendorById = async function (req, res) {
 
 exports.createVendor = function (req, res) {
     const newVendor = {
-        no: req.body.no,
+        vendorNo: req.body.vendorNo,
         name: req.body.name,
-        balance: req.body.balance,
-        creditLimit: req.body.creditLimit,
-        totalSales: req.body.totalSales,
-        costs: req.body.costs,
-        address: req.body.address,
-        country: req.body.country,
-        city: req.body.city,
-        phone: req.body.phone,
-        email: req.body.email,
-        contactName: req.body.contactName
+        name2: req.body.name2,
+        responsibilityCenter: req.body.responsibilityCenter,
+        locationCode: req.body.locationCode,
+        postCode: req.body.postCode,
+        countryRegionCode: req.body.countryRegionCode,
+        phoneNo: req.body.phoneNo,
+        faxNo: req.body.faxNo,
+        icPartnerCode: req.body.icPartnerCode,
+        contact: req.body.contact,
+        purchaserCode: req.body.purchaserCode,
+        vendorPostingGroup: req.body.vendorPostingGroup,
+        allowMultiplePostingGroups: req.body.allowMultiplePostingGroups,
+        genBusPostingGroup: req.body.genBusPostingGroup,
+        vatBusPostingGroup: req.body.vatBusPostingGroup,
+        paymentTermsCode: req.body.paymentTermsCode,
+        finChargeTermsCode: req.body.finChargeTermsCode,
+        currencyCode: req.body.currencyCode,
+        languageCode: req.body.languageCode,
+        searchName: req.body.searchName,
+        blocked: req.body.blocked,
+        privacyBlocked: req.body.privacyBlocked,
+        lastDateModified: req.body.lastDateModified,
+        applicationMethod: req.body.applicationMethod,
+        locationCode2: req.body.locationCode2,
+        shipmentMethodCode: req.body.shipmentMethodCode,
+        leadTimeCalculation: req.body.leadTimeCalculation,
+        baseCalendarCode: req.body.baseCalendarCode,
+        balanceLcy: req.body.balanceLcy,
+        balanceDueLcy: req.body.balanceDueLcy,
+        paymentsLcy: req.body.paymentsLcy,
+        created_at: new Date(),
+        updated_at: new Date()
     };
 
-    if (!newVendor.no || !newVendor.name) {
+
+    if (!newVendor.vendorNo || !newVendor.name) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -59,21 +82,47 @@ exports.createVendor = function (req, res) {
 
 exports.updateVendor = function (req, res) {
     const updatedVendor = {
+        vendorNo: req.body.vendorNo,
         name: req.body.name,
-        balance: req.body.balance,
-        address: req.body.address,
-        country: req.body.country,
-        city: req.body.city,
-        phone: req.body.phone,
-        email: req.body.email,
-        contactName: req.body.contactName
+        name2: req.body.name2,
+        responsibilityCenter: req.body.responsibilityCenter,
+        locationCode: req.body.locationCode,
+        postCode: req.body.postCode,
+        countryRegionCode: req.body.countryRegionCode,
+        phoneNo: req.body.phoneNo,
+        faxNo: req.body.faxNo,
+        icPartnerCode: req.body.icPartnerCode,
+        contact: req.body.contact,
+        purchaserCode: req.body.purchaserCode,
+        vendorPostingGroup: req.body.vendorPostingGroup,
+        allowMultiplePostingGroups: req.body.allowMultiplePostingGroups,
+        genBusPostingGroup: req.body.genBusPostingGroup,
+        vatBusPostingGroup: req.body.vatBusPostingGroup,
+        paymentTermsCode: req.body.paymentTermsCode,
+        finChargeTermsCode: req.body.finChargeTermsCode,
+        currencyCode: req.body.currencyCode,
+        languageCode: req.body.languageCode,
+        searchName: req.body.searchName,
+        blocked: req.body.blocked,
+        privacyBlocked: req.body.privacyBlocked,
+        lastDateModified: req.body.lastDateModified,
+        applicationMethod: req.body.applicationMethod,
+        locationCode2: req.body.locationCode2,
+        shipmentMethodCode: req.body.shipmentMethodCode,
+        leadTimeCalculation: req.body.leadTimeCalculation,
+        baseCalendarCode: req.body.baseCalendarCode,
+        balanceLcy: req.body.balanceLcy,
+        balanceDueLcy: req.body.balanceDueLcy,
+        paymentsLcy: req.body.paymentsLcy,
+        created_at: new Date(),
+        updated_at: new Date()
     };
 
-    if (!req.params.no) {
+    if (!req.params.vendorNo) {
         return res.status(400).json({ error: 'Vendor ID is missing' });
     }
 
-    Vendor.updateVendor(req.params.no, updatedvendor, (err, result) => {
+    Vendor.updateVendor(req.params.vendorNo, updatedvendor, (err, result) => {
         if (err) {
             console.error('Error updating vendor:', err);
             return res.status(500).json({ error: 'Failed to update vendor' });
@@ -83,7 +132,7 @@ exports.updateVendor = function (req, res) {
 };
 
 exports.deleteVendor = function (req, res) {
-    Vendor.deleteVendor(req.params.no, (err, result) => {
+    Vendor.deleteVendor(req.params.vendorNo, (err, result) => {
         if (err) {
             console.error('Error deleting vendor:', err);
             return res.status(500).json({ error: 'Failed to delete vendor' });

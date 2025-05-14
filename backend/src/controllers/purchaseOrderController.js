@@ -30,15 +30,37 @@ exports.getPurchaseOrderById = async function (req, res) {
 
 exports.createPurchaseOrder = function (req, res) {
     const newPurchaseOrder = {
-        orderNo: req.body.orderNo,
-        supplierNo: req.body.supplierNo,
-        orderDate: req.body.orderDate,
-        status: req.body.status,
-        totalAmount: req.body.totalAmount,
-        description: req.body.description,
+        no: req.body.no,
+        buyFromVendorNo: req.body.buyFromVendorNo,
+        orderAddressCode: req.body.orderAddressCode,
+        buyFromVendorName: req.body.buyFromVendorName,
+        vendorAuthorizationNo: req.body.vendorAuthorizationNo,
+        buyFromPostCode: req.body.buyFromPostCode,
+        buyFromCountryRegionCode: req.body.buyFromCountryRegionCode,
+        buyFromContact: req.body.buyFromContact,
+        payToVendorNo: req.body.payToVendorNo,
+        payToName: req.body.payToName,
+        payToPostCode: req.body.payToPostCode,
+        payToCountryRegionCode: req.body.payToCountryRegionCode,
+        payToContact: req.body.payToContact,
+        shipToCode: req.body.shipToCode,
+        shipToName: req.body.shipToName,
+        shipToPostCode: req.body.shipToPostCode,
+        shipToCountryRegionCode: req.body.shipToCountryRegionCode,
+        shipToContact: req.body.shipToContact,
+        postingDate: req.body.postingDate,
+        shortcutDimension1Code: req.body.shortcutDimension1Code,
+        shortcutDimension2Code: req.body.shortcutDimension2Code,
+        locationCode: req.body.locationCode,
+        purchaserCode: req.body.purchaserCode,
+        assignedUserId: req.body.assignedUserId,
+        currencyCode: req.body.currencyCode,
+        created_at: new Date(),
+        updated_at: new Date()
     };
 
-    if (!newPurchaseOrder.orderNo || !newPurchaseOrder.supplierNo) {
+
+    if (!newPurchaseOrder.no || !newPurchaseOrder.buyFromVendorNo) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -53,19 +75,41 @@ exports.createPurchaseOrder = function (req, res) {
 
 exports.updatePurchaseOrder = function (req, res) {
     const updatedPurchaseOrder = {
-        orderNo: req.body.orderNo,
-        supplierNo: req.body.supplierNo,
-        orderDate: req.body.orderDate,
-        status: req.body.status,
-        totalAmount: req.body.totalAmount,
-        description: req.body.description,
+        no: req.body.no,
+        buyFromVendorNo: req.body.buyFromVendorNo,
+        orderAddressCode: req.body.orderAddressCode,
+        buyFromVendorName: req.body.buyFromVendorName,
+        vendorAuthorizationNo: req.body.vendorAuthorizationNo,
+        buyFromPostCode: req.body.buyFromPostCode,
+        buyFromCountryRegionCode: req.body.buyFromCountryRegionCode,
+        buyFromContact: req.body.buyFromContact,
+        payToVendorNo: req.body.payToVendorNo,
+        payToName: req.body.payToName,
+        payToPostCode: req.body.payToPostCode,
+        payToCountryRegionCode: req.body.payToCountryRegionCode,
+        payToContact: req.body.payToContact,
+        shipToCode: req.body.shipToCode,
+        shipToName: req.body.shipToName,
+        shipToPostCode: req.body.shipToPostCode,
+        shipToCountryRegionCode: req.body.shipToCountryRegionCode,
+        shipToContact: req.body.shipToContact,
+        postingDate: req.body.postingDate,
+        shortcutDimension1Code: req.body.shortcutDimension1Code,
+        shortcutDimension2Code: req.body.shortcutDimension2Code,
+        locationCode: req.body.locationCode,
+        purchaserCode: req.body.purchaserCode,
+        assignedUserId: req.body.assignedUserId,
+        currencyCode: req.body.currencyCode,
+        created_at: req.body.created_at,
+        updated_at: new Date()
     };
 
-    if (!req.params.id) {
-        return res.status(400).json({ error: 'PurchaseOrder ID is missing' });
+
+    if (!req.params.no) {
+        return res.status(400).json({ error: 'PurchaseOrder No is missing' });
     }
 
-    PurchaseOrder.updatePurchaseOrder(req.params.id, updatedPurchaseOrder, (err, result) => {
+    PurchaseOrder.updatePurchaseOrder(req.params.no, updatedPurchaseOrder, (err, result) => {
         if (err) {
             console.error('Error updating purchaseOrder:', err);
             return res.status(500).json({ error: 'Failed to update purchaseOrder' });
@@ -75,7 +119,7 @@ exports.updatePurchaseOrder = function (req, res) {
 };
 
 exports.deletePurchaseOrder = function (req, res) {
-    PurchaseOrder.deletePurchaseOrder(req.params.id, (err, result) => {
+    PurchaseOrder.deletePurchaseOrder(req.params.no, (err, result) => {
         if (err) {
             console.error('Error deleting purchaseOrder:', err);
             return res.status(500).json({ error: 'Failed to delete purchaseOrder' });
