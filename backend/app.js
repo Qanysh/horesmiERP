@@ -10,6 +10,8 @@ const adminRoutes = require("./src/routes/adminRoutes");
 const purchaseOrderRoutes = require("./src/routes/purchaseOrderRoutes");
 const salesOrderRoutes = require("./src/routes/salesOrderRoutes");
 const errorMiddleware = require("./src/middlewares/errorMiddleware");
+const reportRoutes = require("./src/routes/reportRoutes");
+const warehouseRoutes = require("./src/routes/warehouseRoutes");
 const cors = require("cors");
 
 require("dotenv").config();
@@ -43,6 +45,8 @@ app.use("/api/itemLedgerEntries", itemLedgerEntryRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/purchaseOrders", purchaseOrderRoutes);
 app.use("/api/salesOrders", salesOrderRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/warehouses", warehouseRoutes);
 
 app.use(errorMiddleware);
 
