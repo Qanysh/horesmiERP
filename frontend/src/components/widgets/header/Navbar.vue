@@ -2,16 +2,29 @@
 import { ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import Search from '@/components/search/Search.vue';
+import { useAuthStore } from '@/pages/auth/stores/authStore.js'
+
+const authStore = useAuthStore()
+
+const handleLogout = () => {
+  authStore.logout()
+}
+
 
 const isMobileMenuVisible = ref(false);
 
 const toggleMobileMenu = () => {
   isMobileMenuVisible.value = !isMobileMenuVisible.value;
 };
+
+
+
 </script>
 
 <template>
+  
   <nav class="container relative mx-auto my-3">
+
     <div class="flex justify-between items-center">
       <div class="flex flex-col">
         <div class="flex items-center space-x-3">
@@ -53,6 +66,9 @@ const toggleMobileMenu = () => {
           <a href="" class="lower-menu">Chart of Accounts</a>
           <a href="" class="lower-menu">Purchase orders</a>
           <a href="" class="lower-menu">Sales orders</a>
+           <button @click="handleLogout" class="text-red-500 hover:text-red-700">
+    Logout
+  </button>
         </div>
         <div v-show="isMobileMenuVisible" id="mobile-menu" class="lg:hidden flex flex-col space-y-4 mt-4">
           <RouterLink to="/customers" class="lower-menu">Customers</RouterLink>
@@ -61,7 +77,11 @@ const toggleMobileMenu = () => {
           <a href="#" class="lower-menu">Purchasing</a>
           <a href="#" class="lower-menu">Shopify</a>
           <a href="#" class="lower-menu">Все отчеты</a>
+          <button @click="handleLogout" class="lower-menu">
+    Logout
+  </button>
         </div>
+        
       </div>
 
     </div>
