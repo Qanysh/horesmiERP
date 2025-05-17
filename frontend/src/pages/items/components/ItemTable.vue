@@ -2,11 +2,11 @@
 defineProps({
   item: {
     type: Object,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const emit = defineEmits(['view'])
+const emit = defineEmits(["view"]);
 </script>
 
 <template>
@@ -32,12 +32,8 @@ const emit = defineEmits(['view'])
     <td class="px-6 py-4">
       {{ item.quantity }}
     </td>
-    <td class="px-6 py-4">
-      ${{ item.unit_cost }}
-    </td>
-    <td class="px-6 py-4">
-      ${{ item.price }}
-    </td>
+    <td class="px-6 py-4">${{ item.unit_cost }}</td>
+    <td class="px-6 py-4">${{ item.price }}</td>
     <td class="px-6 py-4 text-right">
       <button
         @click="emit('view', item.item_no)"

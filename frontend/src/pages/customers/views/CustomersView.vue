@@ -38,7 +38,7 @@ onMounted(() => {
       @openModal="openModal"
     />
 
-    <div class="relative overflow-x-auto">
+    <div class="overflow-x-auto">
       <table class="w-full text-left text-sm text-gray-500 rtl:text-right">
         <thead class="bg-gray-50 text-xs uppercase text-gray-700">
           <tr>
@@ -50,13 +50,18 @@ onMounted(() => {
             <th scope="col" class="px-6 py-3">Contact</th>
             <th scope="col" class="px-6 py-3">Salesperson code</th>
             <th scope="col" class="px-6 py-3">Credit limit lcy</th>
-            <th scope="col" class="px-6 py-3">X</th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Actions
+            </th>
           </tr>
         </thead>
 
         <template v-if="customerStore.loading">
           <tr v-for="i in 5" :key="i" class="animate-pulse">
-            <td v-for="j in 12" :key="j" class="px-6 py-3">
+            <td v-for="j in 9" :key="j" class="px-6 py-3">
               <div class="h-4 bg-gray-200 rounded"></div>
             </td>
           </tr>
@@ -67,7 +72,7 @@ onMounted(() => {
             v-for="customer in customerStore.filteredCustomers"
             :key="customer.id"
             :customer="customer"
-            @delete="deleteCustomer(customer.no)"
+            @delete="deleteCustomer(customer.customer_no)"
           />
         </template>
       </table>

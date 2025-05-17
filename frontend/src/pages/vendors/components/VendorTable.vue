@@ -2,29 +2,25 @@
 defineProps({
   vendor: {
     type: Object,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const emit = defineEmits(['delete'])
+const emit = defineEmits(["delete"]);
 </script>
 
 <template>
   <tr class="bg-white border-b hover:bg-gray-50">
     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-      {{ vendor.no }}
+      {{ vendor.vendorNo }}
     </td>
     <td class="px-6 py-4">{{ vendor.name }}</td>
-    <td class="px-6 py-4">{{ vendor.balance }}</td>
-    <td class="px-6 py-4">{{ vendor.creditLimit }}</td>
-    <td class="px-6 py-4">{{ vendor.totalSales }}</td>
-    <td class="px-6 py-4">{{ vendor.costs }}</td>
-    <td class="px-6 py-4">{{ vendor.address }}</td>
-    <td class="px-6 py-4">{{ vendor.country }}</td>
-    <td class="px-6 py-4">{{ vendor.city }}</td>
-    <td class="px-6 py-4">{{ vendor.phone }}</td>
-    <td class="px-6 py-4">{{ vendor.email }}</td>
-    <td class="px-6 py-4">{{ vendor.contactName }}</td>
+    <td class="px-6 py-4">{{ vendor.responsibilityCenter }}</td>
+    <td class="px-6 py-4">{{ vendor.locationCode }}</td>
+    <td class="px-6 py-4">{{ vendor.phoneNo }}</td>
+    <td class="px-6 py-4">{{ vendor.contact }}</td>
+    <td class="px-6 py-4">{{ vendor.currencyCode }}</td>
+    <td class="px-6 py-4">{{ vendor.searchName }}</td>
     <td class="px-6 py-4 text-right">
       <button
         @click="emit('delete', vendor.no)"
