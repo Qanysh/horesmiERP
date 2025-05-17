@@ -64,7 +64,7 @@ exports.createGeneralLedgerEntry = function (req, res) {
         balAccountType: req.body.balAccountType,
         balAccountNo: req.body.balAccountNo,
         vatReportingDate: req.body.vatReportingDate,
-        userId: req.body.userId,
+        userId: req.session.userId,
         sourceCode: req.body.sourceCode,
         sourceType: req.body.sourceType,
         sourceNo: req.body.sourceNo,
@@ -85,8 +85,7 @@ exports.createGeneralLedgerEntry = function (req, res) {
         shortcutDimension7Code: req.body.shortcutDimension7Code,
         shortcutDimension8Code: req.body.shortcutDimension8Code,
         created_at: new Date(),
-        updated_at: new Date(),
-        created_by: current_user
+        updated_at: new Date()
     };
 
     if (!newGeneralLedgerEntry.entryNo || !newGeneralLedgerEntry.accountNo) {
@@ -155,15 +154,14 @@ exports.updateGeneralLedgerEntry = function (req, res) {
         shortcutDimension7Code: req.body.shortcutDimension7Code,
         shortcutDimension8Code: req.body.shortcutDimension8Code,
         created_at: req.body.created_at,
-        updated_at: new Date(),
-        created_by: req.body.created_by
+        updated_at: new Date()
     };
 
-    if (!req.params.no) {
+    if (!req.params.entryNo) {
         return res.status(400).json({ error: 'GeneralLedgerEntry ID is missing' });
     }
 
-    GeneralLedgerEntry.updateGeneralLedgerEntry(req.params.no, updatedGeneralLedgerEntry, (err, result) => {
+    GeneralLedgerEntry.updateGeneralLedgerEntry(req.params.entryNo, updatedGeneralLedgerEntry, (err, result) => {
         if (err) {
             console.error('Error updating generalLedgerEntry:', err);
             return res.status(500).json({ error: 'Failed to update generalLedgerEntry' });
@@ -173,7 +171,7 @@ exports.updateGeneralLedgerEntry = function (req, res) {
 };
 
 exports.deleteGeneralLedgerEntry = function (req, res) {
-    GeneralLedgerEntry.deleteGeneralLedgerEntry(req.params.no, (err, result) => {
+    GeneralLedgerEntry.deleteGeneralLedgerEntry(req.params.entryNo, (err, result) => {
         if (err) {
             console.error('Error deleting generalLedgerEntry:', err);
             return res.status(500).json({ error: 'Failed to delete generalLedgerEntry' });

@@ -16,7 +16,7 @@ exports.getAllWarehouses = async function (req, res) {
 };
 
 exports.getWarehouseById = async function (req, res) {
-    Warehouse.getWarehouseById([req.params.id], (err, warehouse) => {
+    Warehouse.getWarehouseById([req.params.locationCode], (err, warehouse) => {
         if (err) {
             console.error('Error fetching warehouse:', err);
             return res.status(500).json({ error: 'Error fetching warehouse' });
@@ -30,15 +30,28 @@ exports.getWarehouseById = async function (req, res) {
 
 exports.createWarehouse = function (req, res) {
     const newWarehouse = {
-        id: req.body.id,
+        locationCode: req.body.locationCode,
         name: req.body.name,
-        location: req.body.location,
-        capacity: req.body.capacity,
-        manager: req.body.manager,
-        contact: req.body.contact
+        address: req.body.address,
+        address2: req.body.address2,
+        city: req.body.city,
+        county: req.body.county,
+        postCode: req.body.postCode,
+        countryRegionCode: req.body.countryRegionCode,
+        phoneNo: req.body.phoneNo,
+        contact: req.body.contact,
+        email: req.body.email,
+        responsibilityCenter: req.body.responsibilityCenter,
+        shipmentMethodCode: req.body.shipmentMethodCode,
+        baseCalendarCode: req.body.baseCalendarCode,
+        blocked: req.body.blocked,
+        lastDateModified: req.body.lastDateModified,
+        created_at: new Date(),
+        updated_at: new Date()
     };
 
-    if (!newWarehouse.id || !newWarehouse.name) {
+
+    if (!newWarehouse.locationCode || !newWarehouse.name) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -53,18 +66,31 @@ exports.createWarehouse = function (req, res) {
 
 exports.updateWarehouse = function (req, res) {
     const updatedWarehouse = {
+        locationCode: req.body.locationCode,
         name: req.body.name,
-        location: req.body.location,
-        capacity: req.body.capacity,
-        manager: req.body.manager,
-        contact: req.body.contact
+        address: req.body.address,
+        address2: req.body.address2,
+        city: req.body.city,
+        county: req.body.county,
+        postCode: req.body.postCode,
+        countryRegionCode: req.body.countryRegionCode,
+        phoneNo: req.body.phoneNo,
+        contact: req.body.contact,
+        email: req.body.email,
+        responsibilityCenter: req.body.responsibilityCenter,
+        shipmentMethodCode: req.body.shipmentMethodCode,
+        baseCalendarCode: req.body.baseCalendarCode,
+        blocked: req.body.blocked,
+        lastDateModified: req.body.lastDateModified,
+        created_at: req.body.created_at,
+        updated_at: new Date()
     };
 
-    if (!req.params.id) {
-        return res.status(400).json({ error: 'Warehouse ID is missing' });
+    if (!req.params.locationCode) {
+        return res.status(400).json({ error: 'Warehouse locationCode is missing' });
     }
 
-    Warehouse.updateWarehouse(req.params.id, updatedWarehouse, (err, result) => {
+    Warehouse.updateWarehouse(req.params.locationCode, updatedWarehouse, (err, result) => {
         if (err) {
             console.error('Error updating warehouse:', err);
             return res.status(500).json({ error: 'Failed to update warehouse' });
@@ -74,7 +100,7 @@ exports.updateWarehouse = function (req, res) {
 };
 
 exports.deleteWarehouse = function (req, res) {
-    Warehouse.deleteWarehouse(req.params.id, (err, result) => {
+    Warehouse.deleteWarehouse(req.params.locationCode, (err, result) => {
         if (err) {
             console.error('Error deleting warehouse:', err);
             return res.status(500).json({ error: 'Failed to delete warehouse' });

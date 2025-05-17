@@ -9,6 +9,7 @@ exports.getAllUsers = async function (req, res) {
                 return res.status(500).json({ error: 'Error fetching users data' });
             }
             res.json(users);
+            console.log(users);
         });
     } catch (err) {
         console.error('Unexpected error fetching users:', err);

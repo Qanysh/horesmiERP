@@ -16,7 +16,7 @@ exports.getAllItemLedgerEntries = async function (req, res) {
 };
 
 exports.getItemLedgerEntryById = async function (req, res) {
-    ItemLedgerEntry.getItemLedgerEntryById([req.params.no], (err, itemLedgerEntryCard) => {
+    ItemLedgerEntry.getItemLedgerEntryById([req.params.entryNo], (err, itemLedgerEntryCard) => {
         if (err) {
             console.error('Error fetching itemLedgerEntry:', err);
             return res.status(500).json({ error: 'Error fetching itemLedgerEntry' });
@@ -30,18 +30,64 @@ exports.getItemLedgerEntryById = async function (req, res) {
 
 exports.createItemLedgerEntry = function (req, res) {
     const newItemLedgerEntry = {
-        entryNo: req.body.entryNo,
-        itemNo: req.body.itemNo,
         postingDate: req.body.postingDate,
         entryType: req.body.entryType,
-        sourceNo: req.body.sourceNo,
+        documentType: req.body.documentType,
         documentNo: req.body.documentNo,
-        quantity: req.body.quantity,
-        itemCategoryCode: req.body.itemCategoryCode,
+        documentLineNo: req.body.documentLineNo,
+        itemNo: req.body.itemNo,
+        variantCode: req.body.variantCode,
         description: req.body.description,
+        returnReasonCode: req.body.returnReasonCode,
+        globalDimension1Code: req.body.globalDimension1Code,
+        globalDimension2Code: req.body.globalDimension2Code,
+        expirationDate: req.body.expirationDate,
+        serialNo: req.body.serialNo,
+        lotNo: req.body.lotNo,
+        packageNo: req.body.packageNo,
+        locationCode: req.body.locationCode,
+        quantity: req.body.quantity,
+        invoicedQuantity: req.body.invoicedQuantity,
+        remainingQuantity: req.body.remainingQuantity,
+        shippedQtyNotReturned: req.body.shippedQtyNotReturned,
+        reservedQuantity: req.body.reservedQuantity,
+        qtyPerUnitOfMeasure: req.body.qtyPerUnitOfMeasure,
+        unitOfMeasureCode: req.body.unitOfMeasureCode,
+        salesAmountExpected: req.body.salesAmountExpected,
+        salesAmountActual: req.body.salesAmountActual,
+        costAmountExpected: req.body.costAmountExpected,
+        costAmountActual: req.body.costAmountActual,
+        costAmountNonInvtbl: req.body.costAmountNonInvtbl,
+        costAmountExpectedAcy: req.body.costAmountExpectedAcy,
+        costAmountActualAcy: req.body.costAmountActualAcy,
+        costAmountNonInvtblAcy: req.body.costAmountNonInvtblAcy,
+        completelyInvoiced: req.body.completelyInvoiced,
+        open: req.body.open,
+        dropShipment: req.body.dropShipment,
+        assembleToOrder: req.body.assembleToOrder,
+        appliedEntryToAdjust: req.body.appliedEntryToAdjust,
+        orderType: req.body.orderType,
+        orderNo: req.body.orderNo,
+        orderLineNo: req.body.orderLineNo,
+        prodOrderCompLineNo: req.body.prodOrderCompLineNo,
+        entryNo: req.body.entryNo,
+        jobNo: req.body.jobNo,
+        jobTaskNo: req.body.jobTaskNo,
+        dimensionSetId: req.body.dimensionSetId,
+        shortcutDimension3Code: req.body.shortcutDimension3Code,
+        shortcutDimension4Code: req.body.shortcutDimension4Code,
+        shortcutDimension5Code: req.body.shortcutDimension5Code,
+        shortcutDimension6Code: req.body.shortcutDimension6Code,
+        shortcutDimension7Code: req.body.shortcutDimension7Code,
+        shortcutDimension8Code: req.body.shortcutDimension8Code,
+        sourceType: req.body.sourceType,
+        sourceNo: req.body.sourceNo,
+        created_at: new Date(),
+        updated_at: new Date()
     };
 
-    if (!newItemLedgerEntry.no || !newItemLedgerEntry.name) {
+
+    if (!newItemLedgerEntry.entryNo || !newItemLedgerEntry.itemNo) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -56,18 +102,64 @@ exports.createItemLedgerEntry = function (req, res) {
 
 exports.updateItemLedgerEntry = function (req, res) {
     const updatedItemLedgerEntry = {
-        entryNo: req.body.entryNo,
-        itemNo: req.body.itemNo,
         postingDate: req.body.postingDate,
         entryType: req.body.entryType,
-        sourceNo: req.body.sourceNo,
+        documentType: req.body.documentType,
         documentNo: req.body.documentNo,
-        quantity: req.body.quantity,
-        itemCategoryCode: req.body.itemCategoryCode,
+        documentLineNo: req.body.documentLineNo,
+        itemNo: req.body.itemNo,
+        variantCode: req.body.variantCode,
         description: req.body.description,
+        returnReasonCode: req.body.returnReasonCode,
+        globalDimension1Code: req.body.globalDimension1Code,
+        globalDimension2Code: req.body.globalDimension2Code,
+        expirationDate: req.body.expirationDate,
+        serialNo: req.body.serialNo,
+        lotNo: req.body.lotNo,
+        packageNo: req.body.packageNo,
+        locationCode: req.body.locationCode,
+        quantity: req.body.quantity,
+        invoicedQuantity: req.body.invoicedQuantity,
+        remainingQuantity: req.body.remainingQuantity,
+        shippedQtyNotReturned: req.body.shippedQtyNotReturned,
+        reservedQuantity: req.body.reservedQuantity,
+        qtyPerUnitOfMeasure: req.body.qtyPerUnitOfMeasure,
+        unitOfMeasureCode: req.body.unitOfMeasureCode,
+        salesAmountExpected: req.body.salesAmountExpected,
+        salesAmountActual: req.body.salesAmountActual,
+        costAmountExpected: req.body.costAmountExpected,
+        costAmountActual: req.body.costAmountActual,
+        costAmountNonInvtbl: req.body.costAmountNonInvtbl,
+        costAmountExpectedAcy: req.body.costAmountExpectedAcy,
+        costAmountActualAcy: req.body.costAmountActualAcy,
+        costAmountNonInvtblAcy: req.body.costAmountNonInvtblAcy,
+        completelyInvoiced: req.body.completelyInvoiced,
+        open: req.body.open,
+        dropShipment: req.body.dropShipment,
+        assembleToOrder: req.body.assembleToOrder,
+        appliedEntryToAdjust: req.body.appliedEntryToAdjust,
+        orderType: req.body.orderType,
+        orderNo: req.body.orderNo,
+        orderLineNo: req.body.orderLineNo,
+        prodOrderCompLineNo: req.body.prodOrderCompLineNo,
+        entryNo: req.body.entryNo,
+        jobNo: req.body.jobNo,
+        jobTaskNo: req.body.jobTaskNo,
+        dimensionSetId: req.body.dimensionSetId,
+        shortcutDimension3Code: req.body.shortcutDimension3Code,
+        shortcutDimension4Code: req.body.shortcutDimension4Code,
+        shortcutDimension5Code: req.body.shortcutDimension5Code,
+        shortcutDimension6Code: req.body.shortcutDimension6Code,
+        shortcutDimension7Code: req.body.shortcutDimension7Code,
+        shortcutDimension8Code: req.body.shortcutDimension8Code,
+        sourceType: req.body.sourceType,
+        sourceNo: req.body.sourceNo,
+        created_at: req.body.created_at,
+        updated_at: new Date()
     };
 
-    if (!req.params.no) {
+
+    if (!req.params.entryNo) {
         return res.status(400).json({ error: 'ItemLedgerEntry ID is missing' });
     }
 
@@ -81,7 +173,7 @@ exports.updateItemLedgerEntry = function (req, res) {
 };
 
 exports.deleteItemLedgerEntry = function (req, res) {
-    ItemLedgerEntry.deleteItemLedgerEntry(req.params.no, (err, result) => {
+    ItemLedgerEntry.deleteItemLedgerEntry(req.params.entryNo, (err, result) => {
         if (err) {
             console.error('Error deleting itemLedgerEntry:', err);
             return res.status(500).json({ error: 'Failed to delete itemLedgerEntry' });
