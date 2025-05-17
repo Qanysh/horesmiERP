@@ -15,25 +15,23 @@ const emit = defineEmits(["view"]);
       {{ item.item_no }}
     </td>
     <td class="px-6 py-4">
-      {{ item.item_type }}
-    </td>
-    <td class="px-6 py-4">
       {{ item.description }}
     </td>
     <td class="px-6 py-4">
-      {{ item.item_category_code }}
+      {{ item.type }}
     </td>
     <td class="px-6 py-4">
-      {{ item.size }}
+      {{ item.inventory }}
     </td>
     <td class="px-6 py-4">
-      {{ item.weight }}
+      {{ item.unitCost }}
     </td>
     <td class="px-6 py-4">
-      {{ item.quantity }}
+      {{ item.unitPrice }}
     </td>
-    <td class="px-6 py-4">${{ item.unit_cost }}</td>
-    <td class="px-6 py-4">${{ item.price }}</td>
+    <td class="px-6 py-4">
+      {{ item.vendorNo }}
+    </td>
     <td class="px-6 py-4 text-right">
       <button
         @click="emit('view', item.item_no)"

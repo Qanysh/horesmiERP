@@ -23,7 +23,7 @@ const emit = defineEmits(["delete"]);
     <td class="px-6 py-4">{{ vendor.searchName }}</td>
     <td class="px-6 py-4 text-right">
       <button
-        @click="emit('delete', vendor.no)"
+        @click="emit('delete', vendor.vendorNo)"
         class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
       >
         Delete

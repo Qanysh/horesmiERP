@@ -20,8 +20,8 @@ export const useItemStore = defineStore("item", () => {
   const fetchItems = async () => {
     loading.value = true;
     try {
-      await new Promise((resolve) => setTimeout(resolve, 200)); // Эмуляция задержки
       const response = await axios.get(`${API_URL}/api/items`);
+      console.log("Fetched items:", response.data);
       items.value = response.data;
       filterItemsData();
     } catch (err) {
