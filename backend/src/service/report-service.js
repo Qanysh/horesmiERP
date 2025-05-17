@@ -1,5 +1,6 @@
 const PDFDocument = require('pdfkit');
 const PurchaseLine = require('../models/purchaseLine');
+const SalesLine = require('../models/salesLine');
 const path = require('path');
 
 async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
@@ -26,7 +27,7 @@ async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
         doc.moveDown(1.5);
 
         // Vendor & Company Details (левая и правая колонка)
-        doc.fontSize(10).font('DejaVu');
+        doc.fontSize(9).font('DejaVu');
         const leftX = 50;
         const rightX = 350;
         let y = 80;
@@ -66,48 +67,48 @@ async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
         doc.text(`Shipment Method: ${purchaseHeader.shipmentMethod || ''}`, leftX, detailsTop + 150);
         doc.text(`Prices Including VAT: ${purchaseHeader.includeVAT ? 'Yes' : 'No'}`, leftX, detailsTop + 165);
 
-        // Table Header
-        y = detailsTop + 200;
+        // Table Header (размеры и расположение как в salesInvoicePdf)
+        y = detailsTop + 190;
         doc.font('DejaVu-Bold');
         doc.text('No.', 50, y);
         doc.text('Description', 120, y);
         doc.text('Quantity', 200, y, { width: 40, align: 'right' });
         doc.text('Unit', 250, y, { width: 40, align: 'right' });
-        doc.text('Unit Cost', 300, y, { width: 40, align: 'right' });
-        doc.text('Discount %', 350, y, { width: 50, align: 'right' });
-        doc.text('Invoice Disc.', 400, y, { width: 60, align: 'right' });
-        doc.text('VAT', 470, y, { width: 40, align: 'right' });
-        doc.text('Amount', 500, y, { width: 80, align: 'right' });
+        doc.text('Unit Cost', 300, y, { width: 60, align: 'right' });
+        doc.text('Discount %', 370, y, { width: 50, align: 'right' });
+        doc.text('VAT', 430, y, { width: 40, align: 'right' });
+        doc.text('Amount', 480, y, { width: 80, align: 'right' });
         y += 30;
+        doc.moveTo(50, y).lineTo(560, y).stroke();
+        y += 10;
         doc.font('DejaVu');
 
         // Table Body
         let total = 0;
         for (const line of purchaseLines) {
             doc.text(line.no || '', 50, y);
-            doc.text(line.description || '', 120, y, { width: 130 });
+            doc.text(line.description || '', 120, y, { width: 70 });
             doc.text(line.quantity != null ? line.quantity : '', 200, y, { width: 40, align: 'right' });
             doc.text(line.unitOfMeasureCode || '', 250, y, { width: 40, align: 'right' });
             doc.text(line.directUnitCost != null ? line.directUnitCost.toFixed(2) : '', 300, y, { width: 60, align: 'right' });
-            doc.text(line.discountPercent != null ? line.discountPercent.toFixed(2) : '0.00', 350, y, { width: 50, align: 'right' });
-            doc.text(line.allowInvoiceDiscount ? 'Yes' : 'No', 400, y, { width: 60, align: 'right' });
-            doc.text(line.vatIdentifier || '', 450, y, { width: 40, align: 'right' });
-            doc.text(line.lineAmount != null ? line.lineAmount.toFixed(2) : '', 500, y, { width: 80, align: 'right' });
+            doc.text(line.discountPercent != null ? line.discountPercent.toFixed(2) : '0.00', 370, y, { width: 50, align: 'right' });
+            doc.text(line.vatIdentifier || '', 430, y, { width: 40, align: 'right' });
+            doc.text(line.lineAmount != null ? line.lineAmount.toFixed(2) : '', 480, y, { width: 80, align: 'right' });
             y += 20;
             total += Number(line.lineAmount) || 0;
         }
 
         // Totals
-        y += 10;
-        doc.moveTo(50, y).lineTo(730, y).stroke();
+        y += 25;
+        doc.moveTo(50, y).lineTo(560, y).stroke();
         doc.font('DejaVu-Bold');
-        doc.text(`Total GBP Excl. VAT`, 400, y + 10, { width: 130, align: 'right' });
-        doc.text(total.toFixed(2), 520, y + 10, { width: 80, align: 'right' });
+        doc.text(`Total GBP Excl. VAT`, 350, y + 10, { width: 130, align: 'right' });
+        doc.text(total.toFixed(2), 480, y + 10, { width: 80, align: 'right' });
         const vatAmount = total * 0.25;
-        doc.text(`25% VAT`, 400, y + 30, { width: 130, align: 'right' });
-        doc.text(vatAmount.toFixed(2), 520, y + 30, { width: 80, align: 'right' });
-        doc.text(`Total GBP Incl. VAT`, 400, y + 50, { width: 130, align: 'right' });
-        doc.text((total + vatAmount).toFixed(2), 520, y + 50, { width: 80, align: 'right' });
+        doc.text(`25% VAT`, 350, y + 30, { width: 130, align: 'right' });
+        doc.text(vatAmount.toFixed(2), 480, y + 30, { width: 80, align: 'right' });
+        doc.text(`Total GBP Incl. VAT`, 350, y + 50, { width: 130, align: 'right' });
+        doc.text((total + vatAmount).toFixed(2), 480, y + 50, { width: 80, align: 'right' });
 
         doc.end();
     } catch (error) {
@@ -130,7 +131,7 @@ async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
     try {
 
         const salesLine = await new Promise((resolve, reject) => {
-            PurchaseLine.getSalesLineByDocumentNo(salesOrder.no, (err, result) => {
+            SalesLine.getSalesLineByDocumentNo(salesOrder.no, (err, result) => {
                 if (err) return reject(err);
                 resolve(result);
             });
@@ -140,7 +141,7 @@ async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
         doc.moveDown(1.5);
 
         // Customer & Company Details (левая и правая колонка)
-        doc.fontSize(10).font('DejaVu');
+        doc.fontSize(9).font('DejaVu');
         const leftX = 50;
         const rightX = 350;
         let y = 80;
@@ -190,6 +191,8 @@ async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
         doc.text('VAT', 430, y, { width: 40, align: 'right' });
         doc.text('Amount', 480, y, { width: 80, align: 'right' });
         y += 30;
+        doc.moveTo(50, y).lineTo(560, y).stroke();
+        y += 10;
         doc.font('DejaVu');
 
         // Table Body
@@ -208,7 +211,7 @@ async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
         }
 
         // Totals
-        y += 10;
+        y += 25;
         doc.moveTo(50, y).lineTo(560, y).stroke();
         doc.font('DejaVu-Bold');
         doc.text(`Total Excl. VAT`, 350, y + 10, { width: 130, align: 'right' });

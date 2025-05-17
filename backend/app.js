@@ -15,6 +15,7 @@ const warehouseRoutes = require("./src/routes/warehouseRoutes");
 const generalLedgerEntriesRoutes = require("./src/routes/generalLedgerEntriesRoutes");
 const purchaseHeaderRoutes = require("./src/routes/purchaseHeaderRoutes");
 const purchaseLineRoutes = require("./src/routes/purchaseLineRoutes");
+const salesLinesRoutes = require("./src/routes/salesLineRoutes");
 const cors = require("cors");
 
 require("dotenv").config();
@@ -53,6 +54,7 @@ app.use("/api/warehouses", warehouseRoutes);
 app.use("/api/generalLedgerEntries", generalLedgerEntriesRoutes);
 app.use("/api/purchaseHeaders", purchaseHeaderRoutes);
 app.use("/api/purchaseLines", purchaseLineRoutes);
+app.use("/api/salesLines", salesLinesRoutes);
 
 app.use(errorMiddleware);
 
