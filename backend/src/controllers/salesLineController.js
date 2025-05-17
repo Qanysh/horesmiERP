@@ -1,4 +1,6 @@
 const SalesLine = require('../models/salesLine');
+const GeneralLedgerEntry = require('../models/generalLedgerEntry');
+const Item = require('../models/item');
 
 exports.getAllSalesLines = async function (req, res) {
     try {
@@ -93,6 +95,59 @@ exports.createSalesLine = function (req, res) {
             return res.status(500).json({ error: 'Failed to create salesLine' });
         }
         res.status(201).json({ message: 'SalesLine created successfully', salesLine: newSalesLine });
+    });
+
+    const itemNo = newSalesLine.no;
+    const qty = Number(newSalesLine.quantity) || 0;
+
+    Item.getItemById(itemNo, (err, items) => {
+        if (err) {
+            console.error('Error fetching item:', err);
+            return res.status(500).json({ error: 'Failed to fetch item' });
+        }
+        if (items && items.length > 0) {
+            const item = items[0];
+            const newInventory = Number(item.inventory || 0) - qty;
+            if (newInventory > 0) {
+                Item.updateItem(itemNo, { ...item, inventory: newInventory, updated_at: new Date() }, (err) => {
+                    if (err) {
+                        console.error('Error updating item inventory:', err);
+                        return res.status(500).json({ error: 'Failed to update item inventory' });
+                    }
+                    return res.status(201).json({ message: 'SalesLine created, item inventory updated', salesLine: newSalesLine });
+                });
+            } else {
+                // Если количество стало 0 или меньше — удаляем товар
+                Item.deleteItem(itemNo, (err) => {
+                    if (err) {
+                        console.error('Error deleting item:', err);
+                        return res.status(500).json({ error: 'Failed to delete item' });
+                    }
+                    return res.status(201).json({ message: 'SalesLine created, item deleted (inventory <= 0)', salesLine: newSalesLine });
+                });
+            }
+        } else {
+            // Товар не найден, просто возвращаем успех по продаже
+            return res.status(201).json({ message: 'SalesLine created, item not found', salesLine: newSalesLine });
+        }
+    });
+
+    const generalLedgerEntry = {
+        entryType: 'Sale',
+        documentNo: newSalesLine.documentNo,
+        itemNo: newSalesLine.no,
+        quantity: newSalesLine.quantity,
+        amount: newSalesLine.lineAmount,
+        postingDate: new Date(),
+        description: newSalesLine.description,
+        created_at: new Date(),
+        updated_at: new Date()
+    };
+    GeneralLedgerEntry.createGeneralLedgerEntry(generalLedgerEntry, (err) => {
+        if (err) {
+            console.error('Error creating general ledger entry:', err);
+        }
+        // Возврат ответа клиенту (как раньше)
     });
 };
 
