@@ -13,6 +13,8 @@ const errorMiddleware = require("./src/middlewares/errorMiddleware");
 const reportRoutes = require("./src/routes/reportRoutes");
 const warehouseRoutes = require("./src/routes/warehouseRoutes");
 const generalLedgerEntriesRoutes = require("./src/routes/generalLedgerEntriesRoutes");
+const purchaseHeaderRoutes = require("./src/routes/purchaseHeaderRoutes");
+const purchaseLineRoutes = require("./src/routes/purchaseLineRoutes");
 const cors = require("cors");
 
 require("dotenv").config();
@@ -49,11 +51,13 @@ app.use("/api/salesOrders", salesOrderRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/warehouses", warehouseRoutes);
 app.use("/api/generalLedgerEntries", generalLedgerEntriesRoutes);
+app.use("/api/purchaseHeaders", purchaseHeaderRoutes);
+app.use("/api/purchaseLines", purchaseLineRoutes);
 
 app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
-  res.redirect("http://localhost:80/");
+  res.redirect("http://localhost:5173/");
 });
 
 app.listen(port, "0.0.0.0", () => {

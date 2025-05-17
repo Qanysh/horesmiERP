@@ -1,81 +1,113 @@
 const PDFDocument = require('pdfkit');
-const PurchaseOrder = require('../models/purchaseOrder'); // Assuming a model for purchaseOrders
+const PurchaseLine = require('../models/purchaseLine');
+const path = require('path');
 
-async function purchaseInvoicePdf(orderId, dataCallback, endCallback) {
+async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
     const doc = new PDFDocument({ bufferPages: true, margin: 50 });
+    const fontPath = path.join(__dirname, '../../fonts/DejaVuSans.ttf');
+    const fontPathBold = path.join(__dirname, '../../fonts/DejaVuSans-Bold.ttf');
+    doc.registerFont('DejaVu', fontPath);
+    doc.font('DejaVu');
+    doc.registerFont('DejaVu-Bold', fontPathBold);
 
     doc.on('data', dataCallback);
     doc.on('end', endCallback);
 
     try {
-        // Fetch purchase order details from the database
-        const purchaseOrder = await new Promise((resolve, reject) => {
-            PurchaseOrder.getPurchaseOrderById(orderId, (err, result) => {
+        const purchaseLines = await new Promise((resolve, reject) => {
+            PurchaseLine.getPurchaseLineByDocumentNo(purchaseHeader.no, (err, result) => {
                 if (err) return reject(err);
-                resolve(result[0]);
+                resolve(result);
             });
         });
 
-        if (!purchaseOrder) {
-            throw new Error('Purchase order not found');
+        // Header
+        doc.fontSize(16).font('DejaVu-Bold').text('Purchase - Invoice', { align: 'center' });
+        doc.moveDown(1.5);
+
+        // Vendor & Company Details (левая и правая колонка)
+        doc.fontSize(10).font('DejaVu');
+        const leftX = 50;
+        const rightX = 350;
+        let y = 80;
+        doc.text('Wide World Importers', leftX, y);
+        doc.text('Toby Rhode', leftX, y + 15);
+        doc.text('Aviator Way, 3000', leftX, y + 30);
+        doc.text('Manchester Business Park', leftX, y + 45);
+        doc.text('Manchester, M22 5TG', leftX, y + 60);
+        doc.text('Great Britain', leftX, y + 75);
+
+        doc.text('CRONUS International Ltd.', rightX, y);
+        doc.text('5 The Ring', rightX, y + 15);
+        doc.text('Westminster', rightX, y + 30);
+        doc.text('London, W2 8HG', rightX, y + 45);
+        doc.text('Great Britain', rightX, y + 60);
+
+        // Invoice Information (две колонки)
+        const detailsTop = 170;
+        doc.font('DejaVu-Bold').text('Invoice Details', leftX, detailsTop);
+        doc.font('DejaVu');
+        doc.text(`Pay-to Vendor No.: ${purchaseHeader.vendorNo || ''}`, leftX, detailsTop + 18);
+        doc.text(`Invoice No.: ${purchaseHeader.no || ''}`, leftX, detailsTop + 33);
+        doc.text(`Order No.: ${purchaseHeader.no || ''}`, leftX, detailsTop + 48);
+        doc.text(`Document Date: ${formatDate(purchaseHeader.documentDate)}`, leftX, detailsTop + 63);
+        doc.text(`Posting Date: ${formatDate(purchaseHeader.postingDate)}`, leftX, detailsTop + 78);
+        doc.text(`Due Date: ${formatDate(purchaseHeader.dueDate)}`, leftX, detailsTop + 93);
+
+        doc.text(`Phone No.: ${purchaseHeader.phoneNo || ''}`, rightX, detailsTop + 18);
+        doc.text(`VAT Registration No.: ${purchaseHeader.vatNo || ''}`, rightX, detailsTop + 33);
+        doc.text(`Giro No.: ${purchaseHeader.giroNo || ''}`, rightX, detailsTop + 48);
+        doc.text(`Bank: ${purchaseHeader.bankName || ''}`, rightX, detailsTop + 63);
+        doc.text(`Account No.: ${purchaseHeader.accountNo || ''}`, rightX, detailsTop + 78);
+        doc.text(`Purchaser: ${purchaseHeader.purchaser || ''}`, rightX, detailsTop + 93);
+
+        doc.text(`Your Reference: ${purchaseHeader.reference || ''}`, leftX, detailsTop + 120);
+        doc.text(`Payment Terms: ${purchaseHeader.paymentTerms || ''}`, leftX, detailsTop + 135);
+        doc.text(`Shipment Method: ${purchaseHeader.shipmentMethod || ''}`, leftX, detailsTop + 150);
+        doc.text(`Prices Including VAT: ${purchaseHeader.includeVAT ? 'Yes' : 'No'}`, leftX, detailsTop + 165);
+
+        // Table Header
+        y = detailsTop + 200;
+        doc.font('DejaVu-Bold');
+        doc.text('No.', 50, y);
+        doc.text('Description', 120, y);
+        doc.text('Quantity', 200, y, { width: 40, align: 'right' });
+        doc.text('Unit', 250, y, { width: 40, align: 'right' });
+        doc.text('Unit Cost', 300, y, { width: 40, align: 'right' });
+        doc.text('Discount %', 350, y, { width: 50, align: 'right' });
+        doc.text('Invoice Disc.', 400, y, { width: 60, align: 'right' });
+        doc.text('VAT', 470, y, { width: 40, align: 'right' });
+        doc.text('Amount', 500, y, { width: 80, align: 'right' });
+        y += 30;
+        doc.font('DejaVu');
+
+        // Table Body
+        let total = 0;
+        for (const line of purchaseLines) {
+            doc.text(line.no || '', 50, y);
+            doc.text(line.description || '', 120, y, { width: 130 });
+            doc.text(line.quantity != null ? line.quantity : '', 200, y, { width: 40, align: 'right' });
+            doc.text(line.unitOfMeasureCode || '', 250, y, { width: 40, align: 'right' });
+            doc.text(line.directUnitCost != null ? line.directUnitCost.toFixed(2) : '', 300, y, { width: 60, align: 'right' });
+            doc.text(line.discountPercent != null ? line.discountPercent.toFixed(2) : '0.00', 350, y, { width: 50, align: 'right' });
+            doc.text(line.allowInvoiceDiscount ? 'Yes' : 'No', 400, y, { width: 60, align: 'right' });
+            doc.text(line.vatIdentifier || '', 450, y, { width: 40, align: 'right' });
+            doc.text(line.lineAmount != null ? line.lineAmount.toFixed(2) : '', 500, y, { width: 80, align: 'right' });
+            y += 20;
+            total += Number(line.lineAmount) || 0;
         }
 
-        // Header
-        doc.fontSize(20).text('Purchase - Invoice', { align: 'center' });
-        doc.moveDown();
-
-        // Vendor and Ship-to Information
-        doc.fontSize(10);
-        doc.text('Vendor:', 50, 100);
-        doc.text(purchaseOrder.supplierNo, 50, 115);
-        doc.text(purchaseOrder.description, 50, 130);
-        doc.moveDown();
-
-        doc.text('Ship-to Address:', 350, 100);
-        doc.text('CRONUS International Ltd.', 350, 115);
-        doc.text('5 The Ring', 350, 130);
-        doc.text('Westminster', 350, 145);
-        doc.text('London, W2 8HG', 350, 160);
-        doc.text('Great Britain', 350, 175);
-
-        // Invoice details
-        doc.moveDown();
-        doc.text(`Invoice No.: ${purchaseOrder.orderNo}`, 50, 200);
-        doc.text(`Order Date: ${purchaseOrder.orderDate}`, 50, 215);
-        doc.text(`Status: ${purchaseOrder.status}`, 50, 230);
-        doc.text(`Total Amount: ${purchaseOrder.totalAmount}`, 50, 245);
-
-        doc.moveDown().moveTo(50, 270).lineTo(550, 270).stroke();
-
-        // Table header
-        doc.font('Helvetica-Bold');
-        doc.text('No.', 50, 280);
-        doc.text('Description', 90, 280);
-        doc.text('Quantity', 230, 280);
-        doc.text('Unit Cost', 290, 280);
-        doc.text('Amount', 360, 280);
-        doc.font('Helvetica');
-
-        // Table row (example row, replace with actual data if available)
-        doc.text('1', 50, 300);
-        doc.text(purchaseOrder.description, 90, 300);
-        doc.text('1', 230, 300);
-        doc.text(purchaseOrder.totalAmount, 290, 300);
-        doc.text(purchaseOrder.totalAmount, 360, 300);
-
-        // Total
-        doc.moveDown();
-        doc.text(`Total: ${purchaseOrder.totalAmount}`, { align: 'right' });
-
-        // Footer
-        doc.moveDown().text('Account No.: 99-99-888');
-        doc.text('Bank: World Wide Bank');
-        doc.text('Giro No.: 888-9999');
-        doc.text('VAT Registration No.: 777777777');
-        doc.text('Phone No.: 0666-666-6666');
-        doc.text('Email: -');
-        doc.text('Pay-to Vendor No.: 10000');
-        doc.text('Home Page: -');
+        // Totals
+        y += 10;
+        doc.moveTo(50, y).lineTo(730, y).stroke();
+        doc.font('DejaVu-Bold');
+        doc.text(`Total GBP Excl. VAT`, 400, y + 10, { width: 130, align: 'right' });
+        doc.text(total.toFixed(2), 520, y + 10, { width: 80, align: 'right' });
+        const vatAmount = total * 0.25;
+        doc.text(`25% VAT`, 400, y + 30, { width: 130, align: 'right' });
+        doc.text(vatAmount.toFixed(2), 520, y + 30, { width: 80, align: 'right' });
+        doc.text(`Total GBP Incl. VAT`, 400, y + 50, { width: 130, align: 'right' });
+        doc.text((total + vatAmount).toFixed(2), 520, y + 50, { width: 80, align: 'right' });
 
         doc.end();
     } catch (error) {
@@ -83,83 +115,109 @@ async function purchaseInvoicePdf(orderId, dataCallback, endCallback) {
         throw error;
     }
 }
-async function salesInvoicePdf(orderId, dataCallback, endCallback) {
+
+async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
     const doc = new PDFDocument({ bufferPages: true, margin: 50 });
+    const fontPath = path.join(__dirname, '../../fonts/DejaVuSans.ttf');
+    const fontPathBold = path.join(__dirname, '../../fonts/DejaVuSans-Bold.ttf');
+    doc.registerFont('DejaVu', fontPath);
+    doc.font('DejaVu');
+    doc.registerFont('DejaVu-Bold', fontPathBold);
 
     doc.on('data', dataCallback);
     doc.on('end', endCallback);
 
     try {
-        // Fetch sales order details from the database
-        const salesOrder = await new Promise((resolve, reject) => {
-            PurchaseOrder.getSalesOrderById(orderId, (err, result) => {
+
+        const salesLine = await new Promise((resolve, reject) => {
+            PurchaseLine.getSalesLineByDocumentNo(salesOrder.no, (err, result) => {
                 if (err) return reject(err);
-                resolve(result[0]);
+                resolve(result);
             });
         });
+        // Header
+        doc.fontSize(16).font('DejaVu-Bold').text('Sales - Invoice', { align: 'center' });
+        doc.moveDown(1.5);
 
-        if (!salesOrder) {
-            throw new Error('Sales order not found');
+        // Customer & Company Details (левая и правая колонка)
+        doc.fontSize(10).font('DejaVu');
+        const leftX = 50;
+        const rightX = 350;
+        let y = 80;
+        doc.text('Customer:', leftX, y);
+        doc.text(salesOrder.customerName || '', leftX, y + 15);
+        doc.text(salesOrder.customerNo || '', leftX, y + 30);
+        doc.text(salesOrder.customerAddress || '', leftX, y + 45);
+        doc.text(salesOrder.customerCity || '', leftX, y + 60);
+        doc.text(salesOrder.customerCountry || '', leftX, y + 75);
+
+        doc.text('Bill-to:', rightX, y);
+        doc.text(salesOrder.billToName || '', rightX, y + 15);
+        doc.text(salesOrder.billToAddress || '', rightX, y + 30);
+        doc.text(salesOrder.billToCity || '', rightX, y + 45);
+        doc.text(salesOrder.billToCountry || '', rightX, y + 60);
+
+        // Invoice Information (две колонки)
+        const detailsTop = 170;
+        doc.font('DejaVu-Bold').text('Invoice Details', leftX, detailsTop);
+        doc.font('DejaVu');
+        doc.text(`Invoice No.: ${salesOrder.invoiceNo || ''}`, leftX, detailsTop + 18);
+        doc.text(`Order No.: ${salesOrder.orderNo || ''}`, leftX, detailsTop + 33);
+        doc.text(`Document Date: ${formatDate(salesOrder.documentDate)}`, leftX, detailsTop + 48);
+        doc.text(`Posting Date: ${formatDate(salesOrder.postingDate)}`, leftX, detailsTop + 63);
+        doc.text(`Due Date: ${formatDate(salesOrder.dueDate)}`, leftX, detailsTop + 78);
+
+        doc.text(`Phone No.: ${salesOrder.phoneNo || ''}`, rightX, detailsTop + 18);
+        doc.text(`VAT Registration No.: ${salesOrder.vatNo || ''}`, rightX, detailsTop + 33);
+        doc.text(`Bank: ${salesOrder.bankName || ''}`, rightX, detailsTop + 48);
+        doc.text(`Account No.: ${salesOrder.accountNo || ''}`, rightX, detailsTop + 63);
+        doc.text(`Salesperson: ${salesOrder.salesperson || ''}`, rightX, detailsTop + 78);
+
+        doc.text(`Your Reference: ${salesOrder.reference || ''}`, leftX, detailsTop + 105);
+        doc.text(`Payment Terms: ${salesOrder.paymentTerms || ''}`, leftX, detailsTop + 120);
+        doc.text(`Shipment Method: ${salesOrder.shipmentMethod || ''}`, leftX, detailsTop + 135);
+        doc.text(`Prices Including VAT: ${salesOrder.includeVAT ? 'Yes' : 'No'}`, leftX, detailsTop + 150);
+
+        // Table Header
+        y = detailsTop + 190;
+        doc.font('DejaVu-Bold');
+        doc.text('No.', 50, y);
+        doc.text('Description', 120, y);
+        doc.text('Quantity', 200, y, { width: 40, align: 'right' });
+        doc.text('Unit', 250, y, { width: 40, align: 'right' });
+        doc.text('Unit Price', 300, y, { width: 60, align: 'right' });
+        doc.text('Discount %', 370, y, { width: 50, align: 'right' });
+        doc.text('VAT', 430, y, { width: 40, align: 'right' });
+        doc.text('Amount', 480, y, { width: 80, align: 'right' });
+        y += 30;
+        doc.font('DejaVu');
+
+        // Table Body
+        let total = 0;
+        for (const line of salesLine || []) {
+            doc.text(line.no || '', 50, y);
+            doc.text(line.description || '', 120, y, { width: 70 });
+            doc.text(line.quantity != null ? line.quantity : '', 200, y, { width: 40, align: 'right' });
+            doc.text(line.unitOfMeasureCode || '', 250, y, { width: 40, align: 'right' });
+            doc.text(line.unitPrice != null ? line.unitPrice.toFixed(2) : '', 300, y, { width: 60, align: 'right' });
+            doc.text(line.discountPercent != null ? line.discountPercent.toFixed(2) : '0.00', 370, y, { width: 50, align: 'right' });
+            doc.text(line.vatIdentifier || '', 430, y, { width: 40, align: 'right' });
+            doc.text(line.amount != null ? line.amount.toFixed(2) : '', 480, y, { width: 80, align: 'right' });
+            y += 20;
+            total += Number(line.amount) || 0;
         }
 
-        // Header
-        doc.fontSize(20).text('Sales - Invoice', { align: 'center' });
-        doc.moveDown();
-
-        // Customer and Bill-to Information
-        doc.fontSize(10);
-        doc.text('Customer:', 50, 100);
-        doc.text(salesOrder.customerNo, 50, 115);
-        doc.text(salesOrder.customerName, 50, 130);
-        doc.moveDown();
-
-        doc.text('Bill-to Address:', 350, 100);
-        doc.text(salesOrder.billToAddress, 350, 115);
-        doc.text(salesOrder.billToCity, 350, 130);
-        doc.text(salesOrder.billToPostalCode, 350, 145);
-        doc.text(salesOrder.billToCountry, 350, 160);
-
-        // Invoice details
-        doc.moveDown();
-        doc.text(`Invoice No.: ${salesOrder.invoiceNo}`, 50, 200);
-        doc.text(`Order Date: ${salesOrder.orderDate}`, 50, 215);
-        doc.text(`Status: ${salesOrder.status}`, 50, 230);
-        doc.text(`Total Amount: ${salesOrder.totalAmount}`, 50, 245);
-
-        doc.moveDown().moveTo(50, 270).lineTo(550, 270).stroke();
-
-        // Table header
-        doc.font('Helvetica-Bold');
-        doc.text('No.', 50, 280);
-        doc.text('Description', 90, 280);
-        doc.text('Quantity', 230, 280);
-        doc.text('Unit Price', 290, 280);
-        doc.text('Amount', 360, 280);
-        doc.font('Helvetica');
-
-        // Table rows (example row, replace with actual data if available)
-        salesOrder.items.forEach((item, index) => {
-            const y = 300 + index * 20;
-            doc.text(index + 1, 50, y);
-            doc.text(item.description, 90, y);
-            doc.text(item.quantity, 230, y);
-            doc.text(item.unitPrice, 290, y);
-            doc.text(item.amount, 360, y);
-        });
-
-        // Total
-        doc.moveDown();
-        doc.text(`Total: ${salesOrder.totalAmount}`, { align: 'right' });
-
-        // Footer
-        doc.moveDown().text('Account No.: 99-99-888');
-        doc.text('Bank: World Wide Bank');
-        doc.text('Giro No.: 888-9999');
-        doc.text('VAT Registration No.: 777777777');
-        doc.text('Phone No.: 0666-666-6666');
-        doc.text('Email: -');
-        doc.text('Pay-to Vendor No.: 10000');
-        doc.text('Home Page: -');
+        // Totals
+        y += 10;
+        doc.moveTo(50, y).lineTo(560, y).stroke();
+        doc.font('DejaVu-Bold');
+        doc.text(`Total Excl. VAT`, 350, y + 10, { width: 130, align: 'right' });
+        doc.text(total.toFixed(2), 480, y + 10, { width: 80, align: 'right' });
+        const vatAmount = total * 0.25;
+        doc.text(`25% VAT`, 350, y + 30, { width: 130, align: 'right' });
+        doc.text(vatAmount.toFixed(2), 480, y + 30, { width: 80, align: 'right' });
+        doc.text(`Total Incl. VAT`, 350, y + 50, { width: 130, align: 'right' });
+        doc.text((total + vatAmount).toFixed(2), 480, y + 50, { width: 80, align: 'right' });
 
         doc.end();
     } catch (error) {
@@ -167,4 +225,15 @@ async function salesInvoicePdf(orderId, dataCallback, endCallback) {
         throw error;
     }
 }
+
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    if (isNaN(date)) return dateStr;
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+}
+
 module.exports = { purchaseInvoicePdf, salesInvoicePdf };
