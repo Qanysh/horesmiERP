@@ -1,9 +1,9 @@
 <script setup>
 defineProps({
-  searchQuery: String
-})
+  searchQuery: String,
+});
 
-defineEmits(['update:searchQuery', 'openModal'])
+defineEmits(["update:searchQuery", "openModal"]);
 </script>
 
 <template>
@@ -13,7 +13,7 @@ defineEmits(['update:searchQuery', 'openModal'])
         :value="searchQuery"
         @input="$emit('update:searchQuery', $event.target.value)"
         type="text"
-        placeholder="Search by email or name"
+        placeholder="Search name"
         class="w-full rounded-md border px-4 py-2 text-gray-700"
       />
     </div>

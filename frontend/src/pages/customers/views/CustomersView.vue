@@ -1,34 +1,34 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useCustomerStore } from '../stores/useCustomerStore'
-import CustomerTable from '../components/CustomerTable.vue'
-import CustomerModal from '../components/CustomerModal.vue'
-import CustomerSearch from '../components/CustomerSearch.vue'
+import { ref, onMounted } from "vue";
+import { useCustomerStore } from "../stores/useCustomerStore";
+import CustomerTable from "../components/CustomerTable.vue";
+import CustomerModal from "../components/CustomerModal.vue";
+import CustomerSearch from "../components/CustomerSearch.vue";
 
-const customerStore = useCustomerStore()
-const isModalOpen = ref(false)
+const customerStore = useCustomerStore();
+const isModalOpen = ref(false);
 
-const openModal = () => (isModalOpen.value = true)
-const closeModal = () => (isModalOpen.value = false)
+const openModal = () => (isModalOpen.value = true);
+const closeModal = () => (isModalOpen.value = false);
 
 const addCustomer = async (customerData) => {
   try {
-    await customerStore.createCustomer(customerData)
-    closeModal()
+    await customerStore.createCustomer(customerData);
+    closeModal();
   } catch (error) {
-    console.error("Error adding customer", error)
+    console.error("Error adding customer", error);
   }
-}
+};
 
 const deleteCustomer = async (customerNo) => {
   if (confirm("Are you sure you want to delete this customer?")) {
-    await customerStore.deleteCustomer(customerNo)
+    await customerStore.deleteCustomer(customerNo);
   }
-}
+};
 
 onMounted(() => {
-  customerStore.fetchCustomers()
-})
+  customerStore.fetchCustomers();
+});
 </script>
 
 <template>
@@ -44,16 +44,12 @@ onMounted(() => {
           <tr>
             <th scope="col" class="px-6 py-3">Number</th>
             <th scope="col" class="px-6 py-3">Name</th>
-            <th scope="col" class="px-6 py-3">Balance</th>
-            <th scope="col" class="px-6 py-3">Credit limit</th>
-            <th scope="col" class="px-6 py-3">Total sales</th>
-            <th scope="col" class="px-6 py-3">Costs</th>
-            <th scope="col" class="px-6 py-3">Address</th>
-            <th scope="col" class="px-6 py-3">Country</th>
-            <th scope="col" class="px-6 py-3">City</th>
+            <th scope="col" class="px-6 py-3">Responsibility center</th>
+            <th scope="col" class="px-6 py-3">Location code</th>
             <th scope="col" class="px-6 py-3">Phone</th>
-            <th scope="col" class="px-6 py-3">Email</th>
-            <th scope="col" class="px-6 py-3">Contact name</th>
+            <th scope="col" class="px-6 py-3">Contact</th>
+            <th scope="col" class="px-6 py-3">Salesperson code</th>
+            <th scope="col" class="px-6 py-3">Credit limit lcy</th>
             <th scope="col" class="px-6 py-3">X</th>
           </tr>
         </thead>

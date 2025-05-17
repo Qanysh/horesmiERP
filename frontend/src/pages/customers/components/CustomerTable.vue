@@ -3,46 +3,34 @@ defineProps({
   customer: Object,
 });
 
-defineEmits(['delete'])
+defineEmits(["delete"]);
 </script>
 
 <template>
   <tr class="bg-white border-b hover:bg-gray-50">
     <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-      {{ customer.no }}
+      {{ customer.customer_no }}
     </td>
     <td class="px-6 py-4">
       {{ customer.name }}
     </td>
     <td class="px-6 py-4">
-      {{ customer.balance }}
+      {{ customer.responsibility_center }}
     </td>
     <td class="px-6 py-4">
-      {{ customer.creditLimit }}
+      {{ customer.location_code }}
     </td>
     <td class="px-6 py-4">
-      {{ customer.totalSales }}
+      {{ customer.phone_no }}
     </td>
     <td class="px-6 py-4">
-      {{ customer.costs }}
+      {{ customer.contact }}
     </td>
     <td class="px-6 py-4">
-      {{ customer.address }}
+      {{ customer.salesperson_code }}
     </td>
     <td class="px-6 py-4">
-      {{ customer.country }}
-    </td>
-    <td class="px-6 py-4">
-      {{ customer.city }}
-    </td>
-    <td class="px-6 py-4">
-      {{ customer.phone }}
-    </td>
-    <td class="px-6 py-4">
-      {{ customer.email }}
-    </td>
-    <td class="px-6 py-4">
-      {{ customer.contactName }}
+      {{ customer.credit_limit_lcy }}
     </td>
     <td class="px-6 py-4 text-right">
       <button

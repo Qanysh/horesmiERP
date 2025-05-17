@@ -10,10 +10,8 @@ export const useCustomerStore = defineStore("customer", () => {
   const error = ref(null);
 
   const filteredCustomers = computed(() => {
-    return customers.value.filter(
-      (customer) =>
-        customer.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        customer.email.toLowerCase().includes(searchQuery.value.toLowerCase())
+    return customers.value.filter((customer) =>
+      customer.name.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
   });
 
@@ -50,7 +48,7 @@ export const useCustomerStore = defineStore("customer", () => {
     try {
       await axios.delete(`${API_URL}/api/customers/delete/${customerNo}`);
       customers.value = customers.value.filter(
-        (customer) => customer.no !== customerNo
+        (customer) => customer.customer_no !== customerNo
       );
     } catch (err) {
       error.value = err.response?.data?.error || "Error deleting customer";
