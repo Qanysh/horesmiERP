@@ -23,7 +23,7 @@ async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
         });
 
         // Header
-        doc.fontSize(16).font('DejaVu-Bold').text('Purchase - Invoice', { align: 'center' });
+        doc.fontSize(14).font('DejaVu-Bold').text('Purchase - Invoice', { align: 'center' });
         doc.moveDown(1.5);
 
         // Vendor & Company Details (левая и правая колонка)
@@ -86,6 +86,24 @@ async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
         // Table Body
         let total = 0;
         for (const line of purchaseLines) {
+            if (y > 700) { // simple page break
+                doc.addPage();
+                y = 50; // отступ сверху для новой страницы
+                // Повторяем заголовок таблицы на новой странице
+                doc.font('DejaVu-Bold');
+                doc.text('No.', 50, y);
+                doc.text('Description', 120, y);
+                doc.text('Quantity', 200, y, { width: 40, align: 'right' });
+                doc.text('Unit', 250, y, { width: 40, align: 'right' });
+                doc.text('Unit Cost', 300, y, { width: 60, align: 'right' });
+                doc.text('Discount %', 370, y, { width: 50, align: 'right' });
+                doc.text('VAT', 430, y, { width: 40, align: 'right' });
+                doc.text('Amount', 480, y, { width: 80, align: 'right' });
+                y += 30;
+                doc.moveTo(50, y).lineTo(560, y).stroke();
+                y += 10;
+                doc.font('DejaVu');
+            }
             doc.text(line.no || '', 50, y);
             doc.text(line.description || '', 120, y, { width: 70 });
             doc.text(line.quantity != null ? line.quantity : '', 200, y, { width: 40, align: 'right' });
@@ -137,7 +155,7 @@ async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
             });
         });
         // Header
-        doc.fontSize(16).font('DejaVu-Bold').text('Sales - Invoice', { align: 'center' });
+        doc.fontSize(14).font('DejaVu-Bold').text('Sales - Invoice', { align: 'center' });
         doc.moveDown(1.5);
 
         // Customer & Company Details (левая и правая колонка)
@@ -198,6 +216,23 @@ async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
         // Table Body
         let total = 0;
         for (const line of salesLine || []) {
+            if (y > 700) { // simple page break
+                doc.addPage();
+                y = 50;
+                doc.font('DejaVu-Bold');
+                doc.text('No.', 50, y);
+                doc.text('Description', 120, y);
+                doc.text('Quantity', 200, y, { width: 40, align: 'right' });
+                doc.text('Unit', 250, y, { width: 40, align: 'right' });
+                doc.text('Unit Price', 300, y, { width: 60, align: 'right' });
+                doc.text('Discount %', 370, y, { width: 50, align: 'right' });
+                doc.text('VAT', 430, y, { width: 40, align: 'right' });
+                doc.text('Amount', 480, y, { width: 80, align: 'right' });
+                y += 30;
+                doc.moveTo(50, y).lineTo(560, y).stroke();
+                y += 10;
+                doc.font('DejaVu');
+            }
             doc.text(line.no || '', 50, y);
             doc.text(line.description || '', 120, y, { width: 70 });
             doc.text(line.quantity != null ? line.quantity : '', 200, y, { width: 40, align: 'right' });
@@ -229,6 +264,242 @@ async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
     }
 }
 
+async function generalLedgerReportPdf(entries, dataCallback, endCallback) {
+    const doc = new PDFDocument({ bufferPages: true, margin: 50 });
+    const fontPath = path.join(__dirname, '../../fonts/DejaVuSans.ttf');
+    const fontPathBold = path.join(__dirname, '../../fonts/DejaVuSans-Bold.ttf');
+    doc.registerFont('DejaVu', fontPath);
+    doc.font('DejaVu');
+    doc.registerFont('DejaVu-Bold', fontPathBold);
+
+    doc.on('data', dataCallback);
+    doc.on('end', endCallback);
+
+    try {
+        doc.fontSize(16).font('DejaVu-Bold').text('General Ledger Report', { align: 'center' });
+        doc.moveDown(1.5);
+
+        // Table Header
+        doc.fontSize(9).font('DejaVu-Bold');
+        let y = 90;
+        doc.text('Date', 50, y);
+        doc.text('Type', 110, y);
+        doc.text('Doc No.', 170, y);
+        doc.text('Item No.', 240, y);
+        doc.text('Description', 310, y);
+        doc.text('Qty', 420, y, { width: 40, align: 'right' });
+        doc.text('Amount', 470, y, { width: 70, align: 'right' });
+        y += 20;
+        doc.moveTo(50, y).lineTo(540, y).stroke();
+        y += 10;
+        doc.font('DejaVu');
+
+        let totalPurchase = 0;
+        let totalSale = 0;
+
+        for (const entry of entries) {
+            if (y > 700) { // simple page break
+                doc.addPage();
+                y = 50;
+                doc.fontSize(9).font('DejaVu-Bold');
+                doc.text('Date', 50, y);
+                doc.text('Type', 110, y);
+                doc.text('Doc No.', 170, y);
+                doc.text('Item No.', 240, y);
+                doc.text('Description', 310, y);
+                doc.text('Qty', 420, y, { width: 40, align: 'right' });
+                doc.text('Amount', 470, y, { width: 70, align: 'right' });
+                y += 20;
+                doc.moveTo(50, y).lineTo(540, y).stroke();
+                y += 10;
+                doc.font('DejaVu');
+            }
+            doc.text(formatDate(entry.postingDate), 50, y);
+            doc.text(entry.documentType || '', 110, y);
+            doc.text(entry.documentNo || '', 170, y);
+            doc.text(entry.itemNo || '', 240, y);
+            doc.text(entry.description || '', 310, y, { width: 100 });
+            doc.text(entry.quantity != null ? entry.quantity : '', 420, y, { width: 40, align: 'right' });
+            doc.text(entry.amount != null ? Number(entry.amount).toFixed(2) : '', 470, y, { width: 70, align: 'right' });
+
+            // Суммируем для итогов
+            if (entry.documentType === 'Purchase') totalPurchase += Number(entry.amount) || 0;
+            if (entry.documentType === 'Sale') totalSale += Number(entry.amount) || 0;
+
+            y += 20;
+        }
+
+        // Totals
+        y += 20;
+        doc.font('DejaVu-Bold');
+        doc.text('Total Purchases:', 310, y, { width: 100, align: 'right' });
+        doc.text(totalPurchase.toFixed(2), 470, y, { width: 70, align: 'right' });
+        y += 15;
+        doc.text('Total Sales:', 310, y, { width: 100, align: 'right' });
+        doc.text(totalSale.toFixed(2), 470, y, { width: 70, align: 'right' });
+        y += 15;
+        doc.text('Net Result:', 310, y, { width: 100, align: 'right' });
+        doc.text((totalPurchase + totalSale).toFixed(2), 470, y, { width: 70, align: 'right' });
+
+        doc.end();
+    } catch (error) {
+        console.error('Error generating General Ledger PDF:', error);
+        throw error;
+    }
+}
+
+async function generalLedgerReportPdfSales(entries, dataCallback, endCallback) {
+    const doc = new PDFDocument({ bufferPages: true, margin: 50 });
+    const fontPath = path.join(__dirname, '../../fonts/DejaVuSans.ttf');
+    const fontPathBold = path.join(__dirname, '../../fonts/DejaVuSans-Bold.ttf');
+    doc.registerFont('DejaVu', fontPath);
+    doc.font('DejaVu');
+    doc.registerFont('DejaVu-Bold', fontPathBold);
+
+    doc.on('data', dataCallback);
+    doc.on('end', endCallback);
+
+    try {
+        doc.fontSize(16).font('DejaVu-Bold').text('General Ledger Report - Sales', { align: 'center' });
+        doc.moveDown(1.5);
+
+        // Table Header
+        doc.fontSize(9).font('DejaVu-Bold');
+        let y = 90;
+        doc.text('Date', 50, y);
+        doc.text('Type', 110, y);
+        doc.text('Doc No.', 170, y);
+        doc.text('Item No.', 240, y);
+        doc.text('Description', 310, y);
+        doc.text('Qty', 420, y, { width: 40, align: 'right' });
+        doc.text('Amount', 470, y, { width: 70, align: 'right' });
+        y += 20;
+        doc.moveTo(50, y).lineTo(540, y).stroke();
+        y += 10;
+        doc.font('DejaVu');
+
+        let totalSale = 0;
+
+        for (const entry of entries) {
+            if (y > 750) { // simple page break
+                doc.addPage();
+                y = 50;
+                doc.fontSize(9).font('DejaVu-Bold');
+                doc.text('Date', 50, y);
+                doc.text('Type', 110, y);
+                doc.text('Doc No.', 170, y);
+                doc.text('Item No.', 240, y);
+                doc.text('Description', 310, y);
+                doc.text('Qty', 420, y, { width: 40, align: 'right' });
+                doc.text('Amount', 470, y, { width: 70, align: 'right' });
+                y += 20;
+                doc.moveTo(50, y).lineTo(540, y).stroke();
+                y += 10;
+                doc.font('DejaVu');
+
+            }
+            if (entry.documentType === 'Sale') {
+                doc.text(formatDate(entry.postingDate), 50, y);
+                doc.text(entry.documentType || '', 110, y);
+                doc.text(entry.documentNo || '', 170, y);
+                doc.text(entry.itemNo || '', 240, y);
+                doc.text(entry.description || '', 310, y, { width: 100 });
+                doc.text(entry.quantity != null ? entry.quantity : '', 420, y, { width: 40, align: 'right' });
+                doc.text(entry.amount != null ? Number(entry.amount).toFixed(2) : '', 470, y, { width: 70, align: 'right' });
+                // Суммируем для итогов
+                totalSale += Number(entry.amount) || 0;
+                y += 20;
+            }
+        }
+
+
+        // Totals
+        y += 20;
+        doc.font('DejaVu-Bold');
+        doc.text('Total Sales:', 310, y, { width: 100, align: 'right' });
+        doc.text(totalSale.toFixed(2), 470, y, { width: 70, align: 'right' });
+
+        doc.end();
+    } catch (error) {
+        console.error('Error generating General Ledger PDF:', error);
+        throw error;
+    }
+}
+
+async function generalLedgerReportPdfPurchase(entries, dataCallback, endCallback) {
+    const doc = new PDFDocument({ bufferPages: true, margin: 50 });
+    const fontPath = path.join(__dirname, '../../fonts/DejaVuSans.ttf');
+    const fontPathBold = path.join(__dirname, '../../fonts/DejaVuSans-Bold.ttf');
+    doc.registerFont('DejaVu', fontPath);
+    doc.font('DejaVu');
+    doc.registerFont('DejaVu-Bold', fontPathBold);
+
+    doc.on('data', dataCallback);
+    doc.on('end', endCallback);
+
+    try {
+        doc.fontSize(16).font('DejaVu-Bold').text('General Ledger Report - Purchases', { align: 'center' });
+        doc.moveDown(1.5);
+
+        // Table Header
+        doc.fontSize(9).font('DejaVu-Bold');
+        let y = 90;
+        doc.text('Date', 50, y);
+        doc.text('Type', 110, y);
+        doc.text('Doc No.', 170, y);
+        doc.text('Item No.', 240, y);
+        doc.text('Description', 310, y);
+        doc.text('Qty', 420, y, { width: 40, align: 'right' });
+        doc.text('Amount', 470, y, { width: 70, align: 'right' });
+        y += 20;
+        doc.moveTo(50, y).lineTo(540, y).stroke();
+        y += 10;
+        doc.font('DejaVu');
+
+        let totalPurchase = 0;
+
+        for (const entry of entries) {
+            if (y > 750) { // simple page break
+                doc.addPage();
+                y = 50;
+                doc.fontSize(9).font('DejaVu-Bold');
+                doc.text('Date', 50, y);
+                doc.text('Type', 110, y);
+                doc.text('Doc No.', 170, y);
+                doc.text('Item No.', 240, y);
+                doc.text('Description', 310, y);
+                doc.text('Qty', 420, y, { width: 40, align: 'right' });
+                doc.text('Amount', 470, y, { width: 70, align: 'right' });
+                y += 20;
+                doc.moveTo(50, y).lineTo(540, y).stroke();
+                y += 10;
+                doc.font('DejaVu');
+            }
+            if (entry.documentType === 'Purchase') {
+                doc.text(formatDate(entry.postingDate), 50, y);
+                doc.text(entry.documentType || '', 110, y);
+                doc.text(entry.documentNo || '', 170, y);
+                doc.text(entry.itemNo || '', 240, y);
+                doc.text(entry.description || '', 310, y, { width: 100 });
+                doc.text(entry.quantity != null ? entry.quantity : '', 420, y, { width: 40, align: 'right' });
+                doc.text(entry.amount != null ? Number(entry.amount).toFixed(2) : '', 470, y, { width: 70, align: 'right' });
+                // Суммируем для итогов
+                totalPurchase += Number(entry.amount) || 0;
+                y += 20;
+            }
+        }
+        // Totals
+        y += 20;
+        doc.font('DejaVu-Bold');
+        doc.text('Total Purchases:', 310, y, { width: 100, align: 'right' });
+        doc.text(totalPurchase.toFixed(2), 470, y, { width: 70, align: 'right' });
+        doc.end();
+    } catch (error) {
+        console.error('Error generating General Ledger PDF:', error);
+        throw error;
+    }
+}
+
 function formatDate(dateStr) {
     if (!dateStr) return '';
     const date = new Date(dateStr);
@@ -239,4 +510,4 @@ function formatDate(dateStr) {
     return `${day}.${month}.${year}`;
 }
 
-module.exports = { purchaseInvoicePdf, salesInvoicePdf };
+module.exports = { purchaseInvoicePdf, salesInvoicePdf, generalLedgerReportPdf, generalLedgerReportPdfSales, generalLedgerReportPdfPurchase };

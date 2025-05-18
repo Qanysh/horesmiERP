@@ -1,6 +1,7 @@
 const PurchaseLine = require('../models/purchaseLine');
 const Item = require('../models/item');
 const GeneralLedgerEntry = require('../models/generalLedgerEntry');
+const GeneralLedgerEntryController = require('./generalLedgerEntryController');
 
 exports.getAllPurchaseLines = async function (req, res) {
     try {
@@ -96,66 +97,81 @@ exports.createPurchaseLine = function (req, res) {
             console.error('Error creating purchaseLine:', err);
             return res.status(500).json({ error: 'Failed to create purchaseLine' });
         }
-        res.status(201).json({ message: 'PurchaseLine created successfully', purchaseLine: newPurchaseLine });
-    });
 
-    const itemNo = req.body.no;
-    const qty = Number(req.body.quantity) || 0;
+        const itemNo = req.body.no;
+        const qty = Number(req.body.quantity) || 0;
 
-    Item.getItemById(itemNo, (err, items) => {
-        if (err) {
-            console.error('Error fetching item:', err);
-            return res.status(500).json({ error: 'Failed to fetch item' });
-        }
-        if (items && items.length > 0) {
-            // Товар уже есть, увеличиваем количество
-            const item = items[0];
-            const newInventory = Number(item.inventory || 0) + qty;
-            Item.updateItem(itemNo, { ...item, inventory: newInventory, updated_at: new Date() }, (err) => {
-                if (err) {
-                    console.error('Error updating item inventory:', err);
-                    return res.status(500).json({ error: 'Failed to update item inventory' });
-                }
-                return res.status(201).json({ message: 'PurchaseLine created successfully, item inventory updated', purchaseLine: newPurchaseLine });
-            });
-        } else {
-            // Товара нет, создаём новую запись
-            const newItem = {
-                item_no: itemNo,
-                description: req.body.description,
-                description2: req.body.description2,
-                type: req.body.type,
-                inventory: qty,
-                baseUnitOfMeasure: req.body.unitOfMeasureCode,
-                created_at: new Date(),
-                updated_at: new Date()
+        Item.getItemById(itemNo, (err, items) => {
+            if (err) {
+                console.error('Error fetching item:', err);
+                return res.status(500).json({ error: 'Failed to fetch item' });
+            }
+
+            const afterLedger = () => {
+                // Ответ клиенту только здесь!
+                res.status(201).json({ message: 'PurchaseLine and item processed, ledger entry created', purchaseLine: newPurchaseLine });
             };
-            Item.createItem(newItem, (err) => {
-                if (err) {
-                    console.error('Error creating item:', err);
-                    return res.status(500).json({ error: 'Failed to create item' });
-                }
-                return res.status(201).json({ message: 'PurchaseLine and new item created successfully', purchaseLine: newPurchaseLine });
-            });
-        }
-    });
-    const generalLedgerEntry = {
-        entryType: 'Purchase',
-        documentNo: newPurchaseLine.documentNo,
-        itemNo: newPurchaseLine.no,
-        quantity: newPurchaseLine.quantity,
-        amount: newPurchaseLine.lineAmount,
-        postingDate: new Date(),
-        description: newPurchaseLine.description,
-        created_at: new Date(),
-        updated_at: new Date()
-    };
-    GeneralLedgerEntry.createGeneralLedgerEntry(generalLedgerEntry, (err) => {
-        if (err) {
-            console.error('Error creating general ledger entry:', err);
-            // Можно не прерывать процесс, просто логировать ошибку
-        }
-        // Возврат ответа клиенту (как раньше)
+
+            const createLedgerEntry = () => {
+                GeneralLedgerEntry.getLastEntryNo((err, lastentryNo) => {
+                    if (err) {
+                        console.error('Error fetching last entryNo:', err);
+                        return res.status(500).json({ error: 'Failed to fetch last entryNo' });
+                    }
+                    const nextEntryNo = lastentryNo ? Number(lastentryNo) + 1 : 1;
+                    const generalLedgerEntry = {
+                        entryNo: nextEntryNo,
+                        documentType: 'Purchase',
+                        documentNo: newPurchaseLine.documentNo,
+                        quantity: newPurchaseLine.quantity,
+                        amount: -Math.abs(Number(newPurchaseLine.lineAmount)),
+                        postingDate: new Date(),
+                        description: newPurchaseLine.description,
+                        created_at: new Date(),
+                        updated_at: new Date()
+                    };
+                    GeneralLedgerEntry.createGeneralLedgerEntry(generalLedgerEntry, (err) => {
+                        if (err) {
+                            console.error('Error creating general ledger entry:', err);
+                            // Можно не прерывать процесс, просто логировать ошибку
+                        }
+                        afterLedger();
+                    });
+                });
+            };
+
+            if (items && items.length > 0) {
+                // Товар уже есть, увеличиваем количество
+                const item = items[0];
+                const newInventory = Number(item.inventory || 0) + qty;
+                Item.updateItem(itemNo, { ...item, inventory: newInventory, updated_at: new Date() }, (err) => {
+                    if (err) {
+                        console.error('Error updating item inventory:', err);
+                        return res.status(500).json({ error: 'Failed to update item inventory' });
+                    }
+                    createLedgerEntry();
+                });
+            } else {
+                // Товара нет, создаём новую запись
+                const newItem = {
+                    item_no: itemNo,
+                    description: req.body.description,
+                    description2: req.body.description2,
+                    type: req.body.type,
+                    inventory: qty,
+                    baseUnitOfMeasure: req.body.unitOfMeasureCode,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                };
+                Item.createItem(newItem, (err) => {
+                    if (err) {
+                        console.error('Error creating item:', err);
+                        return res.status(500).json({ error: 'Failed to create item' });
+                    }
+                    createLedgerEntry();
+                });
+            }
+        });
     });
 };
 

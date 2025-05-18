@@ -1,6 +1,7 @@
 const Report = require('../service/report-service');
 const PurchaseHeader = require('../models/purchaseHeader');
 const SalesOrder = require('../models/salesOrder');
+const GeneralLedgerEntry = require('../models/generalLedgerEntry');
 
 exports.getPurchaseInvoicePDF = async function (req, res, next) {
     const no = req.params.no;
@@ -59,3 +60,69 @@ exports.getSalesInvoicePDF = async function (req, res, next) {
         res.status(500).send('An error occurred while generating the PDF.');
     }
 };
+
+exports.generalLedgerReportPdf = async function (req, res, next) {
+    const generalLedgerEntries = await new Promise((resolve, reject) => {
+        GeneralLedgerEntry.getAllGeneralLedgerEntries((err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+        });
+    });
+    try {
+        const stream = res.writeHead(200, {
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment;filename=general-ledger-report.pdf`,
+        });
+        Report.generalLedgerReportPdf(generalLedgerEntries,
+            (chunk) => stream.write(chunk),
+            () => stream.end()
+        );
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        res.status(500).send('An error occurred while generating the PDF.');
+    }
+};
+
+exports.generalLedgerReportPdfSales = async function (req, res, next) {
+    const generalLedgerEntries = await new Promise((resolve, reject) => {
+        GeneralLedgerEntry.getAllGeneralLedgerEntries((err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+        });
+    });
+    try {
+        const stream = res.writeHead(200, {
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment;filename=general-ledger-report-sales.pdf`,
+        });
+        Report.generalLedgerReportPdfSales(generalLedgerEntries,
+            (chunk) => stream.write(chunk),
+            () => stream.end()
+        );
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        res.status(500).send('An error occurred while generating the PDF.');
+    }
+};
+
+exports.generalLedgerReportPdfPurchase = async function (req, res, next) {
+    const generalLedgerEntries = await new Promise((resolve, reject) => {
+        GeneralLedgerEntry.getAllGeneralLedgerEntries((err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+        });
+    });
+    try {
+        const stream = res.writeHead(200, {
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment;filename=general-ledger-report-purchase.pdf`,
+        });
+        Report.generalLedgerReportPdfPurchase(generalLedgerEntries,
+            (chunk) => stream.write(chunk),
+            () => stream.end()
+        );
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        res.status(500).send('An error occurred while generating the PDF.');
+    }
+}
