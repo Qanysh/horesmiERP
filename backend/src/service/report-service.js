@@ -108,11 +108,10 @@ async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
             doc.text(line.description || '', 120, y, { width: 70 });
             doc.text(line.quantity != null ? line.quantity : '', 200, y, { width: 40, align: 'right' });
             doc.text(line.unitOfMeasureCode || '', 250, y, { width: 40, align: 'right' });
-            doc.text(line.directUnitCost != null ? line.directUnitCost.toFixed(2) : '', 300, y, { width: 60, align: 'right' });
-            doc.text(line.discountPercent != null ? line.discountPercent.toFixed(2) : '0.00', 370, y, { width: 50, align: 'right' });
+            doc.text(line.directUnitCost != null && !isNaN(Number(line.directUnitCost)) ? Number(line.directUnitCost).toFixed(2) : '', 300, y, { width: 60, align: 'right' });
+            doc.text(line.discountPercent != null && !isNaN(Number(line.discountPercent)) ? Number(line.discountPercent).toFixed(2) : '0.00', 370, y, { width: 50, align: 'right' });
             doc.text(line.vatIdentifier || '', 430, y, { width: 40, align: 'right' });
-            doc.text(line.lineAmount != null ? line.lineAmount.toFixed(2) : '', 480, y, { width: 80, align: 'right' });
-            y += 20;
+            doc.text(line.lineAmount != null && !isNaN(Number(line.lineAmount)) ? Number(line.lineAmount).toFixed(2) : '', 480, y, { width: 80, align: 'right' }); y += 20;
             total += Number(line.lineAmount) || 0;
         }
 
@@ -122,8 +121,8 @@ async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
         doc.font('DejaVu-Bold');
         doc.text(`Total GBP Excl. VAT`, 350, y + 10, { width: 130, align: 'right' });
         doc.text(total.toFixed(2), 480, y + 10, { width: 80, align: 'right' });
-        const vatAmount = total * 0.25;
-        doc.text(`25% VAT`, 350, y + 30, { width: 130, align: 'right' });
+        const vatAmount = total * 0.12; // было 0.25, стало 0.12
+        doc.text(`12% VAT`, 350, y + 30, { width: 130, align: 'right' }); // было 25% VAT
         doc.text(vatAmount.toFixed(2), 480, y + 30, { width: 80, align: 'right' });
         doc.text(`Total GBP Incl. VAT`, 350, y + 50, { width: 130, align: 'right' });
         doc.text((total + vatAmount).toFixed(2), 480, y + 50, { width: 80, align: 'right' });
@@ -237,10 +236,10 @@ async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
             doc.text(line.description || '', 120, y, { width: 70 });
             doc.text(line.quantity != null ? line.quantity : '', 200, y, { width: 40, align: 'right' });
             doc.text(line.unitOfMeasureCode || '', 250, y, { width: 40, align: 'right' });
-            doc.text(line.unitPrice != null ? line.unitPrice.toFixed(2) : '', 300, y, { width: 60, align: 'right' });
-            doc.text(line.discountPercent != null ? line.discountPercent.toFixed(2) : '0.00', 370, y, { width: 50, align: 'right' });
+            doc.text(line.unitPrice != null && !isNaN(Number(line.unitPrice)) ? Number(line.unitPrice).toFixed(2) : '', 300, y, { width: 60, align: 'right' });
+            doc.text(line.discountPercent != null && !isNaN(Number(line.discountPercent)) ? Number(line.discountPercent).toFixed(2) : '0.00', 370, y, { width: 50, align: 'right' });
             doc.text(line.vatIdentifier || '', 430, y, { width: 40, align: 'right' });
-            doc.text(line.amount != null ? line.amount.toFixed(2) : '', 480, y, { width: 80, align: 'right' });
+            doc.text(line.amount != null && !isNaN(Number(line.amount)) ? Number(line.amount).toFixed(2) : '', 480, y, { width: 80, align: 'right' });
             y += 20;
             total += Number(line.amount) || 0;
         }
@@ -251,8 +250,8 @@ async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
         doc.font('DejaVu-Bold');
         doc.text(`Total Excl. VAT`, 350, y + 10, { width: 130, align: 'right' });
         doc.text(total.toFixed(2), 480, y + 10, { width: 80, align: 'right' });
-        const vatAmount = total * 0.25;
-        doc.text(`25% VAT`, 350, y + 30, { width: 130, align: 'right' });
+        const vatAmount = total * 0.12; // было 0.25, стало 0.12
+        doc.text(`12% VAT`, 350, y + 30, { width: 130, align: 'right' }); // было 25% VAT
         doc.text(vatAmount.toFixed(2), 480, y + 30, { width: 80, align: 'right' });
         doc.text(`Total Incl. VAT`, 350, y + 50, { width: 130, align: 'right' });
         doc.text((total + vatAmount).toFixed(2), 480, y + 50, { width: 80, align: 'right' });
@@ -320,8 +319,7 @@ async function generalLedgerReportPdf(entries, dataCallback, endCallback) {
             doc.text(entry.itemNo || '', 240, y);
             doc.text(entry.description || '', 310, y, { width: 100 });
             doc.text(entry.quantity != null ? entry.quantity : '', 420, y, { width: 40, align: 'right' });
-            doc.text(entry.amount != null ? Number(entry.amount).toFixed(2) : '', 470, y, { width: 70, align: 'right' });
-
+            doc.text(entry.amount != null && !isNaN(Number(entry.amount)) ? Number(entry.amount).toFixed(2) : '', 470, y, { width: 70, align: 'right' });
             // Суммируем для итогов
             if (entry.documentType === 'Purchase') totalPurchase += Number(entry.amount) || 0;
             if (entry.documentType === 'Sale') totalSale += Number(entry.amount) || 0;
