@@ -170,6 +170,21 @@ exports.updateGeneralLedgerEntry = function (req, res) {
     });
 };
 
+exports.getLastEntryNo = function (req, res) {
+    GeneralLedgerEntry.getLastEntryNo((err, lastEntryNo) => {
+        if (err) {
+            console.error('Error fetching last entryNo:', err);
+            return res.status(500).json({ error: 'Failed to fetch last entryNo' });
+        }
+        if (lastEntryNo === null || lastEntryNo === undefined || lastEntryNo === NaN) {
+            return res.status(404).json({ error: 'No entry found' });
+        }
+        console.log('Last entryNo:', lastEntryNo);
+        res.json({ lastEntryNo: lastEntryNo });
+
+    });
+};
+
 exports.deleteGeneralLedgerEntry = function (req, res) {
     GeneralLedgerEntry.deleteGeneralLedgerEntry(req.params.entryNo, (err, result) => {
         if (err) {
