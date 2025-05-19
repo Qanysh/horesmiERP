@@ -12,10 +12,10 @@ exports.createPurchaseOrder = function (newPurchaseOrder, callback) {
     db.query('INSERT INTO purchaseOrder SET ?;', newPurchaseOrder, callback);
 };
 
-exports.updatePurchaseOrder = function (id, updatedPurchaseOrder, callback) {
+exports.updatePurchaseOrder = function (no, updatedPurchaseOrder, callback) {
     db.query('UPDATE purchaseOrder SET ? WHERE no = ?', [updatedPurchaseOrder, no], callback);
 };
 
-exports.deletePurchaseOrder = function (id, callback) {
+exports.deletePurchaseOrder = function (no, callback) {
     db.query('DELETE FROM purchaseOrder WHERE no = ?', [no], callback);
 };

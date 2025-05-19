@@ -16,7 +16,7 @@ exports.getAllPurchaseOrders = async function (req, res) {
 };
 
 exports.getPurchaseOrderById = async function (req, res) {
-    PurchaseOrder.getPurchaseOrderById([req.params.id], (err, purchaseOrder) => {
+    PurchaseOrder.getPurchaseOrderById([req.params.no], (err, purchaseOrder) => {
         if (err) {
             console.error('Error fetching purchaseOrder:', err);
             return res.status(500).json({ error: 'Error fetching purchaseOrder' });
