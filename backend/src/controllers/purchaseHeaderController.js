@@ -16,7 +16,7 @@ exports.getAllPurchaseHeaders = async function (req, res) {
 };
 
 exports.getPurchaseHeaderById = async function (req, res) {
-    PurchaseHeader.getPurchaseHeaderById([req.params.id], (err, purchaseHeader) => {
+    PurchaseHeader.getPurchaseHeaderById([req.params.no], (err, purchaseHeader) => {
         if (err) {
             console.error('Error fetching purchaseHeader:', err);
             return res.status(500).json({ error: 'Error fetching purchaseHeader' });
