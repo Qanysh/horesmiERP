@@ -19,7 +19,7 @@ exports.getAllPurchaseLines = async function (req, res) {
 };
 
 exports.getPurchaseLineById = async function (req, res) {
-    PurchaseLine.getPurchaseLineById([req.params.id], (err, purchaseLine) => {
+    PurchaseLine.getPurchaseLineById([req.params.no], (err, purchaseLine) => {
         if (err) {
             console.error('Error fetching purchaseLine:', err);
             return res.status(500).json({ error: 'Error fetching purchaseLine' });
@@ -230,7 +230,7 @@ exports.updatePurchaseLine = function (req, res) {
 };
 
 exports.deletePurchaseLine = function (req, res) {
-    PurchaseLine.deletePurchaseLine(req.params.lineNo, (err, result) => {
+    PurchaseLine.deletePurchaseLine(req.params.no, (err, result) => {
         if (err) {
             console.error('Error deleting purchaseLine:', err);
             return res.status(500).json({ error: 'Failed to delete purchaseLine' });
