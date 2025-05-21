@@ -19,7 +19,7 @@ exports.getAllPurchaseLines = async function (req, res) {
 };
 
 exports.getPurchaseLineById = async function (req, res) {
-    PurchaseLine.getPurchaseLineById([req.params.no], (err, purchaseLine) => {
+    PurchaseLine.getPurchaseLineById([req.params.id], (err, purchaseLine) => {
         if (err) {
             console.error('Error fetching purchaseLine:', err);
             return res.status(500).json({ error: 'Error fetching purchaseLine' });
@@ -32,6 +32,20 @@ exports.getPurchaseLineById = async function (req, res) {
 };
 
 exports.getPurchaseLineByDocumentNo = async function (documentNo, req, res) {
+    PurchaseLine.getPurchaseLineByDocumentNo(documentNo, (err, purchaseLine) => {
+        if (err) {
+            console.error('Error fetching purchaseLine:', err);
+            return res.status(500).json({ error: 'Error fetching purchaseLine' });
+        }
+        if (!purchaseLine || purchaseLine.length === 0) {
+            return res.status(404).json({ error: 'PurchaseLine not found' });
+        }
+        res.json(purchaseLine[0]);
+    });
+};
+
+exports.getPurchaseLineByDocumentNoForRouter = async function (req, res) {
+    const documentNo = req.params.documentNo;
     PurchaseLine.getPurchaseLineByDocumentNo(documentNo, (err, purchaseLine) => {
         if (err) {
             console.error('Error fetching purchaseLine:', err);
@@ -230,7 +244,7 @@ exports.updatePurchaseLine = function (req, res) {
 };
 
 exports.deletePurchaseLine = function (req, res) {
-    PurchaseLine.deletePurchaseLine(req.params.no, (err, result) => {
+    PurchaseLine.deletePurchaseLine(req.params.id, (err, result) => {
         if (err) {
             console.error('Error deleting purchaseLine:', err);
             return res.status(500).json({ error: 'Failed to delete purchaseLine' });
