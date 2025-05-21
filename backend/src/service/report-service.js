@@ -110,7 +110,7 @@ async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
             doc.text(line.unitOfMeasureCode || '', 250, y, { width: 40, align: 'right' });
             doc.text(line.directUnitCost != null && !isNaN(Number(line.directUnitCost)) ? Number(line.directUnitCost).toFixed(2) : '', 300, y, { width: 60, align: 'right' });
             doc.text(line.discountPercent != null && !isNaN(Number(line.discountPercent)) ? Number(line.discountPercent).toFixed(2) : '0.00', 370, y, { width: 50, align: 'right' });
-            doc.text(line.vatIdentifier || '', 430, y, { width: 40, align: 'right' });
+            doc.text(line.vatIdentifier || 'STANDART', 430, y, { width: 50, align: 'right' });
             doc.text(line.lineAmount != null && !isNaN(Number(line.lineAmount)) ? Number(line.lineAmount).toFixed(2) : '', 480, y, { width: 80, align: 'right' }); y += 20;
             total += Number(line.lineAmount) || 0;
         }
