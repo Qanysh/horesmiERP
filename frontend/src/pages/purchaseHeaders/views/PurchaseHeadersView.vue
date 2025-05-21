@@ -17,11 +17,11 @@ const openCard = (no) => {
 };
 
 const deleteHeader = async (no) => {
-  if (confirm("Are you sure you want to delete this purchase header?")) {
+  if (confirm("Are you sure you want to delete this purchase order?")) {
     try {
       await purchaseHeadersStore.deleteHeader(no);
     } catch (error) {
-      alert("Failed to delete purchase header");
+      alert("Failed to delete purchase order");
     }
   }
 };
