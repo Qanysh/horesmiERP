@@ -10,6 +10,7 @@ import Login from "@/pages/auth/views/LoginView.vue";
 import PurchaseOrdersView from "@/pages/purchaseOrders/views/PurchaseOrdersView.vue";
 import PurchaseHeadersView from "@/pages/purchaseHeaders/views/PurchaseHeadersView.vue";
 import SalesView from "@/pages/salesOrders/views/SalesOrdersView.vue";
+import GeneralLedgerEntriesView from "@/pages/generalLedgerEntries/views/GeneralLedgerEntriesView.vue";
 import NotFound from "@/pages/notFound/NotFoundView.vue";
 import { useAuthStore } from "@/pages/auth/stores/authStore";
 import { isAuthenticated, getUser } from "@/pages/auth/utils/storage";
@@ -54,12 +55,6 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/purchaseOrders",
-      name: "purchaseOrders",
-      component: PurchaseOrdersView,
-      meta: { requiresAuth: true },
-    },
-    {
       path: "/purchaseHeaders",
       name: "purchaseHeaders",
       component: PurchaseHeadersView,
@@ -69,6 +64,12 @@ const router = createRouter({
       path: "/sales",
       name: "sales",
       component: SalesView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/ledger",
+      name: "ledger",
+      component: GeneralLedgerEntriesView,
       meta: { requiresAuth: true },
     },
     {
