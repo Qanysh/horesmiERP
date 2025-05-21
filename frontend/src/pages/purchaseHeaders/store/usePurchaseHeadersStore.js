@@ -37,7 +37,7 @@ export const usePurchaseHeadersStore = defineStore("purchaseHeader", () => {
       selectedPurchaseHeader.value = response.data;
       isModalOpen.value = true;
 
-      // Загружаем строки по documentNo → находим по нему id → делаем запрос по id
+      // Загружаем все строки для этого заказа
       await fetchPurchaseLinesByHeaderNo(response.data.no);
     } catch (err) {
       error.value = "Error fetching purchase header or lines";
@@ -53,19 +53,29 @@ export const usePurchaseHeadersStore = defineStore("purchaseHeader", () => {
       const response = await axios.get(`${API_URL}/api/purchaseLines`);
       const allLines = response.data;
 
-      const matchedLine = allLines.find((line) => line.documentNo === no);
+      // Находим ВСЕ строки с этим documentNo
+      const orderLines = allLines.filter((line) => line.documentNo === no);
 
-      if (!matchedLine) {
-        throw new Error(`Purchase line with documentNo ${no} not found`);
+      if (orderLines.length > 0) {
+        // Для каждой найденной строки получаем детали
+        const detailedLines = await Promise.all(
+          orderLines.map(async (line) => {
+            try {
+              const detailedResponse = await axios.get(
+                `${API_URL}/api/purchaseLines/card/${line.id}`
+              );
+              return detailedResponse.data;
+            } catch (err) {
+              console.error(`Error fetching line ${line.id}:`, err);
+              return null;
+            }
+          })
+        );
+        // Фильтруем null (если были ошибки) и сохраняем все строки
+        purchaseLines.value = detailedLines.filter((line) => line !== null);
+      } else {
+        purchaseLines.value = [];
       }
-
-      const id = matchedLine.id;
-
-      const detailedResponse = await axios.get(
-        `${API_URL}/api/purchaseLines/card/${id}`
-      );
-
-      purchaseLines.value = [detailedResponse.data]; // если одна строка
     } catch (err) {
       error.value = "Error fetching purchase lines by header no";
       console.error(err);
