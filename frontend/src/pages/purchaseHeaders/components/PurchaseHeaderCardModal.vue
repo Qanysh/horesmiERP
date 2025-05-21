@@ -119,7 +119,7 @@
             @click="handlePrint"
             class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
           >
-            Print
+            Post & Print
           </button>
           <button
             @click="handleClose"

@@ -28,7 +28,7 @@ const header = ref({
   vendorShipmentNo: "",
   orderAddressCode: "ADDR-01",
   responsibilityCenter: "RC-01",
-  assignedUserId: "user123", // Replace dynamically
+  assignedUserId: "user123",
   jobQueueStatus: "Pending",
   languageCode: "RU",
   formatRegion: "RU",
@@ -89,7 +89,7 @@ const handleClose = () => {
     class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
   >
     <div
-      class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+      class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
     >
       <div class="p-6">
         <div class="flex justify-between items-center mb-4">
@@ -119,10 +119,10 @@ const handleClose = () => {
           @submit.prevent="handleSubmit"
           class="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
-          <!-- PO Number -->
+          <!-- Основная информация -->
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700"
-              >PO Number</label
+              >PO Number*</label
             >
             <input
               v-model="header.no"
@@ -132,10 +132,9 @@ const handleClose = () => {
             />
           </div>
 
-          <!-- Vendor No -->
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700"
-              >Vendor No</label
+              >Vendor No*</label
             >
             <input
               v-model="header.vendorNo"
@@ -145,45 +144,6 @@ const handleClose = () => {
             />
           </div>
 
-          <!-- Description -->
-          <div class="space-y-2 md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700"
-              >Description</label
-            >
-            <textarea
-              v-model="header.postingDescription"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            ></textarea>
-          </div>
-
-          <!-- Order Date -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700"
-              >Order Date</label
-            >
-            <input
-              v-model="header.orderDate"
-              type="date"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-
-          <!-- Due Date -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700"
-              >Due Date</label
-            >
-            <input
-              v-model="header.dueDate"
-              type="date"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-
-          <!-- Status -->
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700"
               >Status</label
@@ -198,7 +158,222 @@ const handleClose = () => {
             </select>
           </div>
 
-          <!-- Submit & Cancel -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Vendor Name*</label
+            >
+            <input
+              v-model="header.buyFromVendorName"
+              type="text"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2 md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Description*</label
+            >
+            <textarea
+              v-model="header.postingDescription"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            ></textarea>
+          </div>
+
+          <!-- Контактная информация -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Contact Name</label
+            >
+            <input
+              v-model="header.buyFromContact"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Contact Phone</label
+            >
+            <input
+              v-model="header.buyFromContactPhoneNo"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Contact Email</label
+            >
+            <input
+              v-model="header.buyFromContactEmail"
+              type="email"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <!-- Адресная информация -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Address</label
+            >
+            <input
+              v-model="header.buyFromAddress"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Address 2</label
+            >
+            <input
+              v-model="header.buyFromAddress2"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">City</label>
+            <input
+              v-model="header.buyFromCity"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Post Code</label
+            >
+            <input
+              v-model="header.buyFromPostCode"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Country</label
+            >
+            <input
+              v-model="header.buyFromCountryRegionCode"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <!-- Финансовая информация -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Currency</label
+            >
+            <input
+              v-model="header.currencyCode"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Payment Terms</label
+            >
+            <input
+              v-model="header.paymentTermsCode"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Payment Method</label
+            >
+            <input
+              v-model="header.paymentMethodCode"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >VAT Bus. Posting Group</label
+            >
+            <input
+              v-model="header.vatBusPostingGroup"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <!-- Даты -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Order Date*</label
+            >
+            <input
+              v-model="header.orderDate"
+              type="date"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Due Date*</label
+            >
+            <input
+              v-model="header.dueDate"
+              type="date"
+              required
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <!-- Дополнительная информация -->
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Vendor Invoice No</label
+            >
+            <input
+              v-model="header.vendorInvoiceNo"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Your Reference</label
+            >
+            <input
+              v-model="header.yourReference"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Shipment Method</label
+            >
+            <input
+              v-model="header.shipmentMethodCode"
+              type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+
+          <!-- Кнопки -->
           <div class="flex justify-end space-x-3 md:col-span-2 pt-4">
             <button
               type="button"
@@ -211,7 +386,7 @@ const handleClose = () => {
               type="submit"
               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              Create Purchase Header
+              Create Purchase Order
             </button>
           </div>
         </form>

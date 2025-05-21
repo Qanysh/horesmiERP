@@ -111,6 +111,10 @@ export const useSalesOrdersStore = defineStore("salesOrder", () => {
     });
   };
 
+  const printSalesOrder = (no) => {
+    window.open(`${API_URL}/api/reports/salesOrder/${no}`, "_blank");
+  };
+
   const closeModal = () => {
     isModalOpen.value = false;
     selectedSalesOrder.value = null;
@@ -145,5 +149,6 @@ export const useSalesOrdersStore = defineStore("salesOrder", () => {
     createOrder,
     openCreateModal,
     closeCreateModal,
+    printSalesOrder,
   };
 });
