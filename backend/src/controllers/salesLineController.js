@@ -18,7 +18,7 @@ exports.getAllSalesLines = async function (req, res) {
 };
 
 exports.getSalesLineById = async function (req, res) {
-    SalesLine.getSalesLineById([req.params.no], (err, salesLine) => {
+    SalesLine.getSalesLineById([req.params.id], (err, salesLine) => {
         if (err) {
             console.error('Error fetching salesLine:', err);
             return res.status(500).json({ error: 'Error fetching salesLine' });
@@ -31,6 +31,20 @@ exports.getSalesLineById = async function (req, res) {
 };
 
 exports.getSalesLineByDocumentNo = async function (documentNo, req, res) {
+    SalesLine.getSalesLineByDocumentNo(documentNo, (err, salesLine) => {
+        if (err) {
+            console.error('Error fetching salesLine:', err);
+            return res.status(500).json({ error: 'Error fetching salesLine' });
+        }
+        if (!salesLine || salesLine.length === 0) {
+            return res.status(404).json({ error: 'SalesLine not found' });
+        }
+        res.json(salesLine[0]);
+    });
+};
+
+exports.getSalesLineByDocumentNoForRouter = async function (req, res) {
+    const documentNo = req.params.documentNo;
     SalesLine.getSalesLineByDocumentNo(documentNo, (err, salesLine) => {
         if (err) {
             console.error('Error fetching salesLine:', err);
