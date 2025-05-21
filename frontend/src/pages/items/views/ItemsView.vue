@@ -1,26 +1,44 @@
 <script setup>
-import { onMounted } from "vue";
-import { useItemStore } from "../stores/useItemStore";
-import ItemTable from "../components/ItemTable.vue";
-import ItemModal from "../components/ItemModal.vue";
-import ItemSearch from "../components/ItemSearch.vue";
+import { onMounted, ref } from "vue";
+import { useItemsStore } from "@/pages/items/stores/useItemStore";
+import ItemTable from "@/pages/items/components/ItemTable.vue";
+import ItemModal from "@/pages/items/components/ItemModal.vue";
+import ItemSearch from "@/pages/items/components/ItemSearch.vue";
 
-const itemStore = useItemStore();
+const itemsStore = useItemsStore();
+const isModalOpen = ref(false);
 
-const viewItem = (itemNo) => {
-  itemStore.fetchItemById(itemNo);
+const openModal = () => (isModalOpen.value = true);
+const closeModal = () => (isModalOpen.value = false);
+
+const addItem = async (itemData) => {
+  try {
+    await itemsStore.addItem(itemData);
+    closeModal();
+  } catch (error) {
+    console.error("Error adding item", error);
+  }
 };
 
-onMounted(async () => {
-  await itemStore.fetchItems();
+const deleteItem = async (itemNo) => {
+  if (confirm("Are you sure you want to delete this item?")) {
+    await itemsStore.deleteItem(itemNo);
+  }
+};
+
+onMounted(() => {
+  itemsStore.fetchItems();
 });
 </script>
 
 <template>
   <div class="container mx-auto px-4 py-6">
-    <ItemSearch v-model:searchQuery="itemStore.searchQuery" />
+    <ItemSearch
+      v-model:searchQuery="itemsStore.searchQuery"
+      @openModal="openModal"
+    />
 
-    <div class="relative overflow-x-auto">
+    <div class="overflow-x-auto">
       <table class="w-full text-left text-sm text-gray-500 rtl:text-right">
         <thead class="bg-gray-50 text-xs uppercase text-gray-700">
           <tr>
@@ -28,13 +46,7 @@ onMounted(async () => {
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              Item Number
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Description
+              Number
             </th>
             <th
               scope="col"
@@ -46,27 +58,20 @@ onMounted(async () => {
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              inventory
+              Description
             </th>
             <th
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              unitCost
+              Unit Price
             </th>
             <th
               scope="col"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
-              unitPrice
+              Inventory
             </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              vendorNo
-            </th>
-
             <th
               scope="col"
               class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -76,29 +81,25 @@ onMounted(async () => {
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <template v-if="itemStore.loading">
+          <template v-if="itemsStore.loading">
             <tr v-for="i in 5" :key="i">
-              <td v-for="j in 10" :key="j" class="px-6 py-4">
+              <td v-for="j in 6" :key="j" class="px-6 py-4">
                 <div class="h-4 bg-gray-200 rounded animate-pulse"></div>
               </td>
             </tr>
           </template>
           <template v-else>
             <ItemTable
-              v-for="item in itemStore.filteredItems"
-              :key="item.item_no"
+              v-for="item in itemsStore.filteredItems"
+              :key="item.no"
               :item="item"
-              @view="viewItem"
+              @delete="deleteItem"
             />
           </template>
         </tbody>
       </table>
     </div>
-  </div>
 
-  <ItemModal
-    :isOpen="itemStore.isModalOpen"
-    :item="itemStore.selectedItem"
-    :closeModal="itemStore.closeModal"
-  />
+    <ItemModal v-if="isModalOpen" @submit="addItem" @close="closeModal" />
+  </div>
 </template>

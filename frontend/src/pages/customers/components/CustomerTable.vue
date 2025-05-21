@@ -35,7 +35,7 @@ defineEmits(["delete"]);
     <td class="px-6 py-4 text-right">
       <button
         @click="$emit('delete')"
-        class="font-medium text-red-600 hover:text-red-900"
+        class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
       >
         Delete
       </button>

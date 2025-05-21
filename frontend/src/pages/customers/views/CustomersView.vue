@@ -42,14 +42,54 @@ onMounted(() => {
       <table class="w-full text-left text-sm text-gray-500 rtl:text-right">
         <thead class="bg-gray-50 text-xs uppercase text-gray-700">
           <tr>
-            <th scope="col" class="px-6 py-3">Number</th>
-            <th scope="col" class="px-6 py-3">Name</th>
-            <th scope="col" class="px-6 py-3">Responsibility center</th>
-            <th scope="col" class="px-6 py-3">Location code</th>
-            <th scope="col" class="px-6 py-3">Phone</th>
-            <th scope="col" class="px-6 py-3">Contact</th>
-            <th scope="col" class="px-6 py-3">Salesperson code</th>
-            <th scope="col" class="px-6 py-3">Credit limit lcy</th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Number
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Name
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Responsibility center
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Location code
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Phone
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Contact
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Salesperson code
+            </th>
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Credit limit lcy
+            </th>
             <th
               scope="col"
               class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
