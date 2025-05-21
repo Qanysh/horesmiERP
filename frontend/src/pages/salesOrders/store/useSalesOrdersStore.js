@@ -1,0 +1,155 @@
+import { defineStore } from "pinia";
+import { ref, watch } from "vue";
+import axios from "axios";
+import API_URL from "@/config/index.js";
+
+export const useSalesOrdersStore = defineStore("salesOrder", () => {
+  const salesOrders = ref([]);
+  const filteredSalesOrders = ref([]);
+  const selectedSalesOrder = ref(null);
+  const salesLines = ref([]);
+  const searchQuery = ref("");
+  const error = ref(null);
+  const loading = ref(false);
+  const isModalOpen = ref(false);
+  const isCreateModalOpen = ref(false);
+
+  const fetchSalesOrders = async () => {
+    loading.value = true;
+    try {
+      const response = await axios.get(`${API_URL}/api/salesOrders`);
+      salesOrders.value = response.data;
+      filterSalesOrdersData();
+    } catch (err) {
+      error.value = "Error fetching sales orders";
+      console.error(err);
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const fetchSalesOrderByNo = async (no) => {
+    loading.value = true;
+    try {
+      const response = await axios.get(`${API_URL}/api/salesOrders/card/${no}`);
+      selectedSalesOrder.value = response.data;
+      isModalOpen.value = true;
+
+      // Fetch sales lines for this order
+      await fetchSalesLinesByOrderNo(no);
+    } catch (err) {
+      error.value = "Error fetching sales order or lines";
+      console.error(err);
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const fetchSalesLinesByOrderNo = async (orderNo) => {
+    loading.value = true;
+    try {
+      const response = await axios.get(`${API_URL}/api/salesLines`);
+      const allLines = response.data;
+
+      // Find lines for this order
+      const orderLines = allLines.filter((line) => line.documentNo === orderNo);
+
+      if (orderLines.length > 0) {
+        // Fetch details for each line
+        const detailedLines = await Promise.all(
+          orderLines.map(async (line) => {
+            const detailedResponse = await axios.get(
+              `${API_URL}/api/salesLines/card/${line.id}`
+            );
+            return detailedResponse.data;
+          })
+        );
+        salesLines.value = detailedLines;
+      } else {
+        salesLines.value = [];
+      }
+    } catch (err) {
+      error.value = "Error fetching sales lines by order no";
+      console.error(err);
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const deleteOrder = async (no) => {
+    try {
+      await axios.delete(`${API_URL}/api/salesOrders/delete/${no}`);
+      salesOrders.value = salesOrders.value.filter((order) => order.no !== no);
+      filterSalesOrdersData();
+    } catch (err) {
+      error.value = "Error deleting sales order";
+      console.error("Delete error:", err);
+      throw err;
+    }
+  };
+
+  const createOrder = async (orderData) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/salesOrders/create`,
+        orderData
+      );
+      salesOrders.value.push(response.data.salesOrder);
+      filterSalesOrdersData();
+      return response.data;
+    } catch (err) {
+      error.value = "Error creating sales order";
+      console.error("Create error:", err);
+      throw err;
+    }
+  };
+
+  const filterSalesOrdersData = () => {
+    filteredSalesOrders.value = salesOrders.value.filter((order) => {
+      const no = order.no || "";
+      const customerName = order.sellToCustomerName || "";
+      const search = searchQuery.value.toLowerCase();
+
+      return (
+        no.toLowerCase().includes(search) ||
+        customerName.toLowerCase().includes(search)
+      );
+    });
+  };
+
+  const closeModal = () => {
+    isModalOpen.value = false;
+    selectedSalesOrder.value = null;
+    salesLines.value = [];
+  };
+
+  const openCreateModal = () => {
+    isCreateModalOpen.value = true;
+  };
+
+  const closeCreateModal = () => {
+    isCreateModalOpen.value = false;
+  };
+
+  watch(searchQuery, filterSalesOrdersData);
+
+  return {
+    salesOrders,
+    filteredSalesOrders,
+    selectedSalesOrder,
+    salesLines,
+    searchQuery,
+    error,
+    loading,
+    isModalOpen,
+    isCreateModalOpen,
+    fetchSalesOrders,
+    fetchSalesOrderByNo,
+    filterSalesOrdersData,
+    closeModal,
+    deleteOrder,
+    createOrder,
+    openCreateModal,
+    closeCreateModal,
+  };
+});

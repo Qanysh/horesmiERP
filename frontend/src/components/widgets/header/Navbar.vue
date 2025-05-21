@@ -1,7 +1,14 @@
 <script setup>
-import { ref } from 'vue';
-import { RouterLink } from 'vue-router';
-import Search from '@/components/search/Search.vue';
+import { ref } from "vue";
+import { RouterLink } from "vue-router";
+import Search from "@/components/search/Search.vue";
+import { useAuthStore } from "@/pages/auth/stores/authStore.js";
+
+const authStore = useAuthStore();
+
+const handleLogout = () => {
+  authStore.logout();
+};
 
 const isMobileMenuVisible = ref(false);
 
@@ -15,11 +22,26 @@ const toggleMobileMenu = () => {
     <div class="flex justify-between items-center">
       <div class="flex flex-col">
         <div class="flex items-center space-x-3">
-          <RouterLink to="/" class="text-2xl font-bold text-blue-800">HORESMI</RouterLink>
-          <button @click="toggleMobileMenu" class="lg:hidden p-2 text-gray-700 hover:text-blue-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          <RouterLink to="/" class="text-2xl font-bold text-blue-800"
+            >HORESMI</RouterLink
+          >
+          <button
+            @click="toggleMobileMenu"
+            class="lg:hidden p-2 text-gray-700 hover:text-blue-700"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              ></path>
             </svg>
           </button>
           <p class="text-xl text-gray-500 hidden lg:flex">|</p>
@@ -41,7 +63,11 @@ const toggleMobileMenu = () => {
             </li>
           </ul>
           <p class="text-xl text-gray-500 hidden lg:flex">|</p>
-          <a href="" class="text-blue-800 hover:text-blue-600 transition hidden lg:flex">Все отчеты</a>
+          <a
+            href=""
+            class="text-blue-800 hover:text-blue-600 transition hidden lg:flex"
+            >Все отчеты</a
+          >
           <p class="text-lg text-gray-500 hidden lg:flex">|</p>
         </div>
         <Search />
@@ -50,20 +76,35 @@ const toggleMobileMenu = () => {
           <RouterLink to="/vendors" class="lower-menu">Vendors</RouterLink>
           <RouterLink to="/items" class="lower-menu">Items</RouterLink>
           <RouterLink to="/users" class="lower-menu">Users</RouterLink>
-          <a href="" class="lower-menu">Chart of Accounts</a>
-          <a href="" class="lower-menu">Purchase orders</a>
-          <a href="" class="lower-menu">Sales orders</a>
+          <RouterLink to="/purchaseOrders" class="lower-menu"
+            >Purchase Orders</RouterLink
+          >
+          <RouterLink to="/purchaseHeaders" class="lower-menu"
+            >Purchase Headers</RouterLink
+          >
+          <RouterLink to="/sales" class="lower-menu">Sales</RouterLink>
+          <button @click="handleLogout" class="text-red-500 hover:text-red-700">
+            Logout
+          </button>
         </div>
-        <div v-show="isMobileMenuVisible" id="mobile-menu" class="lg:hidden flex flex-col space-y-4 mt-4">
+        <div
+          v-show="isMobileMenuVisible"
+          id="mobile-menu"
+          class="lg:hidden flex flex-col space-y-4 mt-4"
+        >
           <RouterLink to="/customers" class="lower-menu">Customers</RouterLink>
           <RouterLink to="/vendors" class="lower-menu">Vendors</RouterLink>
           <RouterLink to="/items" class="lower-menu">Items</RouterLink>
-          <a href="#" class="lower-menu">Purchasing</a>
-          <a href="#" class="lower-menu">Shopify</a>
-          <a href="#" class="lower-menu">Все отчеты</a>
+          <RouterLink to="/users" class="lower-menu">Users</RouterLink>
+          <RouterLink to="/purchaseOrders" class="lower-menu"
+            >Purchase Orders</RouterLink
+          >
+          <RouterLink to="/purchaseHeaders" class="lower-menu"
+            >Purchase Headers</RouterLink
+          >
+          <button @click="handleLogout" class="lower-menu">Logout</button>
         </div>
       </div>
-
     </div>
   </nav>
 </template>
