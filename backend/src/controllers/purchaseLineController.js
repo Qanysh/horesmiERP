@@ -44,6 +44,20 @@ exports.getPurchaseLineByDocumentNo = async function (documentNo, req, res) {
     });
 };
 
+exports.getPurchaseLineByDocumentNoForRouter = async function (req, res) {
+    const documentNo = req.params.documentNo;
+    PurchaseLine.getPurchaseLineByDocumentNo(documentNo, (err, purchaseLine) => {
+        if (err) {
+            console.error('Error fetching purchaseLine:', err);
+            return res.status(500).json({ error: 'Error fetching purchaseLine' });
+        }
+        if (!purchaseLine || purchaseLine.length === 0) {
+            return res.status(404).json({ error: 'PurchaseLine not found' });
+        }
+        res.json(purchaseLine[0]);
+    });
+};
+
 exports.createPurchaseLine = function (req, res) {
     const newPurchaseLine = {
         documentType: req.body.documentType,
