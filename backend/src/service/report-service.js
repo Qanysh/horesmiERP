@@ -31,18 +31,18 @@ async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
         const leftX = 50;
         const rightX = 350;
         let y = 80;
-        doc.text('Wide World Importers', leftX, y);
-        doc.text('Toby Rhode', leftX, y + 15);
+        doc.text('Example Importers', leftX, y);
+        doc.text('Saken Jeleubay', leftX, y + 15);
         doc.text('Aviator Way, 3000', leftX, y + 30);
-        doc.text('Manchester Business Park', leftX, y + 45);
-        doc.text('Manchester, M22 5TG', leftX, y + 60);
-        doc.text('Great Britain', leftX, y + 75);
+        doc.text('Abay', leftX, y + 45);
+        doc.text('Semey, Ualikhanov 23', leftX, y + 60);
+        doc.text('Kazakhstan', leftX, y + 75);
 
-        doc.text('CRONUS International Ltd.', rightX, y);
+        doc.text('EXAMPLE International Ltd.', rightX, y);
         doc.text('5 The Ring', rightX, y + 15);
-        doc.text('Westminster', rightX, y + 30);
-        doc.text('London, W2 8HG', rightX, y + 45);
-        doc.text('Great Britain', rightX, y + 60);
+        doc.text('Aqmola', rightX, y + 30);
+        doc.text('Astana, Mangilik el 52', rightX, y + 45);
+        doc.text('Kazakhstan', rightX, y + 60);
 
         // Invoice Information (две колонки)
         const detailsTop = 170;
@@ -55,16 +55,16 @@ async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
         doc.text(`Posting Date: ${formatDate(purchaseHeader.postingDate)}`, leftX, detailsTop + 78);
         doc.text(`Due Date: ${formatDate(purchaseHeader.dueDate)}`, leftX, detailsTop + 93);
 
-        doc.text(`Phone No.: ${purchaseHeader.phoneNo || ''}`, rightX, detailsTop + 18);
-        doc.text(`VAT Registration No.: ${purchaseHeader.vatNo || ''}`, rightX, detailsTop + 33);
-        doc.text(`Giro No.: ${purchaseHeader.giroNo || ''}`, rightX, detailsTop + 48);
-        doc.text(`Bank: ${purchaseHeader.bankName || ''}`, rightX, detailsTop + 63);
-        doc.text(`Account No.: ${purchaseHeader.accountNo || ''}`, rightX, detailsTop + 78);
-        doc.text(`Purchaser: ${purchaseHeader.purchaser || ''}`, rightX, detailsTop + 93);
+        doc.text(`Phone No.: ${purchaseHeader.phoneNo || '7077777777'}`, rightX, detailsTop + 18);
+        doc.text(`VAT Registration No.: ${purchaseHeader.vatNo || '326-568-987'}`, rightX, detailsTop + 33);
+        doc.text(`Giro No.: ${purchaseHeader.giroNo || '888-9999'}`, rightX, detailsTop + 48);
+        doc.text(`Bank: ${purchaseHeader.bankName || 'Halyk Bank'}`, rightX, detailsTop + 63);
+        doc.text(`Account No.: ${purchaseHeader.accountNo || '99-99-99'}`, rightX, detailsTop + 78);
+        doc.text(`Purchaser: ${purchaseHeader.purchaser || 'Erzhan Azhikenov'}`, rightX, detailsTop + 93);
 
-        doc.text(`Your Reference: ${purchaseHeader.reference || ''}`, leftX, detailsTop + 120);
-        doc.text(`Payment Terms: ${purchaseHeader.paymentTerms || ''}`, leftX, detailsTop + 135);
-        doc.text(`Shipment Method: ${purchaseHeader.shipmentMethod || ''}`, leftX, detailsTop + 150);
+        doc.text(`Your Reference: ${purchaseHeader.reference || 'OPEN'}`, leftX, detailsTop + 120);
+        doc.text(`Payment Terms: ${purchaseHeader.paymentTerms || 'Current Month'}`, leftX, detailsTop + 135);
+        doc.text(`Shipment Method: ${purchaseHeader.shipmentMethod || 'Ground'}`, leftX, detailsTop + 150);
         doc.text(`Prices Including VAT: ${purchaseHeader.includeVAT ? 'Yes' : 'No'}`, leftX, detailsTop + 165);
 
         // Table Header (размеры и расположение как в salesInvoicePdf)
@@ -127,6 +127,18 @@ async function purchaseInvoicePdf(purchaseHeader, dataCallback, endCallback) {
         doc.text(`Total GBP Incl. VAT`, 350, y + 50, { width: 130, align: 'right' });
         doc.text((total + vatAmount).toFixed(2), 480, y + 50, { width: 80, align: 'right' });
 
+        y += 70; // немного отступаем вниз после итогов
+        doc.font('DejaVu-Bold').text('Ship-to Address', 50, y);
+        y += 15;
+        doc.font('DejaVu').text('EXAMPLE International Ltd.', 50, y);
+        y += 15;
+        doc.text('5 The Ring', 50, y);
+        y += 15;
+        doc.text('Aqmola', 50, y);
+        y += 15;
+        doc.text('Astana, Mangilik el 52', 50, y);
+        y += 15;
+        doc.text('Kazakhstan', 50, y);
         doc.end();
     } catch (error) {
         console.error('Error generating PDF:', error);

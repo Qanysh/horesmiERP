@@ -4,8 +4,8 @@ exports.getAllSalesLines = function (callback) {
     db.query('SELECT * FROM salesLine', callback);
 };
 
-exports.getSalesLineById = function (id, callback) {
-    db.query('SELECT * FROM salesLine WHERE id = ?', [id], callback);
+exports.getSalesLineById = function (no, callback) {
+    db.query('SELECT * FROM salesLine WHERE no = ?', [no], callback);
 };
 
 exports.getSalesLineByDocumentNo = function (documentNo, callback) {
@@ -16,10 +16,10 @@ exports.createSalesLine = function (newSalesLine, callback) {
     db.query('INSERT INTO salesLine SET ?', newSalesLine, callback);
 };
 
-exports.updateSalesLine = function (id, updatedSalesLine, callback) {
-    db.query('UPDATE salesLine SET ? WHERE id = ?', [updatedSalesLine, id], callback);
+exports.updateSalesLine = function (no, updatedSalesLine, callback) {
+    db.query('UPDATE salesLine SET ? WHERE no = ?', [updatedSalesLine, no], callback);
 };
 
-exports.deleteSalesLine = function (id, callback) {
-    db.query('DELETE FROM salesLine WHERE id = ?', [id], callback);
+exports.deleteSalesLine = function (no, callback) {
+    db.query('DELETE FROM salesLine WHERE no = ?', [no], callback);
 };

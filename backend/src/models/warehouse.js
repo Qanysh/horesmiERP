@@ -12,10 +12,10 @@ exports.createWarehouse = function (newWarehouse, callback) {
     db.query('INSERT INTO warehouse SET ?;', newWarehouse, callback);
 };
 
-exports.updateWarehouse = function (id, updatedWarehouse, callback) {
+exports.updateWarehouse = function (locationCode, updatedWarehouse, callback) {
     db.query('UPDATE warehouse SET ? WHERE locationCode = ?', [updatedWarehouse, locationCode], callback);
 };
 
-exports.deleteWarehouse = function (id, callback) {
+exports.deleteWarehouse = function (locationCode, callback) {
     db.query('DELETE FROM warehouse WHERE locationCode = ?', [locationCode], callback);
 };

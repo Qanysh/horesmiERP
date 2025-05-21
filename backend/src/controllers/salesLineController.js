@@ -18,7 +18,7 @@ exports.getAllSalesLines = async function (req, res) {
 };
 
 exports.getSalesLineById = async function (req, res) {
-    SalesLine.getSalesLineById([req.params.id], (err, salesLine) => {
+    SalesLine.getSalesLineById([req.params.no], (err, salesLine) => {
         if (err) {
             console.error('Error fetching salesLine:', err);
             return res.status(500).json({ error: 'Error fetching salesLine' });

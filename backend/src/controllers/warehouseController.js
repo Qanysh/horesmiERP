@@ -35,7 +35,7 @@ exports.createWarehouse = function (req, res) {
         address: req.body.address,
         address2: req.body.address2,
         city: req.body.city,
-        county: req.body.county,
+        country: req.body.country,
         postCode: req.body.postCode,
         countryRegionCode: req.body.countryRegionCode,
         phoneNo: req.body.phoneNo,

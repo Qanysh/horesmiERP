@@ -17,5 +17,5 @@ exports.updateSalesOrder = function (no, updatedSalesOrder, callback) {
 };
 
 exports.deleteSalesOrder = function (no, callback) {
-    db.query('DELETE FROM salesOrder WHERE id = ?', [no], callback);
+    db.query('DELETE FROM salesOrder WHERE no = ?', [no], callback);
 };
