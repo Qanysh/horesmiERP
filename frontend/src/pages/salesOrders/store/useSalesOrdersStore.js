@@ -98,6 +98,20 @@ export const useSalesOrdersStore = defineStore("salesOrder", () => {
     }
   };
 
+  const createSalesLine = async (lineData) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/saleslines/create`,
+        lineData
+      );
+      return response.data;
+    } catch (err) {
+      error.value = "Error creating sales line";
+      console.error("Create sales line error:", err);
+      throw err;
+    }
+  };
+
   const filterSalesOrdersData = () => {
     filteredSalesOrders.value = salesOrders.value.filter((order) => {
       const no = order.no || "";
@@ -147,6 +161,7 @@ export const useSalesOrdersStore = defineStore("salesOrder", () => {
     closeModal,
     deleteOrder,
     createOrder,
+    createSalesLine,
     openCreateModal,
     closeCreateModal,
     printSalesOrder,

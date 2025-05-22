@@ -53,7 +53,7 @@ defineEmits(["update:searchQuery", "openModal"]);
           clip-rule="evenodd"
         />
       </svg>
-      Add Header
+      Add Order
     </button>
   </div>
 </template>

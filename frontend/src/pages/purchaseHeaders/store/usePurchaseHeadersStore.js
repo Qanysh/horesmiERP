@@ -28,6 +28,20 @@ export const usePurchaseHeadersStore = defineStore("purchaseHeader", () => {
     }
   };
 
+  const createPurchaseLine = async (lineData) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/purchaseLines/create`,
+        lineData
+      );
+      return response.data;
+    } catch (err) {
+      error.value = "Error creating purchase line";
+      console.error("Create line error:", err);
+      throw err;
+    }
+  };
+
   const fetchPurchaseHeaderByNo = async (no) => {
     loading.value = true;
     try {
@@ -164,6 +178,7 @@ export const usePurchaseHeadersStore = defineStore("purchaseHeader", () => {
     closeModal,
     deleteHeader,
     createHeader,
+    createPurchaseLine,
     openCreateModal,
     closeCreateModal,
   };
