@@ -40,6 +40,13 @@ export const useGeneralLedgerEntriesStore = defineStore(
       }
     };
 
+    const printGeneralLedgerEntries = () => {
+      window.open(
+        "http://localhost:3000/api/reports/generalLedgerEntries",
+        "_blank"
+      );
+    };
+
     return {
       entries,
       filteredEntries,
@@ -47,6 +54,7 @@ export const useGeneralLedgerEntriesStore = defineStore(
       error,
       searchQuery,
       fetchGeneralLedgerEntries,
+      printGeneralLedgerEntries,
     };
   }
 );

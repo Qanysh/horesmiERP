@@ -9,6 +9,14 @@ const store = useGeneralLedgerEntriesStore();
 onMounted(() => {
   store.fetchGeneralLedgerEntries();
 });
+
+// Функция для печати
+const handlePrint = () => {
+  window.open(
+    "http://localhost:3000/api/reports/generalLedgerEntries",
+    "_blank"
+  );
+};
 </script>
 
 <template>
@@ -24,6 +32,14 @@ onMounted(() => {
         :entries="store.filteredEntries"
         :loading="store.loading"
       />
+    </div>
+    <div class="flex justify-end gap-4 mt-6">
+      <button
+        @click="handlePrint"
+        class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+      >
+        Post & Print
+      </button>
     </div>
   </div>
 </template>
