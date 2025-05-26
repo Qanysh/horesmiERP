@@ -17,5 +17,5 @@ exports.updateVendor = function (vendorNo, updatedVendor, callback) {
 };
 
 exports.deleteVendor = function (vendorNo, callback) {
-    db.query('DELETE FROM vendor WHERE vendorNo = ?', [vendorNo], callback);
+    db.query('UPDATE vendor SET IsArchived = true WHERE vendorNo = ?', [vendorNo], callback);
 };
