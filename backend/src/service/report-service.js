@@ -175,37 +175,37 @@ async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
         const rightX = 350;
         let y = 80;
         doc.text('Customer:', leftX, y);
-        doc.text(salesOrder.customerName || '', leftX, y + 15);
-        doc.text(salesOrder.customerNo || '', leftX, y + 30);
-        doc.text(salesOrder.customerAddress || '', leftX, y + 45);
-        doc.text(salesOrder.customerCity || '', leftX, y + 60);
-        doc.text(salesOrder.customerCountry || '', leftX, y + 75);
+        doc.text(salesOrder.customerName || 'Asylkhan Ismailov', leftX, y + 15);
+        doc.text(salesOrder.customerNo || 'Cust-1000', leftX, y + 30);
+        doc.text(salesOrder.customerAddress || 'Mangilik el 52', leftX, y + 45);
+        doc.text(salesOrder.customerCity || 'Astana', leftX, y + 60);
+        doc.text(salesOrder.customerCountry || 'Kazakhstan', leftX, y + 75);
 
         doc.text('Bill-to:', rightX, y);
-        doc.text(salesOrder.billToName || '', rightX, y + 15);
-        doc.text(salesOrder.billToAddress || '', rightX, y + 30);
-        doc.text(salesOrder.billToCity || '', rightX, y + 45);
-        doc.text(salesOrder.billToCountry || '', rightX, y + 60);
+        doc.text(salesOrder.billToName || 'Aslan Jeleubay', rightX, y + 15);
+        doc.text(salesOrder.billToAddress || 'Ualikhanov 7', rightX, y + 30);
+        doc.text(salesOrder.billToCity || 'Semey', rightX, y + 45);
+        doc.text(salesOrder.billToCountry || 'Kazakhstan', rightX, y + 60);
 
         // Invoice Information (две колонки)
         const detailsTop = 170;
         doc.font('DejaVu-Bold').text('Invoice Details', leftX, detailsTop);
         doc.font('DejaVu');
-        doc.text(`Invoice No.: ${salesOrder.invoiceNo || ''}`, leftX, detailsTop + 18);
-        doc.text(`Order No.: ${salesOrder.orderNo || ''}`, leftX, detailsTop + 33);
+        doc.text(`Invoice No.: ${salesOrder.invoiceNo || 'INV-1000'}`, leftX, detailsTop + 18);
+        doc.text(`Order No.: ${salesOrder.orderNo || 'ORD-1000'}`, leftX, detailsTop + 33);
         doc.text(`Document Date: ${formatDate(salesOrder.documentDate)}`, leftX, detailsTop + 48);
         doc.text(`Posting Date: ${formatDate(salesOrder.postingDate)}`, leftX, detailsTop + 63);
         doc.text(`Due Date: ${formatDate(salesOrder.dueDate)}`, leftX, detailsTop + 78);
 
-        doc.text(`Phone No.: ${salesOrder.phoneNo || ''}`, rightX, detailsTop + 18);
-        doc.text(`VAT Registration No.: ${salesOrder.vatNo || ''}`, rightX, detailsTop + 33);
-        doc.text(`Bank: ${salesOrder.bankName || ''}`, rightX, detailsTop + 48);
-        doc.text(`Account No.: ${salesOrder.accountNo || ''}`, rightX, detailsTop + 63);
-        doc.text(`Salesperson: ${salesOrder.salesperson || ''}`, rightX, detailsTop + 78);
+        doc.text(`Phone No.: ${salesOrder.phoneNo || '7077777777'}`, rightX, detailsTop + 18);
+        doc.text(`VAT Registration No.: ${salesOrder.vatNo || '99-999-99'}`, rightX, detailsTop + 33);
+        doc.text(`Bank: ${salesOrder.bankName || 'Halyk Bank'}`, rightX, detailsTop + 48);
+        doc.text(`Account No.: ${salesOrder.accountNo || '400-520-651'}`, rightX, detailsTop + 63);
+        doc.text(`Salesperson: ${salesOrder.salesperson || 'Zhannur Agdal'}`, rightX, detailsTop + 78);
 
-        doc.text(`Your Reference: ${salesOrder.reference || ''}`, leftX, detailsTop + 105);
-        doc.text(`Payment Terms: ${salesOrder.paymentTerms || ''}`, leftX, detailsTop + 120);
-        doc.text(`Shipment Method: ${salesOrder.shipmentMethod || ''}`, leftX, detailsTop + 135);
+        doc.text(`Your Reference: ${salesOrder.reference || 'OPEN'}`, leftX, detailsTop + 105);
+        doc.text(`Payment Terms: ${salesOrder.paymentTerms || 'Bank Transfer'}`, leftX, detailsTop + 120);
+        doc.text(`Shipment Method: ${salesOrder.shipmentMethod || 'Delivery'}`, leftX, detailsTop + 135);
         doc.text(`Prices Including VAT: ${salesOrder.includeVAT ? 'Yes' : 'No'}`, leftX, detailsTop + 150);
 
         // Table Header
@@ -251,9 +251,9 @@ async function salesInvoicePdf(salesOrder, dataCallback, endCallback) {
             doc.text(line.unitPrice != null && !isNaN(Number(line.unitPrice)) ? Number(line.unitPrice).toFixed(2) : '', 300, y, { width: 60, align: 'right' });
             doc.text(line.discountPercent != null && !isNaN(Number(line.discountPercent)) ? Number(line.discountPercent).toFixed(2) : '0.00', 370, y, { width: 50, align: 'right' });
             doc.text(line.vatIdentifier || '', 430, y, { width: 40, align: 'right' });
-            doc.text(line.amount != null && !isNaN(Number(line.amount)) ? Number(line.amount).toFixed(2) : '', 480, y, { width: 80, align: 'right' });
+            doc.text(line.lineAmount != null && !isNaN(Number(line.lineAmount)) ? Number(line.lineAmount).toFixed(2) : '', 480, y, { width: 80, align: 'right' });
             y += 20;
-            total += Number(line.amount) || 0;
+            total += Number(line.lineAmount) || 0;
         }
 
         // Totals

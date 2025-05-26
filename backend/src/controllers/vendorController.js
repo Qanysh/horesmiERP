@@ -122,7 +122,7 @@ exports.updateVendor = function (req, res) {
         return res.status(400).json({ error: 'Vendor ID is missing' });
     }
 
-    Vendor.updateVendor(req.params.vendorNo, updatedvendor, (err, result) => {
+    Vendor.updateVendor(req.params.vendorNo, updatedVendor, (err, result) => {
         if (err) {
             console.error('Error updating vendor:', err);
             return res.status(500).json({ error: 'Failed to update vendor' });

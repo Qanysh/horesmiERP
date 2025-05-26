@@ -95,6 +95,7 @@ exports.createSalesLine = function (req, res) {
         discountPercent: req.body.discountPercent,
         allowInvoiceDiscount: req.body.allowInvoiceDiscount,
         vatIdentifier: req.body.vatIdentifier,
+        isArchived: req.body.isArchived || false,
         created_at: new Date(),
         updated_at: new Date()
     };
@@ -214,6 +215,7 @@ exports.updateSalesLine = function (req, res) {
         discountPercent: req.body.discountPercent,
         allowInvoiceDiscount: req.body.allowInvoiceDiscount,
         vatIdentifier: req.body.vatIdentifier,
+        isArchived: req.body.isArchived || false,
         created_at: req.body.created_at,
         updated_at: new Date()
     };

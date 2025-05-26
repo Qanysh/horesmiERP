@@ -21,5 +21,5 @@ exports.updateSalesLine = function (no, updatedSalesLine, callback) {
 };
 
 exports.deleteSalesLine = function (no, callback) {
-    db.query('DELETE FROM salesLine WHERE no = ?', [no], callback);
+    db.query('UPDATE salesLine SET IsArchived = true WHERE no = ?', [no], callback);
 };

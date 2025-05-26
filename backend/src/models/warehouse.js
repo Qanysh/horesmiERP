@@ -17,5 +17,5 @@ exports.updateWarehouse = function (locationCode, updatedWarehouse, callback) {
 };
 
 exports.deleteWarehouse = function (locationCode, callback) {
-    db.query('DELETE FROM warehouse WHERE locationCode = ?', [locationCode], callback);
+    db.query('UPDATE warehouse SET IsArchived = true WHERE locationCode = ?', [locationCode], callback);
 };

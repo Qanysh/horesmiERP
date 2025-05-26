@@ -97,6 +97,7 @@ exports.createPurchaseLine = function (req, res) {
         amountRcdNotInvoicedLCY: req.body.amountRcdNotInvoicedLCY,
         discountPercent: req.body.discountPercent,
         allowInvoiceDiscount: req.body.allowInvoiceDiscount,
+        isArchived: req.body.isArchived || false,
         vatIdentifier: req.body.vatIdentifier,
         created_at: new Date(),
         updated_at: new Date()
@@ -122,7 +123,6 @@ exports.createPurchaseLine = function (req, res) {
             }
 
             const afterLedger = () => {
-                // Ответ клиенту только здесь!
                 res.status(201).json({ message: 'PurchaseLine and item processed, ledger entry created', purchaseLine: newPurchaseLine });
             };
 
@@ -147,7 +147,6 @@ exports.createPurchaseLine = function (req, res) {
                     GeneralLedgerEntry.createGeneralLedgerEntry(generalLedgerEntry, (err) => {
                         if (err) {
                             console.error('Error creating general ledger entry:', err);
-                            // Можно не прерывать процесс, просто логировать ошибку
                         }
                         afterLedger();
                     });
@@ -155,7 +154,6 @@ exports.createPurchaseLine = function (req, res) {
             };
 
             if (items && items.length > 0) {
-                // Товар уже есть, увеличиваем количество
                 const item = items[0];
                 const newInventory = Number(item.inventory || 0) + qty;
                 Item.updateItem(itemNo, { ...item, inventory: newInventory, updated_at: new Date() }, (err) => {
@@ -166,7 +164,6 @@ exports.createPurchaseLine = function (req, res) {
                     createLedgerEntry();
                 });
             } else {
-                // Товара нет, создаём новую запись
                 const newItem = {
                     item_no: itemNo,
                     description: req.body.description,
@@ -226,6 +223,7 @@ exports.updatePurchaseLine = function (req, res) {
         outstandingQuantity: req.body.outstandingQuantity,
         outstandingAmountLCY: req.body.outstandingAmountLCY,
         amountRcdNotInvoicedLCY: req.body.amountRcdNotInvoicedLCY,
+        isArchived: req.body.isArchived || false,
         created_at: req.body.created_at,
         updated_at: new Date()
     };
