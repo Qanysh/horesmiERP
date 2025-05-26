@@ -1,22 +1,42 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch, toRefs } from "vue";
 
 const emit = defineEmits(["submit", "close"]);
+const props = defineProps({
+  customerData: Object,
+});
 
 const customer = ref({
-  no: "",
+  customer_no: "",
   name: "",
-  balance: 0,
-  creditLimit: 0,
-  totalSales: 0,
-  costs: 0,
-  address: "",
-  country: "",
-  city: "",
-  phone: "",
-  email: "",
-  contactName: "",
+  responsibility_center: "",
+  location_code: "",
+  phone_no: "",
+  contact: "",
+  salesperson_code: "",
+  credit_limit_lcy: 0,
 });
+
+watch(
+  () => props.customerData,
+  (newVal) => {
+    if (newVal) {
+      customer.value = { ...newVal };
+    } else {
+      customer.value = {
+        customer_no: "",
+        name: "",
+        responsibility_center: "",
+        location_code: "",
+        phone_no: "",
+        contact: "",
+        salesperson_code: "",
+        credit_limit_lcy: 0,
+      };
+    }
+  },
+  { immediate: true }
+);
 
 const handleSubmit = () => {
   emit("submit", customer.value);
@@ -36,25 +56,12 @@ const handleClose = () => {
     >
       <div class="p-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Add Customer</h2>
+          <h2 class="text-xl font-semibold">Customer</h2>
           <button
             @click="handleClose"
             class="text-gray-500 hover:text-gray-700"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            ✕
           </button>
         </div>
 
@@ -86,32 +93,31 @@ const handleClose = () => {
 
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700"
-              >Responsibility center</label
+              >Responsibility Center</label
             >
             <input
-              v-model.number="customer.responsibility_center"
-              type="number"
+              v-model="customer.responsibility_center"
+              type="text"
               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             />
           </div>
 
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700"
-              >Location code</label
+              >Location Code</label
             >
             <input
-              v-model.number="customer.location_code"
-              type="number"
+              v-model="customer.location_code"
+              type="text"
               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             />
           </div>
 
-          <!-- Add all other fields in similar fashion -->
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">Phone</label>
             <input
-              v-model.number="customer.phone_no"
-              type="number"
+              v-model="customer.phone_no"
+              type="text"
               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             />
           </div>
@@ -121,15 +127,15 @@ const handleClose = () => {
               >Contact</label
             >
             <input
-              v-model.number="customer.contact"
-              type="number"
+              v-model="customer.contact"
+              type="text"
               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             />
           </div>
 
           <div class="space-y-2 md:col-span-2">
             <label class="block text-sm font-medium text-gray-700"
-              >Salesperson code</label
+              >Salesperson Code</label
             >
             <input
               v-model="customer.salesperson_code"
@@ -140,11 +146,12 @@ const handleClose = () => {
 
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700"
-              >Credit limit lcy
-            </label>
+              >Credit Limit (LCY)</label
+            >
             <input
-              v-model="customer.credit_limit_lcy"
-              type="text"
+              v-model.number="customer.credit_limit_lcy"
+              type="number"
+              min="0"
               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             />
           </div>
@@ -161,7 +168,7 @@ const handleClose = () => {
               type="submit"
               class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              Save Customer
+              Save
             </button>
           </div>
         </form>

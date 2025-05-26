@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useItemsStore } from "@/pages/items/stores/useItemStore";
 import ItemTable from "@/pages/items/components/ItemTable.vue";
 import ItemModal from "@/pages/items/components/ItemModal.vue";
@@ -7,17 +7,24 @@ import ItemSearch from "@/pages/items/components/ItemSearch.vue";
 
 const itemsStore = useItemsStore();
 const isModalOpen = ref(false);
+const editingItem = ref(null);
 
-const openModal = () => (isModalOpen.value = true);
-const closeModal = () => (isModalOpen.value = false);
+const openModal = (item = null) => {
+  editingItem.value = item;
+  isModalOpen.value = true;
+};
+const closeModal = () => {
+  editingItem.value = null;
+  isModalOpen.value = false;
+};
 
-const addItem = async (itemData) => {
-  try {
+const handleSubmit = async (itemData) => {
+  if (editingItem.value) {
+    await itemsStore.updateItem(itemData);
+  } else {
     await itemsStore.addItem(itemData);
-    closeModal();
-  } catch (error) {
-    console.error("Error adding item", error);
   }
+  closeModal();
 };
 
 const deleteItem = async (itemNo) => {
@@ -35,52 +42,26 @@ onMounted(() => {
   <div class="container mx-auto px-4 py-6">
     <ItemSearch
       v-model:searchQuery="itemsStore.searchQuery"
-      @openModal="openModal"
+      @openModal="() => openModal()"
     />
 
     <div class="overflow-x-auto">
       <table class="w-full text-left text-sm text-gray-500 rtl:text-right">
         <thead class="bg-gray-50 text-xs uppercase text-gray-700">
           <tr>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Number
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Type
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Description
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Unit Price
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Inventory
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Actions
-            </th>
+            <th class="px-6 py-3">Number</th>
+            <th class="px-6 py-3">Type</th>
+            <th class="px-6 py-3">Description</th>
+            <th class="px-6 py-3">Description 2</th>
+            <th class="px-6 py-3">Unit Price</th>
+            <th class="px-6 py-3">Unit Cost</th>
+            <th class="px-6 py-3">Inventory</th>
+            <th class="px-6 py-3">Vendor No</th>
+            <th class="px-6 py-3">Category Code</th>
+            <th class="px-6 py-3 text-right">Actions</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody>
           <template v-if="itemsStore.loading">
             <tr v-for="i in 5" :key="i">
               <td v-for="j in 6" :key="j" class="px-6 py-4">
@@ -91,15 +72,21 @@ onMounted(() => {
           <template v-else>
             <ItemTable
               v-for="item in itemsStore.filteredItems"
-              :key="item.no"
+              :key="item.item_no"
               :item="item"
               @delete="deleteItem"
+              @click="() => openModal(item)"
             />
           </template>
         </tbody>
       </table>
     </div>
 
-    <ItemModal v-if="isModalOpen" @submit="addItem" @close="closeModal" />
+    <ItemModal
+      v-if="isModalOpen"
+      :modelValue="editingItem"
+      @submit="handleSubmit"
+      @close="closeModal"
+    />
   </div>
 </template>

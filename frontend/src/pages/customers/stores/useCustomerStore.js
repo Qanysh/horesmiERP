@@ -59,6 +59,29 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
+  const updateCustomer = async (customerData) => {
+    try {
+      const { created_at, ...payload } = customerData;
+
+      const response = await axios.put(
+        `${API_URL}/api/customers/update/${customerData.customer_no}`,
+        payload
+      );
+
+      const index = customers.value.findIndex(
+        (c) => c.customer_no === customerData.customer_no
+      );
+      if (index !== -1) {
+        customers.value[index] = response.data.customer;
+      }
+    } catch (err) {
+      error.value = err.response?.data?.error || "Error updating customer";
+      console.error(
+        "Error updating customer:",
+        err.response?.data || err.message
+      );
+    }
+  };
   watch(searchQuery, () => {});
 
   return {
@@ -70,5 +93,6 @@ export const useCustomerStore = defineStore("customer", () => {
     fetchCustomers,
     createCustomer,
     deleteCustomer,
+    updateCustomer,
   };
 });

@@ -7,16 +7,28 @@ import CustomerSearch from "../components/CustomerSearch.vue";
 
 const customerStore = useCustomerStore();
 const isModalOpen = ref(false);
+const currentCustomer = ref(null);
 
-const openModal = () => (isModalOpen.value = true);
-const closeModal = () => (isModalOpen.value = false);
+const openModal = (customer = null) => {
+  currentCustomer.value = customer;
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  currentCustomer.value = null;
+  isModalOpen.value = false;
+};
 
 const addCustomer = async (customerData) => {
   try {
-    await customerStore.createCustomer(customerData);
+    if (currentCustomer.value) {
+      await customerStore.updateCustomer(customerData);
+    } else {
+      await customerStore.createCustomer(customerData);
+    }
     closeModal();
   } catch (error) {
-    console.error("Error adding customer", error);
+    console.error("Error saving customer", error);
   }
 };
 
@@ -113,6 +125,7 @@ onMounted(() => {
             :key="customer.id"
             :customer="customer"
             @delete="deleteCustomer(customer.customer_no)"
+            @edit="openModal(customer)"
           />
         </template>
       </table>
@@ -120,6 +133,7 @@ onMounted(() => {
 
     <CustomerModal
       v-if="isModalOpen"
+      :customerData="currentCustomer"
       @submit="addCustomer"
       @close="closeModal"
     />

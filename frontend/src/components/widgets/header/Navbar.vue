@@ -44,33 +44,9 @@ const toggleMobileMenu = () => {
               ></path>
             </svg>
           </button>
-          <p class="text-xl text-gray-500 hidden lg:flex">|</p>
-          <ul class="md:space-x-6 space-x-3 hidden lg:flex items-center">
-            <li class="upper-menu">
-              <span class="cursor-pointer">Finance</span>
-            </li>
-            <li class="upper-menu">
-              <span class="cursor-pointer">Cash Management</span>
-            </li>
-            <li class="upper-menu">
-              <span class="cursor-pointer">Sales</span>
-            </li>
-            <li class="upper-menu">
-              <span class="cursor-pointer">Purchasing</span>
-            </li>
-            <li class="upper-menu">
-              <span class="cursor-pointer">Shopify</span>
-            </li>
-          </ul>
-          <p class="text-xl text-gray-500 hidden lg:flex">|</p>
-          <a
-            href=""
-            class="text-blue-800 hover:text-blue-600 transition hidden lg:flex"
-            >Все отчеты</a
-          >
-          <p class="text-lg text-gray-500 hidden lg:flex">|</p>
         </div>
         <Search />
+
         <div class="hidden lg:flex items-center space-x-6 mt-2">
           <RouterLink to="/customers" class="lower-menu">Customers</RouterLink>
           <RouterLink to="/vendors" class="lower-menu">Vendors</RouterLink>
@@ -83,9 +59,6 @@ const toggleMobileMenu = () => {
           <RouterLink to="/ledger" class="lower-menu"
             >General Ledgers</RouterLink
           >
-          <button @click="handleLogout" class="text-red-500 hover:text-red-700">
-            Logout
-          </button>
         </div>
         <div
           v-show="isMobileMenuVisible"
@@ -99,7 +72,12 @@ const toggleMobileMenu = () => {
           <RouterLink to="/purchaseHeaders" class="lower-menu"
             >Purchase Orders</RouterLink
           >
-          <button @click="handleLogout" class="lower-menu">Logout</button>
+          <button
+            @click="handleLogout"
+            class="block w-full text-left px-4 py-2 rounded"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </div>

@@ -1,15 +1,32 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch, onMounted } from "vue";
 
+const props = defineProps({
+  modelValue: Object,
+});
 const emit = defineEmits(["submit", "close"]);
 
 const item = ref({
   item_no: "",
-  name: "",
+  type: "",
   description: "",
-  unitPrice: "",
-  inventory: "",
+  description2: "",
+  unitPrice: 0,
+  unitCost: 0,
+  inventory: 0,
+  vendorNo: "",
+  itemCategoryCode: "",
 });
+
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    if (newVal) {
+      item.value = { ...newVal };
+    }
+  },
+  { immediate: true }
+);
 
 const handleSubmit = () => {
   emit("submit", item.value);
@@ -29,7 +46,7 @@ const handleClose = () => {
     >
       <div class="p-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Add Item</h2>
+          <h2 class="text-xl font-semibold">Item Details</h2>
           <button
             @click="handleClose"
             class="text-gray-500 hover:text-gray-700"
@@ -59,32 +76,26 @@ const handleClose = () => {
             <label class="block text-sm font-medium text-gray-700"
               >Item Number</label
             >
-            <input
-              v-model="item.item_no"
-              type="text"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            />
+            <input v-model="item.item_no" type="text" required class="input" />
           </div>
 
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">Type</label>
-            <input
-              v-model="item.type"
-              type="text"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            />
+            <input v-model="item.type" type="text" class="input" />
           </div>
 
           <div class="space-y-2 md:col-span-2">
             <label class="block text-sm font-medium text-gray-700"
               >Description</label
             >
-            <textarea
-              v-model="item.description"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            ></textarea>
+            <textarea v-model="item.description" class="input"></textarea>
+          </div>
+
+          <div class="space-y-2 md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Description 2</label
+            >
+            <textarea v-model="item.description2" class="input"></textarea>
           </div>
 
           <div class="space-y-2">
@@ -95,7 +106,19 @@ const handleClose = () => {
               v-model.number="item.unitPrice"
               type="number"
               step="0.01"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              class="input"
+            />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Unit Cost</label
+            >
+            <input
+              v-model.number="item.unitCost"
+              type="number"
+              step="0.01"
+              class="input"
             />
           </div>
 
@@ -106,27 +129,44 @@ const handleClose = () => {
             <input
               v-model.number="item.inventory"
               type="number"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              class="input"
             />
           </div>
 
-          <div class="flex justify-end space-x-3 md:col-span-2 pt-4">
-            <button
-              type="button"
-              @click="handleClose"
-              class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Vendor No</label
             >
+            <input v-model="item.vendorNo" type="text" class="input" />
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700"
+              >Item Category Code</label
+            >
+            <input v-model="item.itemCategoryCode" type="text" class="input" />
+          </div>
+
+          <div class="flex justify-end space-x-3 md:col-span-2 pt-4">
+            <button type="button" @click="handleClose" class="btn-cancel">
               Cancel
             </button>
-            <button
-              type="submit"
-              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Save Item
-            </button>
+            <button type="submit" class="btn-primary">Save</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm;
+}
+.btn-primary {
+  @apply px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700;
+}
+.btn-cancel {
+  @apply px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400;
+}
+</style>

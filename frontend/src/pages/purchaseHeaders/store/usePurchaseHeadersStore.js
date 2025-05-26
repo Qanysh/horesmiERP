@@ -30,14 +30,25 @@ export const usePurchaseHeadersStore = defineStore("purchaseHeader", () => {
 
   const createPurchaseLine = async (lineData) => {
     try {
+      // Validate required fields before sending
+      if (!lineData.documentNo || !lineData.no || !lineData.quantity) {
+        throw new Error("Missing required fields");
+      }
+
       const response = await axios.post(
         `${API_URL}/api/purchaseLines/create`,
-        lineData
+        lineData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
       return response.data;
     } catch (err) {
-      error.value = "Error creating purchase line";
-      console.error("Create line error:", err);
+      error.value =
+        err.response?.data?.message || "Error creating purchase line";
+      console.error("Create line error:", err.response?.data || err);
       throw err;
     }
   };

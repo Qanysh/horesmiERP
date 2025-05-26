@@ -44,13 +44,40 @@ export const useItemsStore = defineStore("item", () => {
     }
   };
 
+  const updateItem = async (itemData) => {
+    try {
+      const payload = {
+        item_no: itemData.item_no,
+        description: itemData.description,
+        description2: itemData.description2,
+        type: itemData.type,
+        inventory: (itemData.inventory ?? 0).toString(),
+        unitCost: (itemData.unitCost ?? 0).toString(),
+        unitPrice: (itemData.unitPrice ?? 0).toString(),
+        vendorNo: itemData.vendorNo,
+        itemCategoryCode: itemData.itemCategoryCode,
+      };
+
+      await axios.put(
+        `${API_URL}/api/items/update/${itemData.item_no}`,
+        payload
+      );
+      await fetchItems();
+    } catch (err) {
+      error.value = "Error updating item";
+      console.error(err);
+    }
+  };
+
   const filterItemsData = () => {
     const lowerQuery = searchQuery.value.toLowerCase();
 
     filteredItems.value = items.value.filter((item) => {
-      const itemName = item.name ? item.name.toLowerCase() : "";
+      const description = item.description
+        ? item.description.toLowerCase()
+        : "";
       const itemNo = item.item_no ? item.item_no.toLowerCase() : "";
-      return itemName.includes(lowerQuery) || itemNo.includes(lowerQuery);
+      return description.includes(lowerQuery) || itemNo.includes(lowerQuery);
     });
   };
 
@@ -66,5 +93,6 @@ export const useItemsStore = defineStore("item", () => {
     addItem,
     deleteItem,
     filterItemsData,
+    updateItem,
   };
 });

@@ -553,58 +553,10 @@ const goBackToHeader = () => {
 
                   <div class="space-y-2">
                     <label class="block text-sm font-medium text-gray-700"
-                      >Unit Cost LCY</label
-                    >
-                    <input
-                      v-model="newLine.unitCostLCY"
-                      type="number"
-                      step="0.01"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
                       >Line Amount</label
                     >
                     <input
                       v-model="newLine.lineAmount"
-                      type="number"
-                      step="0.01"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Outstanding Quantity</label
-                    >
-                    <input
-                      v-model="newLine.outstandingQuantity"
-                      type="number"
-                      step="0.00001"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Outstanding Amount LCY</label
-                    >
-                    <input
-                      v-model="newLine.outstandingAmountLCY"
-                      type="number"
-                      step="0.01"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Amount Shipped Not Invoiced LCY</label
-                    >
-                    <input
-                      v-model="newLine.amountShippedNotInvoicedLCY"
                       type="number"
                       step="0.01"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
@@ -692,16 +644,6 @@ const goBackToHeader = () => {
                   </div>
 
                   <!-- Dimensions -->
-                  <div class="space-y-2" v-for="i in 8" :key="i">
-                    <label class="block text-sm font-medium text-gray-700">
-                      Shortcut Dimension {{ i }}
-                    </label>
-                    <input
-                      v-model="newLine[`shortcutDimCode${i}`]"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
                 </div>
 
                 <!-- Actions -->

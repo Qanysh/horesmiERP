@@ -2,6 +2,14 @@
 import { ref, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
+import { useAuthStore } from "@/pages/auth/stores/authStore.js";
+
+const authStore = useAuthStore();
+
+const handleLogout = () => {
+  authStore.logout();
+};
+
 const searchQuery = ref("");
 
 const router = useRouter();
@@ -47,5 +55,11 @@ const navigateToRoute = (path) => {
       </div>
       <p v-else class="py-2 px-4">No routes found</p>
     </div>
+    <button
+      @click="handleLogout"
+      class="hidden lg:block w-full text-left px-4 py-2"
+    >
+      Logout
+    </button>
   </div>
 </template>

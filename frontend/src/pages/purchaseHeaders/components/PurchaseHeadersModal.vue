@@ -203,7 +203,16 @@ const resetNewLine = () => {
 
 const savePurchaseLines = async () => {
   try {
-    // Создаем все purchase lines
+    // Validate all lines before sending
+    for (const line of purchaseLines.value) {
+      if (!line.no || !line.description || !line.quantity) {
+        throw new Error(
+          "All lines must have Item No, Description, and Quantity"
+        );
+      }
+    }
+
+    // Create all purchase lines
     for (const line of purchaseLines.value) {
       await store.createPurchaseLine(line);
     }
@@ -527,17 +536,6 @@ const calculateLineAmount = () => {
 
                 <div class="space-y-2">
                   <label class="block text-sm font-medium text-gray-700"
-                    >Your Reference</label
-                  >
-                  <input
-                    v-model="header.yourReference"
-                    type="text"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                  />
-                </div>
-
-                <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700"
                     >Shipment Method</label
                   >
                   <input
@@ -737,54 +735,6 @@ const calculateLineAmount = () => {
 
                   <div class="space-y-2">
                     <label class="block text-sm font-medium text-gray-700"
-                      >Unit Cost LCY</label
-                    >
-                    <input
-                      v-model="newLine.unitCostLCY"
-                      type="number"
-                      step="0.01"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Outstanding Quantity</label
-                    >
-                    <input
-                      v-model="newLine.outstandingQuantity"
-                      type="number"
-                      step="0.00001"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Outstanding Amount LCY</label
-                    >
-                    <input
-                      v-model="newLine.outstandingAmountLCY"
-                      type="number"
-                      step="0.01"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Amount Rcd Not Invoiced LCY</label
-                    >
-                    <input
-                      v-model="newLine.amountRcdNotInvoicedLCY"
-                      type="number"
-                      step="0.01"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
                       >Job No</label
                     >
                     <input
@@ -825,117 +775,6 @@ const calculateLineAmount = () => {
                     >
                     <input
                       v-model="newLine.allocationAccountNo"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Shortcut Dimension 1</label
-                    >
-                    <input
-                      v-model="newLine.shortcutDim1Code"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Shortcut Dimension 2</label
-                    >
-                    <input
-                      v-model="newLine.shortcutDim2Code"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Shortcut Dimension 3</label
-                    >
-                    <input
-                      v-model="newLine.shortcutDimCode3"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Shortcut Dimension 4</label
-                    >
-                    <input
-                      v-model="newLine.shortcutDimCode4"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Shortcut Dimension 5</label
-                    >
-                    <input
-                      v-model="newLine.shortcutDimCode5"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Shortcut Dimension 6</label
-                    >
-                    <input
-                      v-model="newLine.shortcutDimCode6"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Shortcut Dimension 7</label
-                    >
-                    <input
-                      v-model="newLine.shortcutDimCode7"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Shortcut Dimension 8</label
-                    >
-                    <input
-                      v-model="newLine.shortcutDimCode8"
-                      type="text"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >Discount %</label
-                    >
-                    <input
-                      v-model="newLine.discountPercent"
-                      type="number"
-                      step="0.01"
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700"
-                      >VAT Identifier</label
-                    >
-                    <input
-                      v-model="newLine.vatIdentifier"
                       type="text"
                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
                     />
