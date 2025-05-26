@@ -114,6 +114,12 @@
         <!-- Footer -->
         <div class="flex justify-end gap-4 mt-6">
           <button
+            @click="handlePrint"
+            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+          >
+            Post & Print
+          </button>
+          <button
             @click="handleClose"
             class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
           >
@@ -127,6 +133,9 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { useSalesOrdersStore } from "../store/useSalesOrdersStore";
+
+const store = useSalesOrdersStore();
 
 const props = defineProps({
   order: {
@@ -150,6 +159,10 @@ const formatDate = (date) => {
   if (!date) return "-";
   const d = new Date(date);
   return d.toLocaleDateString();
+};
+
+const handlePrint = () => {
+  store.printSalesOrder(props.order.no);
 };
 
 const handleClose = () => {

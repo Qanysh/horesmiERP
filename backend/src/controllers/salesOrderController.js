@@ -63,6 +63,7 @@ exports.createSalesOrder = function (req, res) {
         assignedUserId: req.body.assignedUserId,
         jobQueueStatus: req.body.jobQueueStatus,
         status: req.body.status,
+        isArchived: req.body.isArchived || false,
         created_at: new Date(),
         updated_at: new Date()
     };
@@ -116,6 +117,7 @@ exports.updateSalesOrder = function (req, res) {
         assignedUserId: req.body.assignedUserId,
         jobQueueStatus: req.body.jobQueueStatus,
         status: req.body.status,
+        isArchived: req.body.isArchived || false,
         created_at: req.body.created_at,
         updated_at: new Date()
     };

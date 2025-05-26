@@ -17,5 +17,5 @@ exports.updatePurchaseHeader = function (no, updatedPurchaseHeader, callback) {
 };
 
 exports.deletePurchaseHeader = function (no, callback) {
-    db.query('DELETE FROM purchaseHeaders WHERE no = ?', [no], callback);
+    db.query('UPDATE purchaseHeaders SET IsArchived = true WHERE no = ?', [no], callback);
 };

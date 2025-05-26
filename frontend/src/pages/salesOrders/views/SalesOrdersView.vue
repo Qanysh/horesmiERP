@@ -36,6 +36,10 @@ const handleCreateOrder = async (orderData) => {
     alert("Failed to create sales order: " + error.message);
   }
 };
+
+const handlePrintOrder = (no) => {
+  salesOrdersStore.printSalesOrder(no);
+};
 </script>
 
 <template>
@@ -83,6 +87,7 @@ const handleCreateOrder = async (orderData) => {
       v-if="salesOrdersStore.isModalOpen"
       :order="salesOrdersStore.selectedSalesOrder"
       :lines="salesOrdersStore.salesLines"
+      @print="handlePrintOrder"
       @close="salesOrdersStore.closeModal"
     />
 

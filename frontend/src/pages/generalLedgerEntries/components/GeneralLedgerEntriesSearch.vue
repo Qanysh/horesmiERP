@@ -1,9 +1,7 @@
 <script setup>
-defineProps({
-  searchQuery: String,
-});
+import { useGeneralLedgerEntriesStore } from "@/pages/generalLedgerEntries/store/useGeneralLedgerEntriesStore.js";
 
-defineEmits(["update:searchQuery", "openModal"]);
+const store = useGeneralLedgerEntriesStore();
 </script>
 
 <template>
@@ -29,31 +27,12 @@ defineEmits(["update:searchQuery", "openModal"]);
           </svg>
         </div>
         <input
-          :value="searchQuery"
-          @input="$emit('update:searchQuery', $event.target.value)"
+          v-model="store.searchQuery"
           type="text"
-          placeholder="Search purchase orders..."
+          placeholder="Search entries..."
           class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
         />
       </div>
     </div>
-    <button
-      @click="$emit('openModal')"
-      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="-ml-1 mr-2 h-5 w-5"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-          clip-rule="evenodd"
-        />
-      </svg>
-      Add Order
-    </button>
   </div>
 </template>

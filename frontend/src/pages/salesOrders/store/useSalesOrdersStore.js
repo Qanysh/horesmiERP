@@ -31,11 +31,14 @@ export const useSalesOrdersStore = defineStore("salesOrder", () => {
   const fetchSalesOrderByNo = async (no) => {
     loading.value = true;
     try {
-      const response = await axios.get(`${API_URL}/api/salesOrders/card/${no}`);
-      selectedSalesOrder.value = response.data;
+      // Получаем данные заказа
+      const orderResponse = await axios.get(
+        `${API_URL}/api/salesOrders/card/${no}`
+      );
+      selectedSalesOrder.value = orderResponse.data;
       isModalOpen.value = true;
 
-      // Fetch sales lines for this order
+      // Получаем все строки для этого заказа
       await fetchSalesLinesByOrderNo(no);
     } catch (err) {
       error.value = "Error fetching sales order or lines";
@@ -48,28 +51,19 @@ export const useSalesOrdersStore = defineStore("salesOrder", () => {
   const fetchSalesLinesByOrderNo = async (orderNo) => {
     loading.value = true;
     try {
+      // Получаем все строки заказов
       const response = await axios.get(`${API_URL}/api/salesLines`);
       const allLines = response.data;
 
-      // Find lines for this order
-      const orderLines = allLines.filter((line) => line.documentNo === orderNo);
+      // Фильтруем строки по documentNo (должен совпадать с no заказа)
+      salesLines.value = allLines.filter((line) => line.documentNo === orderNo);
 
-      if (orderLines.length > 0) {
-        // Fetch details for each line
-        const detailedLines = await Promise.all(
-          orderLines.map(async (line) => {
-            const detailedResponse = await axios.get(
-              `${API_URL}/api/salesLines/card/${line.id}`
-            );
-            return detailedResponse.data;
-          })
-        );
-        salesLines.value = detailedLines;
-      } else {
-        salesLines.value = [];
+      // Если не нашли строки - просто оставляем пустой массив
+      if (salesLines.value.length === 0) {
+        console.warn(`No lines found for order ${orderNo}`);
       }
     } catch (err) {
-      error.value = "Error fetching sales lines by order no";
+      error.value = "Error fetching sales lines";
       console.error(err);
     } finally {
       loading.value = false;
@@ -104,6 +98,20 @@ export const useSalesOrdersStore = defineStore("salesOrder", () => {
     }
   };
 
+  const createSalesLine = async (lineData) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/saleslines/create`,
+        lineData
+      );
+      return response.data;
+    } catch (err) {
+      error.value = "Error creating sales line";
+      console.error("Create sales line error:", err);
+      throw err;
+    }
+  };
+
   const filterSalesOrdersData = () => {
     filteredSalesOrders.value = salesOrders.value.filter((order) => {
       const no = order.no || "";
@@ -115,6 +123,10 @@ export const useSalesOrdersStore = defineStore("salesOrder", () => {
         customerName.toLowerCase().includes(search)
       );
     });
+  };
+
+  const printSalesOrder = (no) => {
+    window.open(`${API_URL}/api/reports/salesOrder/${no}`, "_blank");
   };
 
   const closeModal = () => {
@@ -149,7 +161,9 @@ export const useSalesOrdersStore = defineStore("salesOrder", () => {
     closeModal,
     deleteOrder,
     createOrder,
+    createSalesLine,
     openCreateModal,
     closeCreateModal,
+    printSalesOrder,
   };
 });

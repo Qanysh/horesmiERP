@@ -108,6 +108,7 @@ exports.createPurchaseHeader = function (req, res) {
         prepmtPaymentDiscountPercent: req.body.prepmtPaymentDiscountPercent,
         prepmtPaymentDiscountDate: req.body.prepmtPaymentDiscountDate,
         vendorCrMemoNo: req.body.vendorCrMemoNo,
+        isArchived: req.body.isArchived || false,
         created_at: new Date(),
         updated_at: new Date()
     };

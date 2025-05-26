@@ -81,6 +81,7 @@ exports.createItem = function (req, res) {
         assemblyPolicy: req.body.assemblyPolicy,
         itemTrackingCode: req.body.itemTrackingCode,
         defaultDeferralTemplateCode: req.body.defaultDeferralTemplateCode,
+        isArchived: req.body.isArchived || false,
         created_at: new Date(),
         updated_at: new Date()
     };

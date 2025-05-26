@@ -75,14 +75,14 @@ const toggleMobileMenu = () => {
           <RouterLink to="/customers" class="lower-menu">Customers</RouterLink>
           <RouterLink to="/vendors" class="lower-menu">Vendors</RouterLink>
           <RouterLink to="/items" class="lower-menu">Items</RouterLink>
-          <RouterLink to="/users" class="lower-menu">Users</RouterLink>
-          <RouterLink to="/purchaseOrders" class="lower-menu"
+
+          <RouterLink to="/purchaseHeaders" class="lower-menu"
             >Purchase Orders</RouterLink
           >
-          <RouterLink to="/purchaseHeaders" class="lower-menu"
-            >Purchase Headers</RouterLink
-          >
           <RouterLink to="/sales" class="lower-menu">Sales</RouterLink>
+          <RouterLink to="/ledger" class="lower-menu"
+            >General Ledgers</RouterLink
+          >
           <button @click="handleLogout" class="text-red-500 hover:text-red-700">
             Logout
           </button>
@@ -95,12 +95,9 @@ const toggleMobileMenu = () => {
           <RouterLink to="/customers" class="lower-menu">Customers</RouterLink>
           <RouterLink to="/vendors" class="lower-menu">Vendors</RouterLink>
           <RouterLink to="/items" class="lower-menu">Items</RouterLink>
-          <RouterLink to="/users" class="lower-menu">Users</RouterLink>
-          <RouterLink to="/purchaseOrders" class="lower-menu"
-            >Purchase Orders</RouterLink
-          >
+
           <RouterLink to="/purchaseHeaders" class="lower-menu"
-            >Purchase Headers</RouterLink
+            >Purchase Orders</RouterLink
           >
           <button @click="handleLogout" class="lower-menu">Logout</button>
         </div>
