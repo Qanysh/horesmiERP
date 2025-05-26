@@ -43,6 +43,7 @@ onMounted(() => {
     </div>
 
     <CustomersTable :customers="filteredCustomers" />
+    <div class="text-sm text-muted-foreground">Showing {{ store.customers.length }} customers</div>
 
     <CustomerCreateModal v-model:open="isCreateModalOpen" @saved="store.fetchCustomers()" />
   </div>

@@ -73,9 +73,10 @@ const handleDelete = async (customer_no) => {
             <TableCell class="font-medium">{{ customer.responsibility_center }}</TableCell>
             <TableCell class="font-medium">{{ customer.location_code }}</TableCell>
             <TableCell class="font-medium">{{ customer.country_region_code }}</TableCell>
+            <TableCell class="font-medium">{{ customer.phone_no }}</TableCell>
             <TableCell class="font-medium">{{ customer.contact }}</TableCell>
             <TableCell class="font-medium">{{ customer.salesperson_code }}</TableCell>
-            <TableCell class="font-medium">{{ customer.credit_limit_lcy }}</TableCell>
+
             <TableCell>
               <Badge variant="outline">
                 {{ customer.credit_limit_lcy }}
