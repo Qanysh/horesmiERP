@@ -39,6 +39,8 @@ const searchQuery = ref('')
             { to: '/customers', text: 'Customers' },
             { to: '/vendors', text: 'Vendors' },
             { to: '/items', text: 'Items' },
+            { to: '/purchase-orders', text: 'Purchase Orders' },
+            { to: '/', text: 'Sales Orders' },
           ]"
           :key="link.to"
           :to="link.to"
@@ -82,6 +84,8 @@ const searchQuery = ref('')
             { to: '/customers', text: 'Customers' },
             { to: '/vendors', text: 'Vendors' },
             { to: '/items', text: 'Items' },
+            { to: '/purchase-orders', text: 'Purchase Orders' },
+            { to: '/', text: 'Sales Orders' },
           ]"
           :key="link.to"
           :to="link.to"
