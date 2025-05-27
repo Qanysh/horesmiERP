@@ -70,6 +70,16 @@ export const useVendorsStore = defineStore('vendors', () => {
     }
   }
 
+  const getVendorName = (vendorNo) => {
+    if (!vendorNo) return 'Unknown Vendor'
+
+    const vendor = vendors.value.find(
+      (v) =>
+        v.vendorNo &&
+        v.vendorNo.toString().trim().toLowerCase() === vendorNo.toString().trim().toLowerCase(),
+    )
+    return vendor ? vendor.name : `Unknown Vendor (${vendorNo})`
+  }
   return {
     vendors,
     currentVendor,
@@ -80,5 +90,6 @@ export const useVendorsStore = defineStore('vendors', () => {
     createVendor,
     updateVendor,
     deleteVendor,
+    getVendorName,
   }
 })
