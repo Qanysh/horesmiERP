@@ -4,6 +4,7 @@ import DashboardView from '@/views/Dashboard/DashboardView.vue'
 import HomeView from '@/views/HomeView.vue'
 import CustomersView from '@/views/Customers/CustomersView.vue'
 import VendorsView from '@/views/Vendors/VendorsView.vue'
+import ItemsView from '@/views/Items/ItemsView.vue'
 
 const routes = [
   {
@@ -29,6 +30,11 @@ const routes = [
         path: '/vendors',
         name: 'vendors',
         component: VendorsView,
+      },
+      {
+        path: '/items',
+        name: 'items',
+        component: ItemsView,
       },
     ],
   },
