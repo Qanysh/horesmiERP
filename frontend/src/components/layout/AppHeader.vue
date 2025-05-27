@@ -37,7 +37,7 @@ const searchQuery = ref('')
           v-for="link in [
             { to: '/dashboard', text: 'Dashboard' },
             { to: '/customers', text: 'Customers' },
-            { to: '/sales', text: 'Sales' },
+            { to: '/vendors', text: 'Vendors' },
             { to: '/dashboard', text: 'Dashboard' },
             { to: '/customers', text: 'Customers' },
             { to: '/sales', text: 'Sales' },
