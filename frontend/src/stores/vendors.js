@@ -20,10 +20,10 @@ export const useVendorsStore = defineStore('vendors', () => {
     }
   }
 
-  const fetchVendorByNo = async (vendor_no) => {
+  const fetchVendorByNo = async (BIN) => {
     loading.value = true
     try {
-      currentVendor.value = await vendorsService.getVendorByNo(vendor_no)
+      currentVendor.value = await vendorsService.getVendorByNo(BIN)
     } catch (err) {
       error.value = err.message || 'Unknown error'
     } finally {
@@ -44,10 +44,10 @@ export const useVendorsStore = defineStore('vendors', () => {
     }
   }
 
-  const updateVendor = async (vendor_no, data) => {
+  const updateVendor = async (BIN, data) => {
     loading.value = true
     try {
-      await vendorsService.updateVendor(vendor_no, data)
+      await vendorsService.updateVendor(BIN, data)
       await fetchVendors()
     } catch (err) {
       error.value = err.message || 'Unknown error'
@@ -57,10 +57,10 @@ export const useVendorsStore = defineStore('vendors', () => {
     }
   }
 
-  const deleteVendor = async (vendor_no) => {
+  const deleteVendor = async (BIN) => {
     loading.value = true
     try {
-      await vendorsService.deleteVendor(vendor_no)
+      await vendorsService.deleteVendor(BIN)
       await fetchVendors()
     } catch (err) {
       error.value = err.message || 'Unknown error'
@@ -70,15 +70,13 @@ export const useVendorsStore = defineStore('vendors', () => {
     }
   }
 
-  const getVendorName = (vendorNo) => {
-    if (!vendorNo) return 'Unknown Vendor'
+  const getVendorName = (BIN) => {
+    if (!BIN) return 'Unknown Vendor'
 
     const vendor = vendors.value.find(
-      (v) =>
-        v.vendorNo &&
-        v.vendorNo.toString().trim().toLowerCase() === vendorNo.toString().trim().toLowerCase(),
+      (v) => v.BIN && v.BIN.toString().trim().toLowerCase() === BIN.toString().trim().toLowerCase(),
     )
-    return vendor ? vendor.name : `Unknown Vendor (${vendorNo})`
+    return vendor ? vendor.name : `Unknown Vendor (${BIN})`
   }
   return {
     vendors,

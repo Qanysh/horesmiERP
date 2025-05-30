@@ -45,11 +45,11 @@ const openEditModal = (vendor) => {
   isModalOpen.value = true
 }
 
-const handleDelete = async (vendorNo) => {
+const handleDelete = async (BIN) => {
   if (confirm('Are you sure you want to delete this vendor?')) {
     try {
       loading.value = true
-      await store.deleteVendor(vendorNo)
+      await store.deleteVendor(BIN)
     } catch (error) {
       console.error('Delete failed:', error)
       alert(`Failed to delete vendor: ${error.response?.data?.message || error.message}`)
@@ -90,7 +90,7 @@ const filteredVendors = computed(() => {
       <Table class="border-b">
         <TableHeader class="sticky top-0 bg-gray-50 dark:bg-gray-800 z-10">
           <TableRow class="hover:bg-transparent">
-            <TableHead class="w-[100px]">Vendor No</TableHead>
+            <TableHead class="w-[100px]">Vendor BIN</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Responsibility Center</TableHead>
             <TableHead>Location Code</TableHead>
@@ -106,8 +106,8 @@ const filteredVendors = computed(() => {
           <TableRow v-if="filteredVendors.length === 0">
             <TableCell colspan="10" class="text-center py-4">No vendors found</TableCell>
           </TableRow>
-          <TableRow v-for="vendor in filteredVendors" :key="vendor.vendorNo">
-            <TableCell class="font-medium">{{ vendor.vendorNo || '-' }}</TableCell>
+          <TableRow v-for="vendor in filteredVendors" :key="vendor.BIN">
+            <TableCell class="font-medium">{{ vendor.BIN || '-' }}</TableCell>
             <TableCell>{{ vendor.name || '-' }}</TableCell>
             <TableCell>{{ vendor.responsibilityCenter || '-' }}</TableCell>
             <TableCell>{{ vendor.locationCode || '-' }}</TableCell>

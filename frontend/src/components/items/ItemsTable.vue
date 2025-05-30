@@ -97,7 +97,7 @@ const filteredItems = computed(() => {
             <TableHead>Inventory</TableHead>
             <TableHead>Unit Cost</TableHead>
             <TableHead>Unit Price</TableHead>
-            <TableHead>Vendor No</TableHead>
+            <TableHead>BIN</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Status</TableHead>
             <TableHead class="text-right">Actions</TableHead>

@@ -16,7 +16,7 @@ const emit = defineEmits(['update:open', 'saved'])
 const store = useVendorsStore()
 
 const form = ref({
-  vendorNo: '',
+  BIN: '',
   name: '',
   responsibilityCenter: '',
   locationCode: '',
@@ -32,7 +32,7 @@ const handleSubmit = async () => {
     emit('saved')
     emit('update:open', false)
     form.value = {
-      vendorNo: '',
+      BIN: '',
       name: '',
       responsibilityCenter: '',
       locationCode: '',
@@ -58,7 +58,7 @@ const handleSubmit = async () => {
       <div class="grid gap-4 py-4">
         <div
           v-for="field in [
-            { id: 'vendorNo', label: 'Vendor No' },
+            { id: 'BIN', label: 'Vendor No' },
             { id: 'name', label: 'Name' },
             { id: 'responsibilityCenter', label: 'Responsibility Center' },
             { id: 'locationCode', label: 'Location Code' },

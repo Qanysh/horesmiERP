@@ -6,8 +6,8 @@ export default {
     return response.data
   },
 
-  async getVendorByNo(vendor_no) {
-    const response = await api.get(`/vendors/card/${vendor_no}`)
+  async getVendorByNo(BIN) {
+    const response = await api.get(`/vendors/card/${BIN}`)
     return response.data
   },
 
@@ -16,13 +16,13 @@ export default {
     return response.data
   },
 
-  async updateVendor(vendor_no, data) {
-    const response = await api.put(`/vendors/update/${vendor_no}`, data)
+  async updateVendor(BIN, data) {
+    const response = await api.put(`/vendors/update/${BIN}`, data)
     return response.data
   },
 
-  async deleteVendor(vendor_no) {
-    const response = await api.delete(`/vendors/delete/${vendor_no}`)
+  async deleteVendor(BIN) {
+    const response = await api.delete(`/vendors/delete/${BIN}`)
     return response.data
   },
 }

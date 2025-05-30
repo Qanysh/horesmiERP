@@ -119,10 +119,10 @@ const handleSubmit = async () => {
                 <SelectLabel>Vendors</SelectLabel>
                 <SelectItem
                   v-for="vendor in vendorsStore.vendors"
-                  :key="vendor.vendorNo"
-                  :value="vendor.vendorNo"
+                  :key="vendor.BIN"
+                  :value="vendor.BIN"
                 >
-                  {{ vendor.vendorNo }} - {{ vendor.name }}
+                  {{ vendor.BIN }} - {{ vendor.name }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>

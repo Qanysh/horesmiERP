@@ -20,7 +20,7 @@ const props = defineProps({
 const emit = defineEmits(['update:open', 'saved'])
 
 const form = ref({
-  vendorNo: '',
+  BIN: '',
   name: '',
   responsibilityCenter: '',
   locationCode: '',
@@ -37,7 +37,7 @@ watch(
       form.value = { ...val }
     } else {
       form.value = {
-        vendorNo: '',
+        BIN: '',
         name: '',
         responsibilityCenter: '',
         locationCode: '',
@@ -53,8 +53,8 @@ watch(
 
 const handleSubmit = async () => {
   try {
-    if (form.value.vendorNo) {
-      await store.updateVendor(form.value.vendorNo, form.value)
+    if (form.value.BIN) {
+      await store.updateVendor(form.value.BIN, form.value)
     } else {
       await store.createVendor(form.value)
     }
@@ -77,7 +77,7 @@ const handleSubmit = async () => {
       <div class="grid gap-4 py-4">
         <div
           v-for="field in [
-            { id: 'vendorNo', label: 'Vendor No' },
+            { id: 'BIN', label: 'Vendor No' },
             { id: 'name', label: 'Name' },
             { id: 'responsibilityCenter', label: 'Responsibility Center' },
             { id: 'locationCode', label: 'Location Code' },
