@@ -17,5 +17,5 @@ exports.updatePurchaseJournal = function (id, updatedPurchaseJournal, callback) 
 };
 
 exports.deletePurchaseJournal = function (id, callback) {
-    db.query('UPDATE purchaseJournal SET IsArchived = true WHERE id = ?', [id], callback);
+    db.query('UPDATE purchaseJournal SET isArchived = true WHERE id = ?', [id], callback);
 };

@@ -17,5 +17,5 @@ exports.updateSalesOrder = function (no, updatedSalesOrder, callback) {
 };
 
 exports.deleteSalesOrder = function (no, callback) {
-    db.query('UPDATE salesOrder SET IsArchived = true WHERE no = ?', [no], callback);
+    db.query('UPDATE salesOrder SET isArchived = true WHERE no = ?', [no], callback);
 };

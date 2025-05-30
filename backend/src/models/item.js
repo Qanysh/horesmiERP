@@ -22,5 +22,5 @@ exports.updateItem = function (itemNo, updatedItem, callback) {
 
 // Удаление элемента по Item No
 exports.deleteItem = function (itemNo, callback) {
-    db.query('UPDATE item SET IsArchived = true WHERE item_no = ?', [itemNo], callback);
+    db.query('UPDATE item SET isArchived = true WHERE item_no = ?', [itemNo], callback);
 };
