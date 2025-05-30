@@ -28,7 +28,6 @@ const router = useRouter()
 
 const loading = ref(true)
 
-// Fetch all data on mount
 onMounted(async () => {
   try {
     loading.value = true
@@ -55,7 +54,6 @@ const summaryData = computed(() => ({
   recentOrders: purchaseOrdersStore.purchaseOrders.slice(0, 5),
 }))
 
-// Chart options
 const ordersByStatusOptions = computed(() => {
   const statusCounts = purchaseOrdersStore.purchaseOrders.reduce((acc, order) => {
     acc[order.status] = (acc[order.status] || 0) + 1
@@ -256,7 +254,7 @@ const itemsByCategoryOptions = computed(() => {
           <TableHeader>
             <TableRow>
               <TableHead>Order No</TableHead>
-              <TableHead>Vendor</TableHead>
+
               <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
               <TableHead class="text-right">Amount</TableHead>
@@ -265,9 +263,7 @@ const itemsByCategoryOptions = computed(() => {
           <TableBody>
             <TableRow v-for="order in summaryData.recentOrders" :key="order.no">
               <TableCell class="font-medium">{{ order.no }}</TableCell>
-              <TableCell>{{
-                vendorsStore.getVendorName(order.vendorNo) || order.vendorNo || 'N/A'
-              }}</TableCell>
+
               <TableCell>{{
                 order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'
               }}</TableCell>
