@@ -118,7 +118,6 @@ exports.updateSalesOrder = function (req, res) {
         jobQueueStatus: req.body.jobQueueStatus,
         status: req.body.status,
         isArchived: req.body.isArchived || false,
-        created_at: req.body.created_at,
         updated_at: new Date()
     };
 

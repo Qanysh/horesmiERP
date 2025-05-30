@@ -114,7 +114,6 @@ exports.updateVendor = function (req, res) {
         balanceLcy: req.body.balanceLcy,
         balanceDueLcy: req.body.balanceDueLcy,
         paymentsLcy: req.body.paymentsLcy,
-        created_at: new Date(),
         updated_at: new Date()
     };
 

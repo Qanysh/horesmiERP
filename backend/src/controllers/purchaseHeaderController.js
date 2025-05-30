@@ -206,7 +206,6 @@ exports.updatePurchaseHeader = function (req, res) {
         prepmtPaymentDiscountPercent: req.body.prepmtPaymentDiscountPercent,
         prepmtPaymentDiscountDate: req.body.prepmtPaymentDiscountDate,
         vendorCrMemoNo: req.body.vendorCrMemoNo,
-        created_at: req.body.created_at,
         updated_at: new Date()
     };
 
