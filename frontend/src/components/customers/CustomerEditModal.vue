@@ -36,7 +36,18 @@ watch(
   () => props.customer,
   (val) => {
     if (val) {
-      form.value = { ...val }
+      form.value = {
+        customer_no: val.customer_no || '',
+        name: val.name || '',
+        name2: val.name2 || '',
+        responsibility_center: val.responsibility_center || '',
+        location_code: val.location_code || '',
+        country_region_code: val.country_region_code || '',
+        phone_no: val.phone_no || '',
+        contact: val.contact || '',
+        salesperson_code: val.salesperson_code || '',
+        credit_limit_lcy: val.credit_limit_lcy?.toString() || '',
+      }
     } else {
       form.value = {
         customer_no: '',
@@ -57,15 +68,31 @@ watch(
 
 const handleSubmit = async () => {
   try {
-    if (form.value.customer_no) {
-      await store.updateCustomer(form.value.customer_no, form.value)
+    const payload = {
+      customer_no: form.value.customer_no,
+      name: form.value.name,
+      name2: form.value.name2,
+      responsibility_center: form.value.responsibility_center,
+      location_code: form.value.location_code,
+      country_region_code: form.value.country_region_code,
+      phone_no: form.value.phone_no,
+      contact: form.value.contact,
+      salesperson_code: form.value.salesperson_code,
+      credit_limit_lcy: form.value.credit_limit_lcy
+        ? parseFloat(form.value.credit_limit_lcy)
+        : null,
+    }
+
+    if (payload.customer_no) {
+      await store.updateCustomer(payload.customer_no, payload)
     } else {
-      await store.createCustomer(form.value)
+      await store.createCustomer(payload)
     }
     emit('saved')
     emit('update:open', false)
   } catch (error) {
     console.error('Error saving customer:', error)
+    alert(`Failed to save customer: ${error.response?.data?.message || error.message}`)
   }
 }
 </script>
@@ -75,7 +102,7 @@ const handleSubmit = async () => {
     <DialogContent class="sm:max-w-[700px]">
       <DialogHeader>
         <DialogTitle>Edit Customer</DialogTitle>
-        <DialogDescription> Update customer details below </DialogDescription>
+        <DialogDescription>Update customer details below</DialogDescription>
       </DialogHeader>
 
       <div class="grid gap-4 py-4">
@@ -103,8 +130,8 @@ const handleSubmit = async () => {
       </div>
 
       <div class="flex justify-end gap-2">
-        <Button variant="outline" @click="emit('update:open', false)"> Cancel </Button>
-        <Button @click="handleSubmit"> Save </Button>
+        <Button variant="outline" @click="emit('update:open', false)">Cancel</Button>
+        <Button @click="handleSubmit">Save</Button>
       </div>
     </DialogContent>
   </Dialog>

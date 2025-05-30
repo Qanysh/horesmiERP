@@ -1,12 +1,5 @@
 <script setup>
-defineProps({
-  customers: {
-    type: Array,
-    required: true,
-  },
-})
-
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useCustomersStore } from '@/stores/customers'
 import { Button } from '@/components/ui/button'
 import { PencilIcon, Trash2Icon, MoreHorizontal } from 'lucide-vue-next'
@@ -26,10 +19,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 const store = useCustomersStore()
 const isModalOpen = ref(false)
 const selectedCustomer = ref(null)
+const archiveFilter = ref('all')
 
 const openEditModal = (customer) => {
   selectedCustomer.value = { ...customer }
@@ -38,13 +39,43 @@ const openEditModal = (customer) => {
 
 const handleDelete = async (customer_no) => {
   if (confirm('Are you sure you want to delete this customer?')) {
-    await store.deleteCustomer(customer_no)
+    try {
+      await store.deleteCustomer(customer_no)
+    } catch (error) {
+      console.error('Delete failed:', error)
+      alert(`Failed to delete customer: ${error.response?.data?.message || error.message}`)
+    }
   }
 }
+
+const filteredCustomers = computed(() => {
+  return store.customers.filter((customer) => {
+    if (archiveFilter.value === 'active') return !customer.isArchived
+    if (archiveFilter.value === 'archived') return customer.isArchived
+    return true
+  })
+})
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
+  <div class="h-full flex flex-col space-y-4">
+    <!-- Archive Filter -->
+    <div class="flex items-center gap-4">
+      <Select v-model="archiveFilter">
+        <SelectTrigger class="w-[180px]">
+          <SelectValue placeholder="Filter by status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Customers</SelectItem>
+          <SelectItem value="active">Active Only</SelectItem>
+          <SelectItem value="archived">Archived Only</SelectItem>
+        </SelectContent>
+      </Select>
+      <div class="text-sm text-muted-foreground">
+        Showing {{ filteredCustomers.length }} of {{ store.customers.length }} customers
+      </div>
+    </div>
+
     <div class="relative flex-1 overflow-auto">
       <Table class="border-b">
         <TableHeader class="sticky top-0 bg-gray-50 dark:bg-gray-800 z-10">
@@ -59,27 +90,32 @@ const handleDelete = async (customer_no) => {
             <TableHead>Contact</TableHead>
             <TableHead>Salesperson Code</TableHead>
             <TableHead>Credit Limit</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead class="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow v-if="customers.length === 0">
-            <TableCell colspan="11" class="text-center py-4"> No customers found </TableCell>
+          <TableRow v-if="filteredCustomers.length === 0">
+            <TableCell colspan="12" class="text-center py-4">No customers found</TableCell>
           </TableRow>
-          <TableRow v-for="customer in customers" :key="customer.customer_no">
+          <TableRow v-for="customer in filteredCustomers" :key="customer.customer_no">
             <TableCell class="font-medium">{{ customer.customer_no }}</TableCell>
-            <TableCell class="font-medium">{{ customer.name }}</TableCell>
-            <TableCell class="font-medium">{{ customer.name2 }}</TableCell>
-            <TableCell class="font-medium">{{ customer.responsibility_center }}</TableCell>
-            <TableCell class="font-medium">{{ customer.location_code }}</TableCell>
-            <TableCell class="font-medium">{{ customer.country_region_code }}</TableCell>
-            <TableCell class="font-medium">{{ customer.phone_no }}</TableCell>
-            <TableCell class="font-medium">{{ customer.contact }}</TableCell>
-            <TableCell class="font-medium">{{ customer.salesperson_code }}</TableCell>
-
+            <TableCell class="font-medium">{{ customer.name || '-' }}</TableCell>
+            <TableCell class="font-medium">{{ customer.name2 || '-' }}</TableCell>
+            <TableCell class="font-medium">{{ customer.responsibility_center || '-' }}</TableCell>
+            <TableCell class="font-medium">{{ customer.location_code || '-' }}</TableCell>
+            <TableCell class="font-medium">{{ customer.country_region_code || '-' }}</TableCell>
+            <TableCell class="font-medium">{{ customer.phone_no || '-' }}</TableCell>
+            <TableCell class="font-medium">{{ customer.contact || '-' }}</TableCell>
+            <TableCell class="font-medium">{{ customer.salesperson_code || '-' }}</TableCell>
             <TableCell>
               <Badge variant="outline">
-                {{ customer.credit_limit_lcy }}
+                {{ customer.credit_limit_lcy || '0.00' }}
+              </Badge>
+            </TableCell>
+            <TableCell>
+              <Badge :variant="customer.isArchived ? 'destructive' : 'default'">
+                {{ customer.isArchived ? 'Archived' : 'Active' }}
               </Badge>
             </TableCell>
             <TableCell class="text-right">
@@ -108,8 +144,6 @@ const handleDelete = async (customer_no) => {
         </TableBody>
       </Table>
     </div>
-
-    <!-- Pagination would go here -->
 
     <CustomerEditModal
       v-model:open="isModalOpen"

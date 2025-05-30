@@ -11,14 +11,15 @@ const store = useCustomersStore()
 const isCreateModalOpen = ref(false)
 const searchQuery = ref('')
 
-// Computed property for filtered customers
 const filteredCustomers = computed(() => {
-  if (!searchQuery.value) return store.customers
-  return store.customers.filter(
-    (customer) =>
-      customer.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      (customer.name2 && customer.name2.toLowerCase().includes(searchQuery.value.toLowerCase())),
-  )
+  if (!searchQuery.value.trim()) return store.customers
+  const query = searchQuery.value.trim().toLowerCase()
+  return store.customers.filter((customer) => {
+    return (
+      (customer.name || '').toLowerCase().includes(query) ||
+      (customer.name2 || '').toLowerCase().includes(query)
+    )
+  })
 })
 
 onMounted(() => {
@@ -36,14 +37,19 @@ onMounted(() => {
       </Button>
     </div>
 
-    <!-- Search Input -->
     <div class="relative">
       <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-      <Input v-model="searchQuery" placeholder="Search by name..." class="pl-9 w-full max-w-md" />
+      <Input
+        v-model="searchQuery"
+        placeholder="Search by name or name 2..."
+        class="pl-9 w-full max-w-md"
+      />
     </div>
 
     <CustomersTable :customers="filteredCustomers" />
-    <div class="text-sm text-muted-foreground">Showing {{ store.customers.length }} customers</div>
+    <div class="text-sm text-muted-foreground">
+      Showing {{ filteredCustomers.length }} of {{ store.customers.length }} customers
+    </div>
 
     <CustomerCreateModal v-model:open="isCreateModalOpen" @saved="store.fetchCustomers()" />
   </div>

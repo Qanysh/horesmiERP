@@ -22,7 +22,7 @@ export default {
   },
 
   async deleteVendor(vendor_no) {
-    const response = await api.delete(`/vendors/${vendor_no}`)
+    const response = await api.delete(`/vendors/delete/${vendor_no}`)
     return response.data
   },
 }

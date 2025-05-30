@@ -1,16 +1,10 @@
 <script setup>
-defineProps({
-  vendors: {
-    type: Array,
-    required: true,
-  },
-})
-
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useVendorsStore } from '@/stores/vendors'
 import { Button } from '@/components/ui/button'
 import { PencilIcon, Trash2Icon, MoreHorizontal } from 'lucide-vue-next'
 import VendorEditModal from './VendorEditModal.vue'
+import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -25,25 +19,69 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+defineProps({
+  vendors: {
+    type: Array,
+    required: true,
+  },
+})
 
 const store = useVendorsStore()
 const isModalOpen = ref(false)
 const selectedVendor = ref(null)
+const archiveFilter = ref('all')
 
 const openEditModal = (vendor) => {
   selectedVendor.value = { ...vendor }
   isModalOpen.value = true
 }
 
-const handleDelete = async (vendor_no) => {
+const handleDelete = async (vendorNo) => {
   if (confirm('Are you sure you want to delete this vendor?')) {
-    await store.deleteVendor(vendor_no)
+    try {
+      await store.deleteVendor(vendorNo)
+    } catch (error) {
+      console.error('Delete failed:', error)
+      alert(`Failed to delete vendor: ${error.response?.data?.message || error.message}`)
+    }
   }
 }
+
+const filteredVendors = computed(() => {
+  return store.vendors.filter((vendor) => {
+    if (archiveFilter.value === 'active') return !vendor.isArchived
+    if (archiveFilter.value === 'archived') return vendor.isArchived
+    return true
+  })
+})
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
+  <div class="h-full flex flex-col space-y-4">
+    <div class="flex items-center gap-4">
+      <Select v-model="archiveFilter">
+        <SelectTrigger class="w-[180px]">
+          <SelectValue placeholder="Filter by status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Vendors</SelectItem>
+          <SelectItem value="active">Active Only</SelectItem>
+          <SelectItem value="archived">Archived Only</SelectItem>
+        </SelectContent>
+      </Select>
+      <div class="text-sm text-muted-foreground">
+        Showing {{ filteredVendors.length }} of {{ store.vendors.length }} vendors
+      </div>
+    </div>
+
     <div class="relative flex-1 overflow-auto">
       <Table class="border-b">
         <TableHeader class="sticky top-0 bg-gray-50 dark:bg-gray-800 z-10">
@@ -56,22 +94,28 @@ const handleDelete = async (vendor_no) => {
             <TableHead>Contact</TableHead>
             <TableHead>Currency Code</TableHead>
             <TableHead>Search Name</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead class="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow v-if="vendors.length === 0">
-            <TableCell colspan="8" class="text-center py-4"> No vendors found </TableCell>
+          <TableRow v-if="filteredVendors.length === 0">
+            <TableCell colspan="10" class="text-center py-4">No vendors found</TableCell>
           </TableRow>
-          <TableRow v-for="vendor in vendors" :key="vendor.vendorNo">
-            <TableCell class="font-medium">{{ vendor.vendorNo }}</TableCell>
-            <TableCell>{{ vendor.name }}</TableCell>
-            <TableCell>{{ vendor.responsibilityCenter }}</TableCell>
-            <TableCell>{{ vendor.locationCode }}</TableCell>
-            <TableCell>{{ vendor.phoneNo }}</TableCell>
-            <TableCell>{{ vendor.contact }}</TableCell>
-            <TableCell>{{ vendor.currencyCode }}</TableCell>
-            <TableCell>{{ vendor.searchName }}</TableCell>
+          <TableRow v-for="vendor in filteredVendors" :key="vendor.vendorNo">
+            <TableCell class="font-medium">{{ vendor.vendorNo || '-' }}</TableCell>
+            <TableCell>{{ vendor.name || '-' }}</TableCell>
+            <TableCell>{{ vendor.responsibilityCenter || '-' }}</TableCell>
+            <TableCell>{{ vendor.locationCode || '-' }}</TableCell>
+            <TableCell>{{ vendor.phoneNo || '-' }}</TableCell>
+            <TableCell>{{ vendor.contact || '-' }}</TableCell>
+            <TableCell>{{ vendor.currencyCode || '-' }}</TableCell>
+            <TableCell>{{ vendor.searchName || '-' }}</TableCell>
+            <TableCell>
+              <Badge :variant="vendor.isArchived ? 'destructive' : 'default'">
+                {{ vendor.isArchived ? 'Archived' : 'Active' }}
+              </Badge>
+            </TableCell>
             <TableCell class="text-right">
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
