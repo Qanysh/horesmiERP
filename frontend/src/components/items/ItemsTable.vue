@@ -1,16 +1,10 @@
 <script setup>
-defineProps({
-  items: {
-    type: Array,
-    required: true,
-  },
-})
-
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useItemsStore } from '@/stores/items'
 import { Button } from '@/components/ui/button'
 import { PencilIcon, Trash2Icon, MoreHorizontal } from 'lucide-vue-next'
 import ItemEditModal from './ItemEditModal.vue'
+import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -25,10 +19,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+const props = defineProps({
+  items: {
+    type: Array,
+    required: true,
+  },
+})
 
 const store = useItemsStore()
 const isModalOpen = ref(false)
 const selectedItem = ref(null)
+const archiveFilter = ref('all')
+const loading = ref(false)
 
 const openEditModal = (item) => {
   selectedItem.value = { ...item }
@@ -37,13 +47,45 @@ const openEditModal = (item) => {
 
 const handleDelete = async (item_no) => {
   if (confirm('Are you sure you want to delete this item?')) {
-    await store.deleteItem(item_no)
+    try {
+      loading.value = true
+      await store.deleteItem(item_no)
+    } catch (error) {
+      console.error('Delete failed:', error)
+      alert(`Failed to delete item: ${error.response?.data?.message || error.message}`)
+    } finally {
+      loading.value = false
+    }
   }
 }
+
+const filteredItems = computed(() => {
+  return props.items.filter((item) => {
+    if (archiveFilter.value === 'active') return !item.isArchived
+    if (archiveFilter.value === 'archived') return item.isArchived
+    return true
+  })
+})
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
+  <div class="h-full flex flex-col space-y-4">
+    <div class="flex items-center gap-4">
+      <Select v-model="archiveFilter" :disabled="loading">
+        <SelectTrigger class="w-[180px]">
+          <SelectValue placeholder="Filter by status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Items</SelectItem>
+          <SelectItem value="active">Active Only</SelectItem>
+          <SelectItem value="archived">Archived Only</SelectItem>
+        </SelectContent>
+      </Select>
+      <div class="text-sm text-muted-foreground">
+        Showing {{ filteredItems.length }} of {{ store.items.length }} items
+      </div>
+    </div>
+
     <div class="relative flex-1 overflow-auto">
       <Table class="border-b">
         <TableHeader class="sticky top-0 bg-gray-50 dark:bg-gray-800 z-10">
@@ -57,27 +99,33 @@ const handleDelete = async (item_no) => {
             <TableHead>Unit Price</TableHead>
             <TableHead>Vendor No</TableHead>
             <TableHead>Category</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead class="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow v-if="items.length === 0">
-            <TableCell colspan="10" class="text-center py-4"> No items found </TableCell>
+          <TableRow v-if="filteredItems.length === 0">
+            <TableCell colspan="11" class="text-center py-4">No items found</TableCell>
           </TableRow>
-          <TableRow v-for="item in items" :key="item.item_no">
-            <TableCell class="font-medium">{{ item.item_no }}</TableCell>
-            <TableCell>{{ item.description }}</TableCell>
-            <TableCell>{{ item.description2 }}</TableCell>
-            <TableCell>{{ item.type }}</TableCell>
-            <TableCell>{{ item.inventory }}</TableCell>
-            <TableCell>{{ item.unitCost }}</TableCell>
-            <TableCell>{{ item.unitPrice }}</TableCell>
-            <TableCell>{{ item.vendorNo }}</TableCell>
-            <TableCell>{{ item.itemCategoryCode }}</TableCell>
+          <TableRow v-for="item in filteredItems" :key="item.item_no">
+            <TableCell class="font-medium">{{ item.item_no || '-' }}</TableCell>
+            <TableCell>{{ item.description || '-' }}</TableCell>
+            <TableCell>{{ item.description2 || '-' }}</TableCell>
+            <TableCell>{{ item.type || '-' }}</TableCell>
+            <TableCell>{{ item.inventory || '0' }}</TableCell>
+            <TableCell>{{ item.unitCost || '0.00' }}</TableCell>
+            <TableCell>{{ item.unitPrice || '0.00' }}</TableCell>
+            <TableCell>{{ item.vendorNo || '-' }}</TableCell>
+            <TableCell>{{ item.itemCategoryCode || '-' }}</TableCell>
+            <TableCell>
+              <Badge :variant="item.isArchived ? 'destructive' : 'default'">
+                {{ item.isArchived ? 'Archived' : 'Active' }}
+              </Badge>
+            </TableCell>
             <TableCell class="text-right">
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                  <Button variant="ghost" class="h-8 w-8 p-0">
+                  <Button variant="ghost" class="h-8 w-8 p-0" :disabled="loading">
                     <MoreHorizontal class="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>

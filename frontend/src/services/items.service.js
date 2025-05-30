@@ -22,7 +22,7 @@ export default {
   },
 
   async deleteItem(item_no) {
-    const response = await api.delete(`/items/${item_no}`)
+    const response = await api.delete(`/items/delete/${item_no}`)
     return response.data
   },
 }

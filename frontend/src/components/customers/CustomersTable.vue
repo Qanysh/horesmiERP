@@ -27,10 +27,18 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+const props = defineProps({
+  customers: {
+    type: Array,
+    required: true,
+  },
+})
+
 const store = useCustomersStore()
 const isModalOpen = ref(false)
 const selectedCustomer = ref(null)
 const archiveFilter = ref('all')
+const loading = ref(false)
 
 const openEditModal = (customer) => {
   selectedCustomer.value = { ...customer }
@@ -40,16 +48,19 @@ const openEditModal = (customer) => {
 const handleDelete = async (customer_no) => {
   if (confirm('Are you sure you want to delete this customer?')) {
     try {
+      loading.value = true
       await store.deleteCustomer(customer_no)
     } catch (error) {
       console.error('Delete failed:', error)
       alert(`Failed to delete customer: ${error.response?.data?.message || error.message}`)
+    } finally {
+      loading.value = false
     }
   }
 }
 
 const filteredCustomers = computed(() => {
-  return store.customers.filter((customer) => {
+  return props.customers.filter((customer) => {
     if (archiveFilter.value === 'active') return !customer.isArchived
     if (archiveFilter.value === 'archived') return customer.isArchived
     return true
@@ -59,9 +70,8 @@ const filteredCustomers = computed(() => {
 
 <template>
   <div class="h-full flex flex-col space-y-4">
-    <!-- Archive Filter -->
     <div class="flex items-center gap-4">
-      <Select v-model="archiveFilter">
+      <Select v-model="archiveFilter" :disabled="loading">
         <SelectTrigger class="w-[180px]">
           <SelectValue placeholder="Filter by status" />
         </SelectTrigger>
@@ -99,7 +109,7 @@ const filteredCustomers = computed(() => {
             <TableCell colspan="12" class="text-center py-4">No customers found</TableCell>
           </TableRow>
           <TableRow v-for="customer in filteredCustomers" :key="customer.customer_no">
-            <TableCell class="font-medium">{{ customer.customer_no }}</TableCell>
+            <TableCell class="font-medium">{{ customer.customer_no || '-' }}</TableCell>
             <TableCell class="font-medium">{{ customer.name || '-' }}</TableCell>
             <TableCell class="font-medium">{{ customer.name2 || '-' }}</TableCell>
             <TableCell class="font-medium">{{ customer.responsibility_center || '-' }}</TableCell>
@@ -121,7 +131,7 @@ const filteredCustomers = computed(() => {
             <TableCell class="text-right">
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                  <Button variant="ghost" class="h-8 w-8 p-0">
+                  <Button variant="ghost" class="h-8 w-8 p-0" :disabled="loading">
                     <MoreHorizontal class="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>

@@ -12,13 +12,14 @@ const isCreateModalOpen = ref(false)
 const searchQuery = ref('')
 
 const filteredItems = computed(() => {
-  if (!searchQuery.value) return store.items
-  return store.items.filter(
-    (item) =>
-      item.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      (item.description2 &&
-        item.description2.toLowerCase().includes(searchQuery.value.toLowerCase())),
-  )
+  if (!searchQuery.value.trim()) return store.items
+  const query = searchQuery.value.trim().toLowerCase()
+  return store.items.filter((item) => {
+    return (
+      (item.description || '').toLowerCase().includes(query) ||
+      (item.description2 || '').toLowerCase().includes(query)
+    )
+  })
 })
 
 onMounted(() => {
@@ -40,13 +41,15 @@ onMounted(() => {
       <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
       <Input
         v-model="searchQuery"
-        placeholder="Search by description..."
+        placeholder="Search by description or description 2..."
         class="pl-9 w-full max-w-md"
       />
     </div>
 
     <ItemsTable :items="filteredItems" />
-    <div class="text-sm text-muted-foreground">Showing {{ store.items.length }} items</div>
+    <div class="text-sm text-muted-foreground">
+      Showing {{ filteredItems.length }} of {{ store.items.length }} items
+    </div>
 
     <ItemCreateModal v-model:open="isCreateModalOpen" @saved="store.fetchItems()" />
   </div>

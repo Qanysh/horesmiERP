@@ -27,7 +27,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-defineProps({
+const props = defineProps({
   vendors: {
     type: Array,
     required: true,
@@ -38,6 +38,7 @@ const store = useVendorsStore()
 const isModalOpen = ref(false)
 const selectedVendor = ref(null)
 const archiveFilter = ref('all')
+const loading = ref(false)
 
 const openEditModal = (vendor) => {
   selectedVendor.value = { ...vendor }
@@ -47,16 +48,19 @@ const openEditModal = (vendor) => {
 const handleDelete = async (vendorNo) => {
   if (confirm('Are you sure you want to delete this vendor?')) {
     try {
+      loading.value = true
       await store.deleteVendor(vendorNo)
     } catch (error) {
       console.error('Delete failed:', error)
       alert(`Failed to delete vendor: ${error.response?.data?.message || error.message}`)
+    } finally {
+      loading.value = false
     }
   }
 }
 
 const filteredVendors = computed(() => {
-  return store.vendors.filter((vendor) => {
+  return props.vendors.filter((vendor) => {
     if (archiveFilter.value === 'active') return !vendor.isArchived
     if (archiveFilter.value === 'archived') return vendor.isArchived
     return true
@@ -67,7 +71,7 @@ const filteredVendors = computed(() => {
 <template>
   <div class="h-full flex flex-col space-y-4">
     <div class="flex items-center gap-4">
-      <Select v-model="archiveFilter">
+      <Select v-model="archiveFilter" :disabled="loading">
         <SelectTrigger class="w-[180px]">
           <SelectValue placeholder="Filter by status" />
         </SelectTrigger>
@@ -119,7 +123,7 @@ const filteredVendors = computed(() => {
             <TableCell class="text-right">
               <DropdownMenu>
                 <DropdownMenuTrigger as-child>
-                  <Button variant="ghost" class="h-8 w-8 p-0">
+                  <Button variant="ghost" class="h-8 w-8 p-0" :disabled="loading">
                     <MoreHorizontal class="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>

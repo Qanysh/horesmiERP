@@ -41,7 +41,7 @@ onMounted(() => {
       <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
       <Input
         v-model="searchQuery"
-        placeholder="Search by name or name 2..."
+        placeholder="Search by name or surname..."
         class="pl-9 w-full max-w-md"
       />
     </div>
