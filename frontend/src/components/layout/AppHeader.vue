@@ -40,7 +40,7 @@ const searchQuery = ref('')
             { to: '/vendors', text: 'Vendors' },
             { to: '/items', text: 'Items' },
             { to: '/purchase-orders', text: 'Purchase Orders' },
-            { to: '/', text: 'Sales Orders' },
+            { to: '/sales-orders', text: 'Sales Orders' },
           ]"
           :key="link.to"
           :to="link.to"

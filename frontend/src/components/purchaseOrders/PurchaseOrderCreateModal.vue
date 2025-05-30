@@ -157,11 +157,11 @@ const handleSubmit = async () => {
 
         <div class="grid grid-cols-1 gap-4">
           <div class="grid grid-cols-4 items-center gap-4">
-            <label for="postingDescription" class="text-right">Description</label>
+            <label for="postingDescription" class="text-left">Description</label>
             <Textarea
               id="postingDescription"
               v-model="form.postingDescription"
-              class="col-span-3"
+              class="col-span-4"
             />
           </div>
         </div>

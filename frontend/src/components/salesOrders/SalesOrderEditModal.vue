@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { usePurchaseOrdersStore } from '@/stores/purchaseOrders'
-import { useVendorsStore } from '@/stores/vendors'
+import { useSalesOrdersStore } from '@/stores/salesOrders'
+import { useCustomersStore } from '@/stores/customers'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -22,53 +22,42 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 
-const store = usePurchaseOrdersStore()
-const vendorsStore = useVendorsStore()
+const store = useSalesOrdersStore()
+const customersStore = useCustomersStore()
 const props = defineProps({
   open: Boolean,
-  purchaseOrder: Object,
+  salesOrder: Object,
 })
 
 const emit = defineEmits(['update:open', 'saved'])
 
 const form = ref({
   no: '',
-  vendorNo: '',
-  buyFromVendorName: '',
+  sellToCustomerNo: '',
+  sellToCustomerName: '',
   postingDescription: '',
-  buyFromAddress: '',
-  buyFromCity: '',
-  buyFromContact: '',
-  buyFromContactPhoneNo: '',
-  buyFromContactEmail: '',
+  sellToAddress: '',
+  sellToCity: '',
+  sellToContact: '',
+  sellToPhoneNo: '',
+  sellToEmail: '',
   dueDate: '',
-  vendorInvoiceNo: '',
-  purchaserCode: '',
   orderDate: '',
-  orderAddressCode: '',
-  responsibilityCenter: '',
-  assignedUserId: '',
   status: '',
-  languageCode: '',
   currencyCode: '',
-  pricesIncludingVAT: 0,
   paymentTermsCode: '',
   paymentMethodCode: '',
   shipmentMethodCode: '',
-  remitToName: '',
-  remitToAddress: '',
-  remitToCity: '',
-  remitToPostCode: '',
-  remitToCountryRegionCode: '',
-  remitToContact: '',
+  salespersonCode: '',
+  yourReference: '',
 })
 
 onMounted(async () => {
-  await vendorsStore.fetchVendors()
+  await customersStore.fetchCustomers()
 })
 
 watch(
-  () => props.purchaseOrder,
+  () => props.salesOrder,
   (val) => {
     if (val) {
       form.value = { ...val }
@@ -78,34 +67,23 @@ watch(
     } else {
       form.value = {
         no: '',
-        vendorNo: '',
-        buyFromVendorName: '',
+        sellToCustomerNo: '',
+        sellToCustomerName: '',
         postingDescription: '',
-        buyFromAddress: '',
-        buyFromCity: '',
-        buyFromContact: '',
-        buyFromContactPhoneNo: '',
-        buyFromContactEmail: '',
+        sellToAddress: '',
+        sellToCity: '',
+        sellToContact: '',
+        sellToPhoneNo: '',
+        sellToEmail: '',
         dueDate: '',
-        vendorInvoiceNo: '',
-        purchaserCode: '',
         orderDate: '',
-        orderAddressCode: '',
-        responsibilityCenter: '',
-        assignedUserId: '',
         status: '',
-        languageCode: '',
         currencyCode: '',
-        pricesIncludingVAT: 0,
         paymentTermsCode: '',
         paymentMethodCode: '',
         shipmentMethodCode: '',
-        remitToName: '',
-        remitToAddress: '',
-        remitToCity: '',
-        remitToPostCode: '',
-        remitToCountryRegionCode: '',
-        remitToContact: '',
+        salespersonCode: '',
+        yourReference: '',
       }
     }
   },
@@ -114,11 +92,11 @@ watch(
 
 const handleSubmit = async () => {
   try {
-    await store.updatePurchaseOrder(form.value.no, form.value)
+    await store.updateSalesOrder(form.value.no, form.value)
     emit('saved')
     emit('update:open', false)
   } catch (error) {
-    console.error('Error updating purchase order:', error)
+    console.error('Error updating sales order:', error)
   }
 }
 </script>
@@ -127,8 +105,8 @@ const handleSubmit = async () => {
   <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
     <DialogContent class="sm:max-w-[800px]">
       <DialogHeader>
-        <DialogTitle>Edit Purchase Order</DialogTitle>
-        <DialogDescription> Update the purchase order details below </DialogDescription>
+        <DialogTitle>Edit Sales Order</DialogTitle>
+        <DialogDescription> Update the sales order details below </DialogDescription>
       </DialogHeader>
 
       <div class="grid gap-4 py-4">
@@ -139,20 +117,20 @@ const handleSubmit = async () => {
           </div>
 
           <div class="grid grid-cols-4 items-center gap-4">
-            <label for="vendorNo" class="text-right">Vendor</label>
-            <Select v-model="form.vendorNo">
+            <label for="sellToCustomerNo" class="text-right">Customer</label>
+            <Select v-model="form.sellToCustomerNo">
               <SelectTrigger class="col-span-3">
-                <SelectValue placeholder="Select a vendor" />
+                <SelectValue placeholder="Select a customer" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Vendors</SelectLabel>
+                  <SelectLabel>Customers</SelectLabel>
                   <SelectItem
-                    v-for="vendor in vendorsStore.vendors"
-                    :key="vendor.vendorNo"
-                    :value="vendor.vendorNo"
+                    v-for="customer in customersStore.customers"
+                    :key="customer.customerNo"
+                    :value="customer.customerNo"
                   >
-                    {{ vendor.vendorNo }} - {{ vendor.name }}
+                    {{ customer.customerNo }} - {{ customer.name }}
                   </SelectItem>
                 </SelectGroup>
               </SelectContent>

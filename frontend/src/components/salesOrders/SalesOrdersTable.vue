@@ -1,0 +1,232 @@
+<script setup>
+defineProps({
+  salesOrders: {
+    type: Array,
+    required: true,
+  },
+})
+
+import { ref, onMounted } from 'vue'
+import { useSalesOrdersStore } from '@/stores/salesOrders'
+import { useCustomersStore } from '@/stores/customers'
+import { Button } from '@/components/ui/button'
+import {
+  ChevronRightIcon,
+  ChevronDownIcon,
+  PlusIcon,
+  PencilIcon,
+  Trash2Icon,
+  MoreHorizontal,
+  EyeIcon,
+} from 'lucide-vue-next'
+import SalesOrderEditModal from './SalesOrderEditModal.vue'
+import SalesOrderViewModal from './SalesOrderViewModal.vue'
+import SalesLineEditModal from './SalesLineEditModal.vue'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Badge } from '@/components/ui/badge'
+
+const store = useSalesOrdersStore()
+const customersStore = useCustomersStore()
+const isEditModalOpen = ref(false)
+const isViewModalOpen = ref(false)
+const selectedSalesOrder = ref(null)
+
+onMounted(async () => {
+  await customersStore.fetchCustomers()
+})
+
+const openEditModal = (order) => {
+  selectedSalesOrder.value = { ...order }
+  isEditModalOpen.value = true
+}
+
+const openViewModal = (order) => {
+  selectedSalesOrder.value = { ...order }
+  isViewModalOpen.value = true
+}
+
+const handleDelete = async (no) => {
+  if (confirm('Are you sure you want to delete this sales order?')) {
+    await store.deleteSalesOrder(no)
+  }
+}
+
+const getCustomerName = (customerNo) => {
+  const customer = customersStore.customers.find((c) => c.customerNo === customerNo)
+  return customer ? customer.name : customerNo
+}
+
+const expandedRows = ref({})
+
+const toggleRow = (no) => {
+  expandedRows.value[no] = !expandedRows.value[no]
+  if (expandedRows.value[no]) {
+    store.fetchSalesLinesByDocumentNo(no)
+  }
+}
+
+const isLineModalOpen = ref(false)
+const selectedSalesLine = ref(null)
+
+const openLineEditModal = (line, documentNo) => {
+  selectedSalesLine.value = line ? { ...line } : null
+  isLineModalOpen.value = true
+}
+
+const filteredSalesLines = (documentNo) => {
+  const lines = store.salesLinesByDocumentNo[documentNo] || []
+  return lines
+}
+</script>
+
+<template>
+  <div class="h-full flex flex-col">
+    <div class="relative flex-1 overflow-auto">
+      <Table class="border-b">
+        <TableHeader class="sticky top-0 bg-gray-50 dark:bg-gray-800 z-10">
+          <TableRow class="hover:bg-transparent">
+            <TableHead class="w-[50px]">
+              <span class="sr-only">Expand</span>
+            </TableHead>
+            <TableHead>No</TableHead>
+            <TableHead>Customer</TableHead>
+            <TableHead>Order Date</TableHead>
+            <TableHead>Due Date</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead class="text-right w-[100px]">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow v-if="salesOrders.length === 0">
+            <TableCell colspan="7" class="text-center py-4"> No sales orders found </TableCell>
+          </TableRow>
+          <template v-for="order in salesOrders" :key="order.no">
+            <TableRow>
+              <TableCell>
+                <Button variant="ghost" size="icon" @click="toggleRow(order.no)">
+                  <ChevronRightIcon v-if="!expandedRows[order.no]" class="h-4 w-4" />
+                  <ChevronDownIcon v-else class="h-4 w-4" />
+                </Button>
+              </TableCell>
+              <TableCell class="font-medium">{{ order.no }}</TableCell>
+              <TableCell>{{ getCustomerName(order.sellToCustomerNo) }}</TableCell>
+              <TableCell>{{ new Date(order.orderDate).toLocaleDateString() }}</TableCell>
+              <TableCell>{{ new Date(order.dueDate).toLocaleDateString() }}</TableCell>
+              <TableCell>
+                <Badge :variant="order.status === 'Open' ? 'default' : 'secondary'">
+                  {{ order.status }}
+                </Badge>
+              </TableCell>
+              <TableCell>{{ order.totalAmount || '0.00' }}</TableCell>
+              <TableCell class="text-right">
+                <DropdownMenu>
+                  <DropdownMenuTrigger as-child>
+                    <Button variant="ghost" class="h-8 w-8 p-0">
+                      <MoreHorizontal class="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem @click="openViewModal(order)">
+                      <EyeIcon class="mr-2 h-4 w-4" />
+                      View Details
+                    </DropdownMenuItem>
+                    <DropdownMenuItem @click="openLineEditModal(null, order.no)">
+                      <PlusIcon class="mr-2 h-4 w-4" />
+                      Add Line
+                    </DropdownMenuItem>
+                    <DropdownMenuItem @click="openEditModal(order)">
+                      <PencilIcon class="mr-2 h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem @click="handleDelete(order.no)" class="text-red-500">
+                      <Trash2Icon class="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+            <TableRow v-if="expandedRows[order.no]" class="bg-gray-50 dark:bg-gray-800">
+              <TableCell colspan="8">
+                <div class="p-4">
+                  <h4 class="font-semibold mb-2">Sales Lines</h4>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Line No</TableHead>
+                        <TableHead>Item No</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Quantity</TableHead>
+                        <TableHead>Unit Price</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Shipment Date</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow
+                        v-if="
+                          !Array.isArray(filteredSalesLines(order.no)) ||
+                          filteredSalesLines(order.no).length === 0
+                        "
+                      >
+                        <TableCell colspan="7" class="text-center py-4">
+                          {{ store.loading ? 'Loading sales lines...' : 'No sales lines found' }}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow v-for="line in filteredSalesLines(order.no)" :key="line.id">
+                        <TableCell>{{ line.lineNo }}</TableCell>
+                        <TableCell>{{ line.no }}</TableCell>
+                        <TableCell>{{ line.description }}</TableCell>
+                        <TableCell>{{ line.quantity }} {{ line.unitOfMeasureCode }}</TableCell>
+                        <TableCell>{{ line.unitPrice }}</TableCell>
+                        <TableCell>{{ line.lineAmount }}</TableCell>
+                        <TableCell>{{
+                          line.shipmentDate ? new Date(line.shipmentDate).toLocaleDateString() : ''
+                        }}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+              </TableCell>
+            </TableRow>
+          </template>
+        </TableBody>
+      </Table>
+    </div>
+
+    <SalesOrderEditModal
+      v-model:open="isEditModalOpen"
+      :salesOrder="selectedSalesOrder"
+      @saved="store.fetchSalesOrders()"
+    />
+
+    <SalesLineEditModal
+      v-model:open="isLineModalOpen"
+      :sales-line="selectedSalesLine"
+      :document-no="selectedSalesLine?.documentNo"
+      @saved="
+        () => {
+          if (selectedSalesLine?.documentNo) {
+            store.fetchSalesLinesByDocumentNo(selectedSalesLine.documentNo)
+          }
+        }
+      "
+    />
+
+    <SalesOrderViewModal v-model:open="isViewModalOpen" :salesOrder="selectedSalesOrder" />
+  </div>
+</template>

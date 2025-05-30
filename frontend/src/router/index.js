@@ -6,6 +6,7 @@ import CustomersView from '@/views/Customers/CustomersView.vue'
 import VendorsView from '@/views/Vendors/VendorsView.vue'
 import ItemsView from '@/views/Items/ItemsView.vue'
 import PurchaseOrdersView from '@/views/PurchaseOrders/PurchaseOrdersView.vue'
+import SalesOrdersView from '@/views/SalesOrders/SalesOrdersView.vue'
 
 const routes = [
   {
@@ -41,6 +42,11 @@ const routes = [
         path: '/purchase-orders',
         name: 'purchase-orders',
         component: PurchaseOrdersView,
+      },
+      {
+        path: '/sales-orders',
+        name: 'sales-orders',
+        component: SalesOrdersView,
       },
     ],
   },
