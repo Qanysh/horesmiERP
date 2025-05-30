@@ -4,18 +4,18 @@ exports.getAllVendors = function (callback) {
     db.query('SELECT * FROM vendor', callback);
 };
 
-exports.getVendorById = function (vendorNo, callback) {
-    db.query('SELECT * FROM vendor WHERE vendorNo = ?', [vendorNo], callback);
+exports.getVendorById = function (BIN, callback) {
+    db.query('SELECT * FROM vendor WHERE BIN = ?', [BIN], callback);
 };
 
 exports.createVendor = function (newVendor, callback) {
     db.query('INSERT INTO vendor SET ?;', newVendor, callback);
 };
 
-exports.updateVendor = function (vendorNo, updatedVendor, callback) {
-    db.query('UPDATE vendor SET ? WHERE vendorNo = ?', [updatedVendor, vendorNo], callback);
+exports.updateVendor = function (BIN, updatedVendor, callback) {
+    db.query('UPDATE vendor SET ? WHERE BIN = ?', [updatedVendor, BIN], callback);
 };
 
-exports.deleteVendor = function (vendorNo, callback) {
-    db.query('UPDATE vendor SET isArchived = true WHERE vendorNo = ?', [vendorNo], callback);
+exports.deleteVendor = function (BIN, callback) {
+    db.query('UPDATE vendor SET isArchived = true WHERE BIN = ?', [BIN], callback);
 };

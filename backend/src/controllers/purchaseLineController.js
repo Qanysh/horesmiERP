@@ -40,7 +40,7 @@ exports.getPurchaseLineByDocumentNo = async function (documentNo, req, res) {
         if (!purchaseLine || purchaseLine.length === 0) {
             return res.status(404).json({ error: 'PurchaseLine not found' });
         }
-        res.json(purchaseLine[0]);
+        res.json(purchaseLine);
     });
 };
 
@@ -54,7 +54,7 @@ exports.getPurchaseLineByDocumentNoForRouter = async function (req, res) {
         if (!purchaseLine || purchaseLine.length === 0) {
             return res.status(404).json({ error: 'PurchaseLine not found' });
         }
-        res.json(purchaseLine[0]);
+        res.json(purchaseLine);
     });
 };
 
@@ -228,11 +228,11 @@ exports.updatePurchaseLine = function (req, res) {
         updated_at: new Date()
     };
 
-    if (!req.params.lineNo) {
-        return res.status(400).json({ error: 'PurchaseLine lineNo is missing' });
+    if (!req.params.id) {
+        return res.status(400).json({ error: 'PurchaseLine id is missing' });
     }
 
-    PurchaseLine.updatePurchaseLine(req.params.lineNo, updatedPurchaseLine, (err, result) => {
+    PurchaseLine.updatePurchaseLine(req.params.id, updatedPurchaseLine, (err, result) => {
         if (err) {
             console.error('Error updating purchaseLine:', err);
             return res.status(500).json({ error: 'Failed to update purchaseLine' });
