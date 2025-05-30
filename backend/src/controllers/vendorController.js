@@ -16,7 +16,7 @@ exports.getAllVendors = async function (req, res) {
 };
 
 exports.getVendorById = async function (req, res) {
-    Vendor.getVendorById([req.params.vendorNo], (err, vendorCard) => {
+    Vendor.getVendorById([req.params.BIN], (err, vendorCard) => {
         if (err) {
             console.error('Error fetching vendor:', err);
             return res.status(500).json({ error: 'Error fetching vendor' });
@@ -30,7 +30,7 @@ exports.getVendorById = async function (req, res) {
 
 exports.createVendor = function (req, res) {
     const newVendor = {
-        vendorNo: req.body.vendorNo,
+        BIN: req.body.BIN,
         name: req.body.name,
         name2: req.body.name2,
         responsibilityCenter: req.body.responsibilityCenter,
@@ -67,7 +67,7 @@ exports.createVendor = function (req, res) {
     };
 
 
-    if (!newVendor.vendorNo || !newVendor.name) {
+    if (!newVendor.BIN || !newVendor.name) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -82,7 +82,7 @@ exports.createVendor = function (req, res) {
 
 exports.updateVendor = function (req, res) {
     const updatedVendor = {
-        vendorNo: req.body.vendorNo,
+        BIN: req.body.BIN,
         name: req.body.name,
         name2: req.body.name2,
         responsibilityCenter: req.body.responsibilityCenter,
@@ -118,11 +118,11 @@ exports.updateVendor = function (req, res) {
         updated_at: new Date()
     };
 
-    if (!req.params.vendorNo) {
+    if (!req.params.BIN) {
         return res.status(400).json({ error: 'Vendor ID is missing' });
     }
 
-    Vendor.updateVendor(req.params.vendorNo, updatedVendor, (err, result) => {
+    Vendor.updateVendor(req.params.BIN, updatedVendor, (err, result) => {
         if (err) {
             console.error('Error updating vendor:', err);
             return res.status(500).json({ error: 'Failed to update vendor' });
@@ -132,7 +132,7 @@ exports.updateVendor = function (req, res) {
 };
 
 exports.deleteVendor = function (req, res) {
-    Vendor.deleteVendor(req.params.vendorNo, (err, result) => {
+    Vendor.deleteVendor(req.params.BIN, (err, result) => {
         if (err) {
             console.error('Error deleting vendor:', err);
             return res.status(500).json({ error: 'Failed to delete vendor' });
