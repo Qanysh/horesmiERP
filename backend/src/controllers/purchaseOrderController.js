@@ -100,7 +100,6 @@ exports.updatePurchaseOrder = function (req, res) {
         purchaserCode: req.body.purchaserCode,
         assignedUserId: req.body.assignedUserId,
         currencyCode: req.body.currencyCode,
-        created_at: req.body.created_at,
         updated_at: new Date()
     };
 

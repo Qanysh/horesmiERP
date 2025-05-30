@@ -35,8 +35,34 @@ exports.getProductById = async function (req, res) {
     }
 };
 
+Product.getLastProductNo = function (callback) {
+    db.query(
+        "SELECT product_no FROM production ORDER BY product_no DESC LIMIT 1",
+        (err, results) => {
+            if (err) return callback(err);
+            if (results && results.length > 0) {
+                callback(null, results[0].product_no);
+            } else {
+                callback(null, null);
+            }
+        }
+    );
+};
+
 // Создание новой записи
 exports.createProduct = function (req, res) {
+    // Product.getLastProductNo((err, lastProductNo) => {
+    //     if (err) {
+    //         console.error('Error fetching last product_no:', err);
+    //         return res.status(500).json({ error: 'Failed to generate product_no' });
+    //     }
+    //     let nextProductNo = "PRD-001";
+    //     if (lastProductNo) {
+    //         const num = parseInt(lastProductNo.replace("PRD-", ""), 10) + 1;
+    //         nextProductNo = "PRD-" + String(num).padStart(3, "0");
+    //     }
+    // });
+
     const newProduct = {
         product_no: req.body.product_no,
         description: req.body.description,
@@ -71,7 +97,7 @@ exports.createProduct = function (req, res) {
         indirectCostPercent: req.body.indirectCostPercent,
         productCategoryCode: req.body.productCategoryCode,
         blocked: req.body.blocked,
-        lastDateModified: req.body.lastDateModified,
+        lastDateModified: new Date(),
         salesUnitOfMeasure: req.body.salesUnitOfMeasure,
         replenishmentSystem: req.body.replenishmentSystem,
         purchUnitOfMeasure: req.body.purchUnitOfMeasure,

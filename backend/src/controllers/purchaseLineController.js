@@ -224,7 +224,6 @@ exports.updatePurchaseLine = function (req, res) {
         outstandingAmountLCY: req.body.outstandingAmountLCY,
         amountRcdNotInvoicedLCY: req.body.amountRcdNotInvoicedLCY,
         isArchived: req.body.isArchived || false,
-        created_at: req.body.created_at,
         updated_at: new Date()
     };
 

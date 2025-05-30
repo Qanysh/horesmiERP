@@ -83,7 +83,6 @@ exports.updateWarehouse = function (req, res) {
         blocked: req.body.blocked,
         lastDateModified: req.body.lastDateModified,
         isArchived: req.body.isArchived || false,
-        created_at: req.body.created_at,
         updated_at: new Date()
     };
 

@@ -126,7 +126,6 @@ exports.updateCustomer = function (req, res) {
         balance_due_lcy: req.body.balance_due_lcy,
         sales_lcy: req.body.sales_lcy,
         payments_lcy: req.body.payments_lcy,
-        created_at: req.body.created_at,
         updated_at: new Date()
     };
 
