@@ -17,5 +17,5 @@ exports.updateCustomer = function (customer_no, updatedCustomer, callback) {
 };
 
 exports.deleteCustomer = function (customer_no, callback) {
-    db.query('UPDATE customer SET IsArchived = true WHERE customer_no = ?', [customer_no], callback);
+    db.query('UPDATE customer SET isArchived = true WHERE customer_no = ?', [customer_no], callback);
 };

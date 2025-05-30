@@ -20,5 +20,5 @@ exports.updatePurchaseLine = function (id, updatedPurchaseLine, callback) {
 };
 
 exports.deletePurchaseLine = function (id, callback) {
-    db.query('UPDATE purchaseLine SET IsArchived = true WHERE id = ?', [id], callback);
+    db.query('UPDATE purchaseLine SET isArchived = true WHERE id = ?', [id], callback);
 };
