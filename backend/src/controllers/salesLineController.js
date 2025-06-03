@@ -219,11 +219,11 @@ exports.updateSalesLine = function (req, res) {
         updated_at: new Date()
     };
 
-    if (!req.params.lineNo) {
-        return res.status(400).json({ error: 'SalesLine lineNo is missing' });
+    if (!req.params.id) {
+        return res.status(400).json({ error: 'SalesLine id is missing' });
     }
 
-    SalesLine.updateSalesLine(req.params.lineNo, updatedSalesLine, (err, result) => {
+    SalesLine.updateSalesLine(req.params.id, updatedSalesLine, (err, result) => {
         if (err) {
             console.error('Error updating salesLine:', err);
             return res.status(500).json({ error: 'Failed to update salesLine' });
@@ -233,7 +233,7 @@ exports.updateSalesLine = function (req, res) {
 };
 
 exports.deleteSalesLine = function (req, res) {
-    SalesLine.deleteSalesLine(req.params.lineNo, (err, result) => {
+    SalesLine.deleteSalesLine(req.params.id, (err, result) => {
         if (err) {
             console.error('Error deleting salesLine:', err);
             return res.status(500).json({ error: 'Failed to delete salesLine' });

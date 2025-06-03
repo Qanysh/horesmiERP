@@ -45,7 +45,8 @@ exports.updateUser = async function (req, res) {
         username: req.body.username,
         password: hashed_password,
         updated_at: currentDate,
-        admin: req.body.admin
+        admin: req.body.admin,
+        role: req.body.role
     };
 
     if (!req.body.id) {
