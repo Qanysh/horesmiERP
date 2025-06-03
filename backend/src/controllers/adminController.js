@@ -16,7 +16,8 @@ exports.getAllUsers = async function (req, res) {
         res.status(500).json({ error: 'Unexpected error fetching users' });
     }
 };
-exports.getUserById = async function (userId, req, res) {
+exports.getUserById = async function (req, res) {
+    userId = req.params.id;
     try {
         User.getUserById(userId, (err, user) => {
             if (err) {
