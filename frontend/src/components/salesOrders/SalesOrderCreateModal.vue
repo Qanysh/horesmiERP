@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { Loader2Icon } from 'lucide-vue-next'
 
 const props = defineProps(['open'])
 const emit = defineEmits(['update:open', 'saved'])
@@ -47,37 +48,67 @@ const form = ref({
   yourReference: '',
 })
 
+const errors = ref({})
+
+const validateForm = () => {
+  errors.value = {}
+  if (!form.value.no) errors.value.no = 'Order No is required'
+  if (!form.value.sellToCustomerNo) errors.value.sellToCustomerNo = 'Customer is required'
+  return Object.keys(errors.value).length === 0
+}
+
+const resetForm = () => {
+  form.value = {
+    no: '',
+    sellToCustomerNo: '',
+    sellToCustomerName: '',
+    postingDescription: '',
+    sellToAddress: '',
+    sellToCity: '',
+    sellToContact: '',
+    sellToPhoneNo: '',
+    sellToEmail: '',
+    dueDate: new Date().toISOString().split('T')[0],
+    orderDate: new Date().toISOString().split('T')[0],
+    status: 'Open',
+    currencyCode: 'RUB',
+    paymentTermsCode: '',
+    paymentMethodCode: '',
+    shipmentMethodCode: '',
+    yourReference: '',
+  }
+}
+
 onMounted(async () => {
-  await customersStore.fetchCustomers()
+  try {
+    await customersStore.fetchCustomers()
+  } catch (err) {
+    console.error('Failed to load customers:', err)
+  }
 })
 
+const handleCustomerSelect = (value) => {
+  form.value.sellToCustomerNo = value
+  const customer = customersStore.customers.find((c) => c.customer_no === value)
+  if (customer) {
+    form.value.sellToCustomerName = customer.name || ''
+    form.value.sellToAddress = customer.address || ''
+    form.value.sellToCity = customer.city || ''
+    form.value.sellToPhoneNo = customer.phone_no || ''
+    form.value.sellToEmail = customer.email || ''
+  }
+}
+
 const handleSubmit = async () => {
+  if (!validateForm()) return
   try {
     await store.createSalesOrder(form.value)
     emit('saved')
     emit('update:open', false)
-    // Reset form
-    form.value = {
-      no: '',
-      sellToCustomerNo: '',
-      sellToCustomerName: '',
-      postingDescription: '',
-      sellToAddress: '',
-      sellToCity: '',
-      sellToContact: '',
-      sellToPhoneNo: '',
-      sellToEmail: '',
-      dueDate: new Date().toISOString().split('T')[0],
-      orderDate: new Date().toISOString().split('T')[0],
-      status: 'Open',
-      currencyCode: 'RUB',
-      paymentTermsCode: '',
-      paymentMethodCode: '',
-      shipmentMethodCode: '',
-      yourReference: '',
-    }
+    resetForm()
   } catch (error) {
     console.error('Error creating sales order:', error)
+    errors.value.submit = 'Failed to create sales order'
   }
 }
 </script>
@@ -94,28 +125,40 @@ const handleSubmit = async () => {
         <div class="grid grid-cols-2 gap-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <label for="no" class="text-right">Order No</label>
-            <Input id="no" v-model="form.no" class="col-span-3" />
+            <div class="col-span-3">
+              <Input id="no" v-model="form.no" />
+              <p v-if="errors.no" class="text-red-500 text-xs mt-1">{{ errors.no }}</p>
+            </div>
           </div>
 
           <div class="grid grid-cols-4 items-center gap-4">
             <label for="sellToCustomerNo" class="text-right">Customer</label>
-            <Select v-model="form.sellToCustomerNo">
-              <SelectTrigger class="col-span-3">
-                <SelectValue placeholder="Select a customer" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Customers</SelectLabel>
-                  <SelectItem
-                    v-for="customer in customersStore.customers"
-                    :key="customer.customerNo"
-                    :value="customer.customerNo"
-                  >
-                    {{ customer.customerNo }} - {{ customer.name }}
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <div class="col-span-3">
+              <Select v-model="form.sellToCustomerNo" @update:modelValue="handleCustomerSelect">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a customer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Customers</SelectLabel>
+                    <div v-if="customersStore.loading" class="flex justify-center py-2">
+                      <Loader2Icon class="h-4 w-4 animate-spin" />
+                    </div>
+                    <SelectItem
+                      v-else
+                      v-for="customer in customersStore.customers"
+                      :key="customer.customer_no"
+                      :value="customer.customer_no"
+                    >
+                      {{ customer.customer_no }} - {{ customer.name }}
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <p v-if="errors.sellToCustomerNo" class="text-red-500 text-xs mt-1">
+                {{ errors.sellToCustomerNo }}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -167,9 +210,16 @@ const handleSubmit = async () => {
         </div>
       </div>
 
+      <div v-if="errors.submit" class="text-red-500 text-sm mb-4">{{ errors.submit }}</div>
+
       <div class="flex justify-end gap-2">
         <Button variant="outline" @click="emit('update:open', false)"> Cancel </Button>
-        <Button @click="handleSubmit"> Create </Button>
+        <Button
+          @click="handleSubmit"
+          :disabled="Object.keys(errors).length > 0 || customersStore.loading"
+        >
+          Create
+        </Button>
       </div>
     </DialogContent>
   </Dialog>

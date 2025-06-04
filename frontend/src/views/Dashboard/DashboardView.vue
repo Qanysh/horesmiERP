@@ -44,7 +44,6 @@ onMounted(async () => {
   }
 })
 
-// Summary data
 const summaryData = computed(() => ({
   totalOrders: purchaseOrdersStore.purchaseOrders.length,
   totalVendors: vendorsStore.vendors.length,

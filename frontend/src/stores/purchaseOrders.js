@@ -12,9 +12,11 @@ export const usePurchaseOrdersStore = defineStore('purchaseOrders', () => {
   const fetchPurchaseOrders = async () => {
     loading.value = true
     try {
-      purchaseOrders.value = await purchaseOrdersService.getPurchaseOrders()
+      const orders = await purchaseOrdersService.getPurchaseOrders()
+      purchaseOrders.value = orders
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to fetch purchase orders'
+      console.error('Error fetching purchase orders:', err)
     } finally {
       loading.value = false
     }
@@ -23,9 +25,15 @@ export const usePurchaseOrdersStore = defineStore('purchaseOrders', () => {
   const fetchPurchaseOrderByNo = async (no) => {
     loading.value = true
     try {
-      currentPurchaseOrder.value = await purchaseOrdersService.getPurchaseOrderByNo(no)
+      const order = await purchaseOrdersService.getPurchaseOrderByNo(no)
+      if (order.isArchived) {
+        throw new Error('Purchase order is archived')
+      }
+      currentPurchaseOrder.value = order
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to fetch purchase order'
+      console.error('Error fetching purchase order:', err)
+      throw err
     } finally {
       loading.value = false
     }
@@ -37,7 +45,7 @@ export const usePurchaseOrdersStore = defineStore('purchaseOrders', () => {
       const lines = await purchaseOrdersService.getPurchaseLinesByDocumentNo(documentNo)
       purchaseLinesByDocumentNo.value[documentNo] = lines
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to fetch purchase lines'
       purchaseLinesByDocumentNo.value[documentNo] = []
       console.error(`Error fetching purchase lines for ${documentNo}:`, err)
     } finally {
@@ -51,7 +59,8 @@ export const usePurchaseOrdersStore = defineStore('purchaseOrders', () => {
       await purchaseOrdersService.createPurchaseOrder(data)
       await fetchPurchaseOrders()
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to create purchase order'
+      console.error('Error creating purchase order:', err)
       throw err
     } finally {
       loading.value = false
@@ -64,7 +73,8 @@ export const usePurchaseOrdersStore = defineStore('purchaseOrders', () => {
       await purchaseOrdersService.updatePurchaseOrder(no, data)
       await fetchPurchaseOrders()
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to update purchase order'
+      console.error('Error updating purchase order:', err)
       throw err
     } finally {
       loading.value = false
@@ -77,7 +87,8 @@ export const usePurchaseOrdersStore = defineStore('purchaseOrders', () => {
       await purchaseOrdersService.deletePurchaseOrder(no)
       await fetchPurchaseOrders()
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to archive purchase order'
+      console.error('Error deleting purchase order:', err)
       throw err
     } finally {
       loading.value = false
@@ -93,7 +104,8 @@ export const usePurchaseOrdersStore = defineStore('purchaseOrders', () => {
       }
       return response
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to create purchase line'
+      console.error('Error creating purchase line:', err)
       throw err
     } finally {
       loading.value = false
@@ -109,7 +121,8 @@ export const usePurchaseOrdersStore = defineStore('purchaseOrders', () => {
       }
       return response
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to update purchase line'
+      console.error('Error updating purchase line:', err)
       throw err
     } finally {
       loading.value = false
@@ -124,7 +137,8 @@ export const usePurchaseOrdersStore = defineStore('purchaseOrders', () => {
         await fetchPurchaseLinesByDocumentNo(currentPurchaseOrder.value.no)
       }
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to delete purchase line'
+      console.error('Error deleting purchase line:', err)
       throw err
     } finally {
       loading.value = false

@@ -12,13 +12,14 @@ const isCreateModalOpen = ref(false)
 const searchQuery = ref('')
 
 const filteredSalesOrders = computed(() => {
-  if (!searchQuery.value) return store.salesOrders
-  return store.salesOrders.filter(
-    (order) =>
-      order.no.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      (order.sellToCustomerNo &&
-        order.sellToCustomerNo.toLowerCase().includes(searchQuery.value.toLowerCase())),
-  )
+  if (!searchQuery.value.trim()) return store.salesOrders
+  const query = searchQuery.value.trim().toLowerCase()
+  return store.salesOrders.filter((order) => {
+    return (
+      (order.no || '').toLowerCase().includes(query) ||
+      (order.sellToCustomerNo || '').toLowerCase().includes(query)
+    )
+  })
 })
 
 onMounted(() => {
@@ -38,7 +39,6 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Search Input -->
     <div class="relative">
       <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
       <Input
@@ -50,7 +50,7 @@ onMounted(() => {
 
     <SalesOrdersTable :salesOrders="filteredSalesOrders" />
     <div class="text-sm text-muted-foreground">
-      Showing {{ store.salesOrders.length }} sales orders
+      Showing {{ filteredSalesOrders.length }} of {{ store.salesOrders.length }} sales orders
     </div>
 
     <SalesOrderCreateModal v-model:open="isCreateModalOpen" @saved="store.fetchSalesOrders()" />

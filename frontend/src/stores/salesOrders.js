@@ -9,12 +9,13 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
   const loading = ref(false)
   const error = ref(null)
 
-  const fetchSalesOrders = async () => {
+  const fetchSalesOrders = async (isArchived = 0) => {
     loading.value = true
     try {
-      salesOrders.value = await salesOrdersService.getSalesOrders()
+      salesOrders.value = await salesOrdersService.getSalesOrders(isArchived)
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.message || 'Failed to fetch sales orders'
+      console.error(error.value)
     } finally {
       loading.value = false
     }
@@ -25,7 +26,8 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
     try {
       currentSalesOrder.value = await salesOrdersService.getSalesOrderByNo(no)
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.message || 'Failed to fetch sales order'
+      console.error(error.value)
     } finally {
       loading.value = false
     }
@@ -35,9 +37,9 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
     loading.value = true
     try {
       const lines = await salesOrdersService.getSalesLinesByDocumentNo(documentNo)
-      salesLinesByDocumentNo.value[documentNo] = lines
+      salesLinesByDocumentNo.value[documentNo] = lines || []
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.message || 'Failed to fetch sales lines'
       salesLinesByDocumentNo.value[documentNo] = []
       console.error(`Error fetching sales lines for ${documentNo}:`, err)
     } finally {
@@ -51,7 +53,8 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
       await salesOrdersService.createSalesOrder(data)
       await fetchSalesOrders()
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.message || 'Failed to create sales order'
+      console.error(error.value)
       throw err
     } finally {
       loading.value = false
@@ -64,7 +67,8 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
       await salesOrdersService.updateSalesOrder(no, data)
       await fetchSalesOrders()
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.message || 'Failed to update sales order'
+      console.error(error.value)
       throw err
     } finally {
       loading.value = false
@@ -77,7 +81,8 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
       await salesOrdersService.deleteSalesOrder(no)
       await fetchSalesOrders()
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.message || 'Failed to delete sales order'
+      console.error(error.value)
       throw err
     } finally {
       loading.value = false
@@ -93,7 +98,8 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
       }
       return response
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.message || 'Failed to create sales line'
+      console.error(error.value)
       throw err
     } finally {
       loading.value = false
@@ -109,7 +115,8 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
       }
       return response
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.message || 'Failed to update sales line'
+      console.error(error.value)
       throw err
     } finally {
       loading.value = false
@@ -124,7 +131,8 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
         await fetchSalesLinesByDocumentNo(currentSalesOrder.value.no)
       }
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.message || 'Failed to delete sales line'
+      console.error(error.value)
       throw err
     } finally {
       loading.value = false

@@ -12,12 +12,14 @@ const isCreateModalOpen = ref(false)
 const searchQuery = ref('')
 
 const filteredPurchaseOrders = computed(() => {
-  if (!searchQuery.value) return store.purchaseOrders
-  return store.purchaseOrders.filter(
-    (order) =>
-      order.no.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      (order.vendorNo && order.vendorNo.toLowerCase().includes(searchQuery.value.toLowerCase())),
-  )
+  if (!searchQuery.value.trim()) return store.purchaseOrders
+  const query = searchQuery.value.trim().toLowerCase()
+  return store.purchaseOrders.filter((order) => {
+    return (
+      (order.no || '').toLowerCase().includes(query) ||
+      (order.vendorNo || '').toLowerCase().includes(query)
+    )
+  })
 })
 
 onMounted(() => {
@@ -37,7 +39,6 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Search Input -->
     <div class="relative">
       <SearchIcon class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
       <Input
@@ -49,7 +50,8 @@ onMounted(() => {
 
     <PurchaseOrdersTable :purchaseOrders="filteredPurchaseOrders" />
     <div class="text-sm text-muted-foreground">
-      Showing {{ store.purchaseOrders.length }} purchase orders
+      Showing {{ filteredPurchaseOrders.length }} of {{ store.purchaseOrders.length }} purchase
+      orders
     </div>
 
     <PurchaseOrderCreateModal

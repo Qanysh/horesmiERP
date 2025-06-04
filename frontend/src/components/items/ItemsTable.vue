@@ -76,7 +76,7 @@ const filteredItems = computed(() => {
           <SelectValue placeholder="Filter by status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Items</SelectItem>
+          <SelectItem value="all">All Orders</SelectItem>
           <SelectItem value="active">Active Only</SelectItem>
           <SelectItem value="archived">Archived Only</SelectItem>
         </SelectContent>

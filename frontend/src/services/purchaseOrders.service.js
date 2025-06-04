@@ -32,7 +32,7 @@ export default {
   },
 
   async deletePurchaseOrder(no) {
-    const response = await api.delete(`/PurchaseHeaders/${no}`)
+    const response = await api.delete(`/PurchaseHeaders/delete/${no}`)
     return response.data
   },
 

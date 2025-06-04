@@ -44,6 +44,18 @@ const form = ref({
   shipmentDate: '',
 })
 
+const errors = ref({})
+
+const validateForm = () => {
+  errors.value = {}
+  if (!form.value.no) errors.value.no = 'Item No is required'
+  if (!form.value.quantity || form.value.quantity <= 0)
+    errors.value.quantity = 'Valid quantity is required'
+  if (!form.value.unitPrice || form.value.unitPrice < 0)
+    errors.value.unitPrice = 'Valid unit price is required'
+  return Object.keys(errors.value).length === 0
+}
+
 const lineAmount = computed(() => {
   const quantity = parseFloat(form.value.quantity) || 0
   const price = parseFloat(form.value.unitPrice) || 0
@@ -56,7 +68,11 @@ watch(
     if (val) {
       form.value = {
         ...val,
+        documentNo: val.documentNo || props.documentNo,
         shipmentDate: val.shipmentDate ? val.shipmentDate.split('T')[0] : '',
+        quantity: val.quantity ? parseFloat(val.quantity).toString() : '',
+        unitPrice: val.unitPrice ? parseFloat(val.unitPrice).toString() : '',
+        lineAmount: val.lineAmount ? parseFloat(val.lineAmount).toString() : '',
       }
     } else {
       form.value = {
@@ -85,11 +101,18 @@ watch(
   },
 )
 
+watch(lineAmount, (newVal) => {
+  form.value.lineAmount = newVal
+})
+
 const handleSubmit = async () => {
+  if (!validateForm()) return
   try {
     const data = {
       ...form.value,
-      lineAmount: lineAmount.value,
+      lineAmount: parseFloat(lineAmount.value),
+      quantity: parseFloat(form.value.quantity),
+      unitPrice: parseFloat(form.value.unitPrice),
     }
 
     if (form.value.id) {
@@ -121,57 +144,56 @@ const handleSubmit = async () => {
         <div class="grid grid-cols-2 gap-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <label for="no" class="text-right">Item No</label>
-            <Input id="no" v-model="form.no" class="col-span-3" />
+            <div class="col-span-3">
+              <Input id="no" v-model="form.no" />
+              <p v-if="errors.no" class="text-red-500 text-xs mt-1">{{ errors.no }}</p>
+            </div>
           </div>
 
           <div class="grid grid-cols-4 items-center gap-4">
             <label for="quantity" class="text-right">Quantity</label>
-            <Input
-              id="quantity"
-              v-model="form.quantity"
-              type="number"
-              class="col-span-3"
-              @change="form.lineAmount = lineAmount"
-            />
+            <div class="col-span-3">
+              <Input id="quantity" v-model="form.quantity" type="number" min="0" />
+              <p v-if="errors.quantity" class="text-red-500 text-xs mt-1">{{ errors.quantity }}</p>
+            </div>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <label for="unitPrice" class="text-right">Unit Price</label>
-            <Input
-              id="unitPrice"
-              v-model="form.unitPrice"
-              type="number"
-              class="col-span-3"
-              @change="form.lineAmount = lineAmount"
-            />
+            <div class="col-span-3">
+              <Input id="unitPrice" v-model="form.unitPrice" type="number" min="0" step="0.01" />
+              <p v-if="errors.unitPrice" class="text-red-500 text-xs mt-1">
+                {{ errors.unitPrice }}
+              </p>
+            </div>
           </div>
 
           <div class="grid grid-cols-4 items-center gap-4">
             <label for="unitOfMeasureCode" class="text-right">UOM</label>
-            <Input id="unitOfMeasureCode" v-model="form.unitOfMeasureCode" class="col-span-3" />
+            <Input id="unitOfMeasureCode" v-model="form.unitOfMeasureCode" />
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <label for="shipmentDate" class="text-right">Shipment Date</label>
-            <Input id="shipmentDate" v-model="form.shipmentDate" type="date" class="col-span-3" />
+            <Input id="shipmentDate" v-model="form.shipmentDate" type="date" />
           </div>
         </div>
 
         <div class="grid grid-cols-1 gap-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <label for="description" class="text-right">Description</label>
-            <Input id="description" v-model="form.description" class="col-span-3" />
+            <Input id="description" v-model="form.description" />
           </div>
         </div>
 
         <div class="grid grid-cols-1 gap-4">
           <div class="grid grid-cols-4 items-center gap-4">
             <label for="description2" class="text-right">Description 2</label>
-            <Input id="description2" v-model="form.description2" class="col-span-3" />
+            <Input id="description2" v-model="form.description2" />
           </div>
         </div>
 
@@ -187,7 +209,7 @@ const handleSubmit = async () => {
 
       <div class="flex justify-end gap-2">
         <Button variant="outline" @click="emit('update:open', false)"> Cancel </Button>
-        <Button @click="handleSubmit"> Save </Button>
+        <Button @click="handleSubmit" :disabled="Object.keys(errors).length > 0"> Save </Button>
       </div>
     </DialogContent>
   </Dialog>

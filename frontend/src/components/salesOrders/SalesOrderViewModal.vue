@@ -11,7 +11,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { ChevronDownIcon, ChevronRightIcon } from 'lucide-vue-next'
+import { ChevronDownIcon, ChevronRightIcon, Loader2Icon } from 'lucide-vue-next'
 
 const customersStore = useCustomersStore()
 const salesOrdersStore = useSalesOrdersStore()
@@ -22,10 +22,11 @@ const props = defineProps({
 
 const emit = defineEmits(['update:open'])
 const showLines = ref(false)
+const printing = ref(false)
 
 const getCustomerName = (customerNo) => {
-  const customer = customersStore.customers.find((c) => c.customerNo === customerNo)
-  return customer ? `${customer.customerNo} - ${customer.name}` : customerNo
+  const customer = customersStore.customers.find((c) => c.customer_no === customerNo)
+  return customer ? `${customer.customer_no} - ${customer.name}` : customerNo
 }
 
 const formatDate = (dateString) => {
@@ -45,11 +46,17 @@ const toggleLines = async () => {
   }
 }
 
-const handlePrint = () => {
+const handlePrint = async () => {
   if (!props.salesOrder?.no) return
-
-  const url = `http://localhost:3000/api/reports/salesOrder/${props.salesOrder.no}`
-  window.open(url, '_blank')
+  printing.value = true
+  try {
+    const url = `http://localhost:3000/api/reports/salesOrder/${props.salesOrder.no}`
+    window.open(url, '_blank')
+  } catch (error) {
+    console.error('Error printing sales order:', error)
+  } finally {
+    printing.value = false
+  }
 }
 
 watch(
@@ -75,7 +82,7 @@ watch(
         <div class="grid grid-cols-2 gap-4">
           <div>
             <h3 class="font-semibold mb-2">Order Information</h3>
-            <div class="space-y-2">
+            <div class="space-y-1">
               <p><span class="font-medium">No:</span> {{ salesOrder.no }}</p>
               <p>
                 <span class="font-medium">Customer:</span>
@@ -91,14 +98,13 @@ watch(
           </div>
           <div>
             <h3 class="font-semibold mb-2">Financial Information</h3>
-            <div class="space-y-2">
+            <div class="space-y-1">
               <p><span class="font-medium">Currency:</span> {{ salesOrder.currencyCode }}</p>
               <p>
                 <span class="font-medium">Payment Terms:</span> {{ salesOrder.paymentTermsCode }}
               </p>
               <p>
-                <span class="font-medium">Payment Method:</span>
-                {{ salesOrder.paymentMethodCode }}
+                <span class="font-medium">Payment Method:</span> {{ salesOrder.paymentMethodCode }}
               </p>
               <p>
                 <span class="font-medium">Your Reference:</span>
@@ -143,7 +149,10 @@ watch(
         </Button>
 
         <div v-if="showLines" class="mt-2 border rounded-lg p-4">
-          <div class="overflow-auto">
+          <div v-if="salesOrdersStore.loading" class="flex justify-center py-4">
+            <Loader2Icon class="h-6 w-6 animate-spin text-gray-500" />
+          </div>
+          <div v-else class="overflow-auto">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
@@ -192,9 +201,7 @@ watch(
                   "
                 >
                   <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
-                    {{
-                      salesOrdersStore.loading ? 'Loading sales lines...' : 'No sales lines found'
-                    }}
+                    No sales lines found
                   </td>
                 </tr>
                 <tr
@@ -226,7 +233,10 @@ watch(
       </div>
 
       <div class="flex justify-end gap-2">
-        <Button @click="handlePrint"> Post & Print </Button>
+        <Button @click="handlePrint" :disabled="printing">
+          <Loader2Icon v-if="printing" class="h-4 w-4 animate-spin mr-2" />
+          Post & Print
+        </Button>
         <Button variant="outline" @click="emit('update:open', false)"> Close </Button>
       </div>
     </DialogContent>

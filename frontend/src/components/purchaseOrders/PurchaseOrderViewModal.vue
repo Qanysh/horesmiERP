@@ -1,8 +1,7 @@
-<!-- PurchaseOrderViewModal.vue -->
 <script setup>
 import { ref, watch } from 'vue'
 import { useVendorsStore } from '@/stores/vendors'
-import { usePurchaseOrdersStore } from '@/stores/purchaseOrders.js'
+import { usePurchaseOrdersStore } from '@/stores/purchaseOrders'
 
 import {
   Dialog,
@@ -23,41 +22,49 @@ const props = defineProps({
 
 const emit = defineEmits(['update:open'])
 const showLines = ref(false)
+const errorMessage = ref('')
 
 const getVendorName = (vendorNo) => {
-  const vendor = vendorsStore.vendors.find((v) => v.vendorNo === vendorNo)
-  return vendor ? `${vendor.vendorNo} - ${vendor.name}` : vendorNo
+  const vendor = vendorsStore.vendors.find((v) => v.BIN === vendorNo)
+  return vendor ? `${vendor.no} - ${vendor.name}` : vendorNo
 }
 
 const formatDate = (dateString) => {
   if (!dateString) return ''
   const date = new Date(dateString)
-  return date.toLocaleDateString()
+  return isNaN(date) ? '' : date.toLocaleDateString()
 }
 
 const toggleLines = async () => {
   showLines.value = !showLines.value
-  try {
-    if (showLines.value && props.purchaseOrder?.no) {
+  if (showLines.value && props.purchaseOrder?.no) {
+    try {
       await purchaseOrdersStore.fetchPurchaseLinesByDocumentNo(props.purchaseOrder.no)
+      errorMessage.value = ''
+    } catch (error) {
+      errorMessage.value = error.response?.data?.message || 'Failed to load purchase lines'
+      console.error('Error fetching purchase lines:', error)
     }
-  } catch (error) {
-    console.error('Error fetching purchase lines:', error)
   }
 }
 
 const handlePrint = () => {
   if (!props.purchaseOrder?.no) return
-
-  const url = `http://localhost:3000/api/reports/purchaseOrder/${props.purchaseOrder.no}`
+  const url = `http://localhost:3000/api/purchase/printed/${props.purchaseOrder.no}`
   window.open(url, '_blank')
 }
 
 watch(
   () => props.purchaseOrder,
-  (newVal) => {
+  async (newVal) => {
     if (newVal && newVal.no) {
-      purchaseOrdersStore.fetchPurchaseLinesByDocumentNo(newVal.no)
+      try {
+        await purchaseOrdersStore.fetchPurchaseLinesByDocumentNo(newVal.no)
+        errorMessage.value = ''
+      } catch (error) {
+        errorMessage.value = error.response?.data?.message || 'Failed to load purchase lines'
+        console.error('Error fetching purchase lines:', error)
+      }
     }
   },
   { immediate: true },
@@ -66,17 +73,21 @@ watch(
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="sm:max-w-[900px]">
+    <DialogContent class="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle>Purchase Order Details</DialogTitle>
-        <DialogDescription> View all details of this purchase order </DialogDescription>
+        <DialogTitle> Purchase Order Details </DialogTitle>
+        <DialogDescription>View all details of this purchase order</DialogDescription>
       </DialogHeader>
+
+      <div v-if="errorMessage" class="text-red-500 text-sm mb-4">
+        {{ errorMessage }}
+      </div>
 
       <div v-if="purchaseOrder" class="grid gap-4 py-4">
         <div class="grid grid-cols-2 gap-4">
           <div>
             <h3 class="font-semibold mb-2">Order Information</h3>
-            <div class="space-y-2">
+            <div class="space-y-1">
               <p><span class="font-medium">No:</span> {{ purchaseOrder.no }}</p>
               <p>
                 <span class="font-medium">Vendor:</span> {{ getVendorName(purchaseOrder.vendorNo) }}
@@ -93,7 +104,7 @@ watch(
           </div>
           <div>
             <h3 class="font-semibold mb-2">Financial Information</h3>
-            <div class="space-y-2">
+            <div class="space-y-1">
               <p><span class="font-medium">Currency:</span> {{ purchaseOrder.currencyCode }}</p>
               <p>
                 <span class="font-medium">Payment Terms:</span> {{ purchaseOrder.paymentTermsCode }}
@@ -126,7 +137,7 @@ watch(
             </div>
           </div>
           <div>
-            <h3 class="font-semibold mb-2">Remit To</h3>
+            <h3 class="font-semibold mb-2">Receipt</h3>
             <div class="space-y-1">
               <p>{{ purchaseOrder.remitToName }}</p>
               <p>{{ purchaseOrder.remitToAddress }}</p>
@@ -146,7 +157,10 @@ watch(
           <ChevronDownIcon v-else class="h-4 w-4" />
         </Button>
 
-        <div v-if="showLines" class="mt-2 border rounded-lg p-4">
+        <div v-if="showLines" class="mt-2 border rounded-lg p-4 max-h-[300px] overflow-y-auto">
+          <div v-if="errorMessage" class="text-red-500 text-sm mb-4">
+            {{ errorMessage }}
+          </div>
           <div class="overflow-auto">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
@@ -201,7 +215,7 @@ watch(
                     {{
                       purchaseOrdersStore.loading
                         ? 'Loading purchase lines...'
-                        : 'No purchase lines found'
+                        : errorMessage || 'No purchase lines found'
                     }}
                   </td>
                 </tr>
@@ -235,8 +249,8 @@ watch(
       </div>
 
       <div class="flex justify-end gap-2">
-        <Button @click="handlePrint"> Post & Print </Button>
-        <Button variant="outline" @click="emit('update:open', false)"> Close </Button>
+        <Button @click="handlePrint">Post & Print</Button>
+        <Button variant="outline" @click="emit('update:open')">Close</Button>
       </div>
     </DialogContent>
   </Dialog>

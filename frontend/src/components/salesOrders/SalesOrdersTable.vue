@@ -1,12 +1,5 @@
 <script setup>
-defineProps({
-  salesOrders: {
-    type: Array,
-    required: true,
-  },
-})
-
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useSalesOrdersStore } from '@/stores/salesOrders'
 import { useCustomersStore } from '@/stores/customers'
 import { Button } from '@/components/ui/button'
@@ -18,6 +11,7 @@ import {
   Trash2Icon,
   MoreHorizontal,
   EyeIcon,
+  Loader2Icon,
 } from 'lucide-vue-next'
 import SalesOrderEditModal from './SalesOrderEditModal.vue'
 import SalesOrderViewModal from './SalesOrderViewModal.vue'
@@ -37,15 +31,35 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+const props = defineProps({
+  salesOrders: {
+    type: Array,
+    required: true,
+  },
+})
 
 const store = useSalesOrdersStore()
 const customersStore = useCustomersStore()
 const isEditModalOpen = ref(false)
 const isViewModalOpen = ref(false)
 const selectedSalesOrder = ref(null)
+const archiveFilter = ref('active')
+const loading = ref(false)
 
 onMounted(async () => {
-  await customersStore.fetchCustomers()
+  try {
+    await customersStore.fetchCustomers()
+  } catch (err) {
+    console.error('Failed to load customers:', err)
+  }
 })
 
 const openEditModal = (order) => {
@@ -59,41 +73,88 @@ const openViewModal = (order) => {
 }
 
 const handleDelete = async (no) => {
-  if (confirm('Are you sure you want to delete this sales order?')) {
-    await store.deleteSalesOrder(no)
+  if (confirm('Are you sure you want to archive this sales order?')) {
+    try {
+      loading.value = true
+      await store.deleteSalesOrder(no)
+      await store.fetchSalesOrders()
+    } catch (err) {
+      console.error('Failed to archive sales order:', err)
+      alert(`Failed to archive sales order: ${err.response?.data?.message || err.message}`)
+    } finally {
+      loading.value = false
+    }
   }
 }
 
 const getCustomerName = (customerNo) => {
-  const customer = customersStore.customers.find((c) => c.customerNo === customerNo)
+  const customer = customersStore.customers.find((c) => c.customer_no === customerNo)
   return customer ? customer.name : customerNo
 }
 
 const expandedRows = ref({})
 
-const toggleRow = (no) => {
+const toggleRow = async (no) => {
   expandedRows.value[no] = !expandedRows.value[no]
   if (expandedRows.value[no]) {
-    store.fetchSalesLinesByDocumentNo(no)
+    await store.fetchSalesLinesByDocumentNo(no)
   }
 }
+
+const filteredSalesLines = (documentNo) => {
+  return store.salesLinesByDocumentNo[documentNo] || []
+}
+
+const filteredSalesOrders = computed(() => {
+  return props.salesOrders.filter((order) => {
+    if (archiveFilter.value === 'active') return !order.isArchived
+    if (archiveFilter.value === 'archived') return order.isArchived
+    return true
+  })
+})
 
 const isLineModalOpen = ref(false)
 const selectedSalesLine = ref(null)
 
 const openLineEditModal = (line, documentNo) => {
-  selectedSalesLine.value = line ? { ...line } : null
+  selectedSalesLine.value = line ? { ...line, documentNo } : { documentNo }
   isLineModalOpen.value = true
 }
 
-const filteredSalesLines = (documentNo) => {
-  const lines = store.salesLinesByDocumentNo[documentNo] || []
-  return lines
+const handleDeleteLine = async (lineId, documentNo) => {
+  if (confirm('Are you sure you want to delete this sales line?')) {
+    try {
+      loading.value = true
+      await store.deleteSalesLine(lineId)
+      await store.fetchSalesLinesByDocumentNo(documentNo)
+    } catch (error) {
+      console.error('Delete line failed:', error)
+      alert(`Failed to delete sales line: ${error.response?.data?.message || error.message}`)
+    } finally {
+      loading.value = false
+    }
+  }
 }
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
+  <div class="h-full flex flex-col space-y-4">
+    <div class="flex items-center gap-4">
+      <Select v-model="archiveFilter" :disabled="loading">
+        <SelectTrigger class="w-[180px]">
+          <SelectValue placeholder="Filter by status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Orders</SelectItem>
+          <SelectItem value="active">Active Only</SelectItem>
+          <SelectItem value="archived">Archived Only</SelectItem>
+        </SelectContent>
+      </Select>
+      <div class="text-sm text-muted-foreground">
+        Showing {{ filteredSalesOrders.length }} of {{ store.salesOrders.length }} sales orders
+      </div>
+    </div>
+
     <div class="relative flex-1 overflow-auto">
       <Table class="border-b">
         <TableHeader class="sticky top-0 bg-gray-50 dark:bg-gray-800 z-10">
@@ -107,14 +168,17 @@ const filteredSalesLines = (documentNo) => {
             <TableHead>Due Date</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Amount</TableHead>
+            <TableHead>Archive Status</TableHead>
             <TableHead class="text-right w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow v-if="salesOrders.length === 0">
-            <TableCell colspan="7" class="text-center py-4"> No sales orders found </TableCell>
+          <TableRow v-if="filteredSalesOrders.length === 0">
+            <TableCell colspan="9" class="text-center py-4">
+              {{ store.loading ? 'Loading sales orders...' : 'No sales orders found' }}
+            </TableCell>
           </TableRow>
-          <template v-for="order in salesOrders" :key="order.no">
+          <template v-for="order in filteredSalesOrders" :key="order.no">
             <TableRow>
               <TableCell>
                 <Button variant="ghost" size="icon" @click="toggleRow(order.no)">
@@ -132,10 +196,15 @@ const filteredSalesLines = (documentNo) => {
                 </Badge>
               </TableCell>
               <TableCell>{{ order.totalAmount || '0.00' }}</TableCell>
+              <TableCell>
+                <Badge :variant="order.isArchived ? 'destructive' : 'default'">
+                  {{ order.isArchived ? 'Archived' : 'Active' }}
+                </Badge>
+              </TableCell>
               <TableCell class="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger as-child>
-                    <Button variant="ghost" class="h-8 w-8 p-0">
+                    <Button variant="ghost" class="h-8 w-8 p-0" :disabled="loading">
                       <MoreHorizontal class="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -154,14 +223,14 @@ const filteredSalesLines = (documentNo) => {
                     </DropdownMenuItem>
                     <DropdownMenuItem @click="handleDelete(order.no)" class="text-red-500">
                       <Trash2Icon class="mr-2 h-4 w-4" />
-                      Delete
+                      Archive
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
             </TableRow>
             <TableRow v-if="expandedRows[order.no]" class="bg-gray-50 dark:bg-gray-800">
-              <TableCell colspan="8">
+              <TableCell colspan="9">
                 <div class="p-4">
                   <h4 class="font-semibold mb-2">Sales Lines</h4>
                   <Table>
@@ -174,6 +243,7 @@ const filteredSalesLines = (documentNo) => {
                         <TableHead>Unit Price</TableHead>
                         <TableHead>Amount</TableHead>
                         <TableHead>Shipment Date</TableHead>
+                        <TableHead class="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -183,7 +253,7 @@ const filteredSalesLines = (documentNo) => {
                           filteredSalesLines(order.no).length === 0
                         "
                       >
-                        <TableCell colspan="7" class="text-center py-4">
+                        <TableCell colspan="8" class="text-center py-4">
                           {{ store.loading ? 'Loading sales lines...' : 'No sales lines found' }}
                         </TableCell>
                       </TableRow>
@@ -197,6 +267,28 @@ const filteredSalesLines = (documentNo) => {
                         <TableCell>{{
                           line.shipmentDate ? new Date(line.shipmentDate).toLocaleDateString() : ''
                         }}</TableCell>
+                        <TableCell class="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                              <Button variant="ghost" class="h-8 w-8 p-0">
+                                <MoreHorizontal class="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem @click="openLineEditModal(line, order.no)">
+                                <PencilIcon class="mr-2 h-4 w-4" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                @click="handleDeleteLine(line.id, order.no)"
+                                class="text-red-500"
+                              >
+                                <Trash2Icon class="mr-2 h-4 w-4" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
