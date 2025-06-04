@@ -71,8 +71,7 @@ exports.updateProductionTool = function (req, res) {
         type: req.body.type,
         locationCode: req.body.locationCode,
         status: req.body.status,
-        isArchived: req.body.isArchived,
-        created_at: req.body.created_at,
+        isArchived: req.body.isArchived || false,
         updated_at: new Date()
     };
 
