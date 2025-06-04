@@ -9,7 +9,7 @@ router.get('/byDocumentNo/:documentNo', purchaseLineController.getPurchaseLineBy
 router.post('/create', purchaseLineController.createPurchaseLine);
 
 router.get('/update/:id', purchaseLineController.getPurchaseLineById);
-router.put('/update/:lineNo', purchaseLineController.updatePurchaseLine);
+router.put('/update/:id', purchaseLineController.updatePurchaseLine);
 router.delete('/delete/:id', purchaseLineController.deletePurchaseLine);
 
 module.exports = router;
