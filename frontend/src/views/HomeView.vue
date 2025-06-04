@@ -1,13 +1,14 @@
-<!-- @/views/HomeView.vue -->
 <script setup>
 import { RouterLink } from 'vue-router'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, ShoppingCart, Users, Package, UserCheck } from 'lucide-vue-next'
+import AppHeader from '@/components/layout/AppHeader.vue'
 </script>
 
 <template>
   <div class="flex flex-col min-h-screen">
+    <AppHeader />
     <section class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 rounded-lg">
       <div class="container mx-auto px-4 text-center">
         <h1 class="text-4xl md:text-5xl font-bold mb-4">Streamline Your Inventory Management</h1>
