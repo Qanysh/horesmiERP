@@ -161,6 +161,10 @@ const handleSubmit = async () => {
       errorMessage.value = 'Item No is required'
       return
     }
+    if (!form.value.lineNo) {
+      errorMessage.value = 'Line No is required'
+      return
+    }
     if (!form.value.quantity || parseFloat(form.value.quantity) <= 0) {
       errorMessage.value = 'Quantity must be greater than 0'
       return
@@ -194,19 +198,15 @@ const handleSubmit = async () => {
 
     if (!form.value.id) {
       delete data.id
-    }
-
-    if (form.value.id) {
-      await purchaseOrdersStore.updatePurchaseLine(form.value.id, data)
-    } else {
       await purchaseOrdersStore.createPurchaseLine(data)
+    } else {
+      await purchaseOrdersStore.updatePurchaseLine(form.value.id, data)
     }
     emit('saved')
     emit('update:open', false)
     errorMessage.value = ''
   } catch (error) {
     errorMessage.value = error.response?.data?.message || 'Failed to save purchase line'
-    console.error('Error saving purchase line:', error)
     emit('error', errorMessage.value)
   }
 }
@@ -214,7 +214,7 @@ const handleSubmit = async () => {
 
 <template>
   <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-    <DialogContent class="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+    <DialogContent class="sm:max-w-[700px] max-h-[90vh] overflow-y-auto p-6">
       <DialogHeader>
         <DialogTitle>{{ purchaseLine ? 'Edit Purchase Line' : 'Add Purchase Line' }}</DialogTitle>
         <DialogDescription
@@ -227,172 +227,134 @@ const handleSubmit = async () => {
       </div>
 
       <div class="grid gap-4 py-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="no" class="text-right">Item No</label>
-            <Select v-model="form.no" class="col-span-3" :disabled="itemsStore.loading">
-              <SelectTrigger>
-                <SelectValue
-                  :placeholder="
-                    itemsStore.loading
-                      ? 'Loading items...'
-                      : itemsStore.error
-                        ? 'Failed to load items'
-                        : 'Select an item'
-                  "
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Items</SelectLabel>
-                  <SelectItem
-                    v-for="item in itemsStore.items"
-                    :key="item.item_no"
-                    :value="item.item_no"
-                  >
-                    {{ item.item_no }} - {{ item.description }}
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="quantity" class="text-right">Quantity</label>
-            <Input
-              id="quantity"
-              v-model="form.quantity"
-              type="number"
-              step="0.00001"
-              class="col-span-3"
-              required
-            />
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="no" class="text-right font-medium">Item No</label>
+          <Select v-model="form.no" class="col-span-3" :disabled="itemsStore.loading">
+            <SelectTrigger>
+              <SelectValue
+                :placeholder="
+                  itemsStore.loading
+                    ? 'Loading items...'
+                    : itemsStore.error
+                      ? 'Failed to load items'
+                      : 'Select an item'
+                "
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Items</SelectLabel>
+                <SelectItem
+                  v-for="item in itemsStore.items"
+                  :key="item.item_no"
+                  :value="item.item_no"
+                >
+                  {{ item.item_no }} - {{ item.description }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="directUnitCost" class="text-right">Unit Cost</label>
-            <Input
-              id="directUnitCost"
-              v-model="form.directUnitCost"
-              type="number"
-              step="0.01"
-              class="col-span-3"
-              required
-            />
-          </div>
-
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="unitPriceLCY" class="text-right">Unit Price</label>
-            <Input
-              id="unitPriceLCY"
-              v-model="form.unitPriceLCY"
-              type="number"
-              step="0.01"
-              class="col-span-3"
-            />
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="lineNo" class="text-right font-medium">Line No</label>
+          <Input id="lineNo" v-model="form.lineNo" class="col-span-3" required />
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="unitOfMeasureCode" class="text-right">UOM</label>
-            <Input id="unitOfMeasureCode" v-model="form.unitOfMeasureCode" class="col-span-3" />
-          </div>
-
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="expectedReceiptDate" class="text-right">Expected Date</label>
-            <Input
-              id="expectedReceiptDate"
-              v-model="form.expectedReceiptDate"
-              type="date"
-              class="col-span-3"
-            />
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="quantity" class="text-right font-medium">Quantity</label>
+          <Input id="quantity" v-model="form.quantity" type="number" class="col-span-3" required />
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="variantCode" class="text-right">Variant Code</label>
-            <Input id="variantCode" v-model="form.variantCode" class="col-span-3" />
-          </div>
-
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="locationCode" class="text-right">Location Code</label>
-            <Input id="locationCode" v-model="form.locationCode" class="col-span-3" />
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="directUnitCost" class="text-right font-medium">Unit Cost</label>
+          <Input
+            id="directUnitCost"
+            v-model="form.directUnitCost"
+            type="number"
+            class="col-span-3"
+            required
+          />
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="indirectCostPercent" class="text-right">Indirect Cost %</label>
-            <Input
-              id="indirectCostPercent"
-              v-model="form.indirectCostPercent"
-              type="number"
-              step="0.01"
-              class="col-span-3"
-            />
-          </div>
-
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="unitCostLCY" class="text-right">Unit Cost LCY</label>
-            <Input
-              id="unitCostLCY"
-              v-model="form.unitCostLCY"
-              type="number"
-              step="0.01"
-              class="col-span-3"
-            />
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="unitPriceLCY" class="text-right font-medium">Unit Price</label>
+          <Input id="unitPriceLCY" v-model="form.unitPriceLCY" type="number" class="col-span-3" />
         </div>
 
-        <div class="grid grid-cols-1 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="description" class="text-right">Description</label>
-            <Input id="description" v-model="form.description" class="col-span-3" />
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="unitOfMeasureCode" class="text-right font-medium">UOM</label>
+          <Input id="unitOfMeasureCode" v-model="form.unitOfMeasureCode" class="col-span-3" />
         </div>
 
-        <div class="grid grid-cols-1 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="description2" class="text-right">Description 2</label>
-            <Input id="description2" v-model="form.description2" class="col-span-3" />
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="expectedReceiptDate" class="text-right font-medium">Expected Date</label>
+          <Input
+            id="expectedReceiptDate"
+            v-model="form.expectedReceiptDate"
+            type="date"
+            class="col-span-3"
+          />
         </div>
 
-        <div class="grid grid-cols-1 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="allocationAccountNo" class="text-right">Allocation Account</label>
-            <Input id="allocationAccountNo" v-model="form.allocationAccountNo" class="col-span-3" />
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="variantCode" class="text-right font-medium">Variant Code</label>
+          <Input id="variantCode" v-model="form.variantCode" class="col-span-3" />
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="jobNo" class="text-right">Job No</label>
-            <Input id="jobNo" v-model="form.jobNo" class="col-span-3" />
-          </div>
-
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="jobTaskNo" class="text-right">Job Task No</label>
-            <Input id="jobTaskNo" v-model="form.jobTaskNo" class="col-span-3" />
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="locationCode" class="text-right font-medium">Location Code</label>
+          <Input id="locationCode" v-model="form.locationCode" class="col-span-3" />
         </div>
 
-        <div class="grid grid-cols-1 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="jobLineType" class="text-right">Job Line Type</label>
-            <Input id="jobLineType" v-model="form.jobLineType" class="col-span-3" />
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="indirectCostPercent" class="text-right font-medium">Indirect Cost %</label>
+          <Input
+            id="indirectCostPercent"
+            v-model="form.indirectCostPercent"
+            type="number"
+            class="col-span-3"
+          />
         </div>
 
-        <div class="grid grid-cols-1 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label class="text-right font-medium">Line Amount</label>
-            <div class="col-span-3 text-sm">{{ lineAmount }}</div>
-          </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="unitCostLCY" class="text-right font-medium">Unit Cost LCY</label>
+          <Input id="unitCostLCY" v-model="form.unitCostLCY" type="number" class="col-span-3" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="description" class="text-right font-medium">Description</label>
+          <Input id="description" v-model="form.description" class="col-span-3" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="description2" class="text-right font-medium">Description 2</label>
+          <Input id="description2" v-model="form.description2" class="col-span-3" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="allocationAccountNo" class="text-right font-medium">Allocation Account</label>
+          <Input id="allocationAccountNo" v-model="form.allocationAccountNo" class="col-span-3" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="jobNo" class="text-right font-medium">Job No</label>
+          <Input id="jobNo" v-model="form.jobNo" class="col-span-3" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="jobTaskNo" class="text-right font-medium">Job Task No</label>
+          <Input id="jobTaskNo" v-model="form.jobTaskNo" class="col-span-3" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="jobLineType" class="text-right font-medium">Job Line Type</label>
+          <Input id="jobLineType" v-model="form.jobLineType" class="col-span-3" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label class="text-right font-medium">Line Amount</label>
+          <div class="col-span-3 text-sm">{{ lineAmount }}</div>
         </div>
       </div>
 

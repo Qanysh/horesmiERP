@@ -43,11 +43,19 @@ export const usePurchaseOrdersStore = defineStore('purchaseOrders', () => {
     loading.value = true
     try {
       const lines = await purchaseOrdersService.getPurchaseLinesByDocumentNo(documentNo)
-      purchaseLinesByDocumentNo.value[documentNo] = lines
+      purchaseLinesByDocumentNo.value[documentNo] = Array.isArray(lines) ? lines : []
+      error.value = null
     } catch (err) {
-      error.value = err.response?.data?.message || err.message || 'Failed to fetch purchase lines'
-      purchaseLinesByDocumentNo.value[documentNo] = []
-      console.error(`Error fetching purchase lines for ${documentNo}:`, err)
+      if (
+        err.response?.status === 404 ||
+        err.response?.data?.message.includes('No purchase lines')
+      ) {
+        purchaseLinesByDocumentNo.value[documentNo] = []
+        error.value = null
+      } else {
+        error.value = err.response?.data?.message || 'Failed to fetch purchase lines'
+        console.error(`Error fetching purchase lines for ${documentNo}:`, err)
+      }
     } finally {
       loading.value = false
     }

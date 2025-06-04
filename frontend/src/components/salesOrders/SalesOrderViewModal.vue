@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useCustomersStore } from '@/stores/customers'
-import { useSalesOrdersStore } from '@/stores/salesOrders.js'
+import { useSalesOrdersStore } from '@/stores/salesOrders'
 
 import {
   Dialog,
@@ -37,12 +37,17 @@ const formatDate = (dateString) => {
 
 const toggleLines = async () => {
   showLines.value = !showLines.value
-  try {
-    if (showLines.value && props.salesOrder?.no) {
+  if (showLines.value && props.salesOrder?.no) {
+    try {
       await salesOrdersStore.fetchSalesLinesByDocumentNo(props.salesOrder.no)
+      console.log(
+        'Fetched lines in ViewModal for',
+        props.salesOrder.no,
+        salesOrdersStore.salesLinesByDocumentNo[props.salesOrder.no],
+      )
+    } catch (error) {
+      console.error('Error fetching sales lines:', error)
     }
-  } catch (error) {
-    console.error('Error fetching sales lines:', error)
   }
 }
 
@@ -61,9 +66,18 @@ const handlePrint = async () => {
 
 watch(
   () => props.salesOrder,
-  (newVal) => {
+  async (newVal) => {
     if (newVal && newVal.no) {
-      salesOrdersStore.fetchSalesLinesByDocumentNo(newVal.no)
+      try {
+        await salesOrdersStore.fetchSalesLinesByDocumentNo(newVal.no)
+        console.log(
+          'Initial fetch lines for',
+          newVal.no,
+          salesOrdersStore.salesLinesByDocumentNo[newVal.no],
+        )
+      } catch (error) {
+        console.error('Error fetching sales lines on mount:', error)
+      }
     }
   },
   { immediate: true },
@@ -148,8 +162,14 @@ watch(
           <ChevronDownIcon v-else class="h-4 w-4" />
         </Button>
 
-        <div v-if="showLines" class="mt-2 border rounded-lg p-4">
-          <div v-if="salesOrdersStore.loading" class="flex justify-center py-4">
+        <div v-if="showLines" class="mt-2 border rounded-lg p-4 max-h-[300px] overflow-y-auto">
+          <div
+            v-if="salesOrdersStore.salesLinesByDocumentNo[salesOrder?.no]?.length === 0"
+            class="text-sm text-gray-500"
+          >
+            No sales lines found
+          </div>
+          <div v-else-if="salesOrdersStore.loading" class="flex justify-center py-4">
             <Loader2Icon class="h-6 w-6 animate-spin text-gray-500" />
           </div>
           <div v-else class="overflow-auto">
@@ -194,16 +214,6 @@ watch(
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr
-                  v-if="
-                    !Array.isArray(salesOrdersStore.salesLinesByDocumentNo[salesOrder?.no]) ||
-                    salesOrdersStore.salesLinesByDocumentNo[salesOrder?.no]?.length === 0
-                  "
-                >
-                  <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
-                    No sales lines found
-                  </td>
-                </tr>
                 <tr
                   v-for="line in salesOrdersStore.salesLinesByDocumentNo[salesOrder?.no] || []"
                   :key="line.id"

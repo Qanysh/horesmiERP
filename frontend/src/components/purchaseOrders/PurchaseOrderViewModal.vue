@@ -26,7 +26,7 @@ const errorMessage = ref('')
 
 const getVendorName = (vendorNo) => {
   const vendor = vendorsStore.vendors.find((v) => v.BIN === vendorNo)
-  return vendor ? `${vendor.no} - ${vendor.name}` : vendorNo
+  return vendor ? `${vendor.BIN} - ${vendor.name}` : vendorNo
 }
 
 const formatDate = (dateString) => {

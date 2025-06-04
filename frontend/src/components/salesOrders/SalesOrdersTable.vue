@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useSalesOrdersStore } from '@/stores/salesOrders'
 import { useCustomersStore } from '@/stores/customers'
 import { Button } from '@/components/ui/button'
@@ -98,11 +98,14 @@ const toggleRow = async (no) => {
   expandedRows.value[no] = !expandedRows.value[no]
   if (expandedRows.value[no]) {
     await store.fetchSalesLinesByDocumentNo(no)
+    console.log('Fetched lines for', no, store.salesLinesByDocumentNo[no])
   }
 }
 
 const filteredSalesLines = (documentNo) => {
-  return store.salesLinesByDocumentNo[documentNo] || []
+  const lines = store.salesLinesByDocumentNo[documentNo] || []
+  console.log('Rendering lines for', documentNo, lines)
+  return lines
 }
 
 const filteredSalesOrders = computed(() => {
@@ -135,6 +138,14 @@ const handleDeleteLine = async (lineId, documentNo) => {
     }
   }
 }
+
+watch(
+  () => store.salesLinesByDocumentNo,
+  () => {
+    console.log('Sales lines updated:', store.salesLinesByDocumentNo)
+  },
+  { deep: true },
+)
 </script>
 
 <template>
@@ -314,6 +325,7 @@ const handleDeleteLine = async (lineId, documentNo) => {
         () => {
           if (selectedSalesLine?.documentNo) {
             store.fetchSalesLinesByDocumentNo(selectedSalesLine.documentNo)
+            expandedRows[selectedSalesLine.documentNo] = true
           }
         }
       "

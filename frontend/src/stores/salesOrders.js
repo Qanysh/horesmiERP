@@ -13,6 +13,7 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
     loading.value = true
     try {
       salesOrders.value = await salesOrdersService.getSalesOrders(isArchived)
+      error.value = null
     } catch (err) {
       error.value = err.message || 'Failed to fetch sales orders'
       console.error(error.value)
@@ -25,6 +26,7 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
     loading.value = true
     try {
       currentSalesOrder.value = await salesOrdersService.getSalesOrderByNo(no)
+      error.value = null
     } catch (err) {
       error.value = err.message || 'Failed to fetch sales order'
       console.error(error.value)
@@ -37,11 +39,16 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
     loading.value = true
     try {
       const lines = await salesOrdersService.getSalesLinesByDocumentNo(documentNo)
-      salesLinesByDocumentNo.value[documentNo] = lines || []
+      salesLinesByDocumentNo.value[documentNo] = Array.isArray(lines) ? lines : []
+      error.value = null
     } catch (err) {
-      error.value = err.message || 'Failed to fetch sales lines'
-      salesLinesByDocumentNo.value[documentNo] = []
-      console.error(`Error fetching sales lines for ${documentNo}:`, err)
+      if (err.response?.status === 404 || err.response?.data?.message.includes('No sales lines')) {
+        salesLinesByDocumentNo.value[documentNo] = []
+        error.value = null
+      } else {
+        error.value = err.message || 'Failed to fetch sales lines'
+        console.error(`Error fetching sales lines for ${documentNo}:`, err)
+      }
     } finally {
       loading.value = false
     }
@@ -52,6 +59,7 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
     try {
       await salesOrdersService.createSalesOrder(data)
       await fetchSalesOrders()
+      error.value = null
     } catch (err) {
       error.value = err.message || 'Failed to create sales order'
       console.error(error.value)
@@ -66,6 +74,7 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
     try {
       await salesOrdersService.updateSalesOrder(no, data)
       await fetchSalesOrders()
+      error.value = null
     } catch (err) {
       error.value = err.message || 'Failed to update sales order'
       console.error(error.value)
@@ -80,6 +89,7 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
     try {
       await salesOrdersService.deleteSalesOrder(no)
       await fetchSalesOrders()
+      error.value = null
     } catch (err) {
       error.value = err.message || 'Failed to delete sales order'
       console.error(error.value)
@@ -96,6 +106,7 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
       if (data.documentNo) {
         await fetchSalesLinesByDocumentNo(data.documentNo)
       }
+      error.value = null
       return response
     } catch (err) {
       error.value = err.message || 'Failed to create sales line'
@@ -113,6 +124,7 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
       if (data.documentNo) {
         await fetchSalesLinesByDocumentNo(data.documentNo)
       }
+      error.value = null
       return response
     } catch (err) {
       error.value = err.message || 'Failed to update sales line'
@@ -130,6 +142,7 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
       if (currentSalesOrder.value?.no) {
         await fetchSalesLinesByDocumentNo(currentSalesOrder.value.no)
       }
+      error.value = null
     } catch (err) {
       error.value = err.message || 'Failed to delete sales line'
       console.error(error.value)
