@@ -10,6 +10,8 @@ import SalesOrdersView from '@/views/SalesOrders/SalesOrdersView.vue'
 import SignupView from '@/views/Auth/SignupView.vue'
 import LoginView from '@/views/Auth/LoginView.vue'
 import authService from '@/services/authService'
+import ProductsView from '@/views/Product/ProductsView.vue'
+import ProductionToolsView from '@/views/ProductionTools/ProductionToolsView.vue'
 
 const routes = [
   {
@@ -95,6 +97,30 @@ const routes = [
         path: '',
         name: 'SalesOrders',
         component: SalesOrdersView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/products',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'Products',
+        component: ProductsView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/production-tools',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'ProductionTools',
+        component: ProductionToolsView,
         meta: { requiresAuth: true },
       },
     ],

@@ -55,6 +55,8 @@ const goToLogin = () => {
               { to: '/customers', text: 'Customers' },
               { to: '/vendors', text: 'Vendors' },
               { to: '/items', text: 'Items' },
+              { to: '/products', text: 'Products' },
+              { to: '/production-tools', text: 'Production Tools' },
               { to: '/purchase-orders', text: 'Purchase Orders' },
               { to: '/sales-orders', text: 'Sales Orders' },
             ]"
@@ -125,6 +127,8 @@ const goToLogin = () => {
               { to: '/customers', text: 'Customers' },
               { to: '/vendors', text: 'Vendors' },
               { to: '/items', text: 'Items' },
+              { to: '/products', text: 'Products' },
+              { to: '/production-tools', text: 'Production Tools' },
               { to: '/purchase-orders', text: 'Purchase Orders' },
               { to: '/sales-orders', text: 'Sales Orders' },
             ]"
