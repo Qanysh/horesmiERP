@@ -171,7 +171,6 @@ exports.updateProduct = function (req, res) {
         assemblyPolicy: req.body.assemblyPolicy,
         productTrackingCode: req.body.productTrackingCode,
         defaultDeferralTemplateCode: req.body.defaultDeferralTemplateCode,
-        created_at: req.body.created_at,
         updated_at: new Date()
     };
 

@@ -26,7 +26,7 @@ exports.getSalesLineById = async function (req, res) {
         if (!salesLine || salesLine.length === 0) {
             return res.status(404).json({ error: 'SalesLine not found' });
         }
-        res.json(salesLine[0]);
+        res.json(salesLine);
     });
 };
 
@@ -39,7 +39,7 @@ exports.getSalesLineByDocumentNo = async function (documentNo, req, res) {
         if (!salesLine || salesLine.length === 0) {
             return res.status(404).json({ error: 'SalesLine not found' });
         }
-        res.json(salesLine[0]);
+        res.json(salesLine);
     });
 };
 
