@@ -66,7 +66,7 @@ const goToLogin = () => {
                 v-model="form.email"
                 id="email"
                 type="email"
-                placeholder="m@example.com"
+                placeholder="Horesmi@example.com"
                 required
               />
             </div>
