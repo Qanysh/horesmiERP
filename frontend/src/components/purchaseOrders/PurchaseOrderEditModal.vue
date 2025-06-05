@@ -348,7 +348,7 @@ const handleSubmit = async () => {
 
 <template>
   <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-    <DialogContent class="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+    <DialogContent class="w-full max-w-[98vw] sm:max-w-5xl max-h-[95vh] overflow-y-auto px-6 py-4">
       <DialogHeader>
         <DialogTitle>Edit Purchase Order</DialogTitle>
         <DialogDescription>Update the purchase order details below</DialogDescription>

@@ -12,6 +12,7 @@ import LoginView from '@/views/Auth/LoginView.vue'
 import authService from '@/services/authService'
 import ProductsView from '@/views/Product/ProductsView.vue'
 import ProductionToolsView from '@/views/ProductionTools/ProductionToolsView.vue'
+import GeneralLedgerEntriesView from '@/views/GeneralEntries/GeneralLedgerEntriesView.vue'
 
 const routes = [
   {
@@ -121,6 +122,18 @@ const routes = [
         path: '',
         name: 'ProductionTools',
         component: ProductionToolsView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/general-ledger-entries',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'General Ledger Entries',
+        component: GeneralLedgerEntriesView,
         meta: { requiresAuth: true },
       },
     ],

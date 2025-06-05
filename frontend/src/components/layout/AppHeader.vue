@@ -59,6 +59,7 @@ const goToLogin = () => {
               { to: '/production-tools', text: 'Production Tools' },
               { to: '/purchase-orders', text: 'Purchase Orders' },
               { to: '/sales-orders', text: 'Sales Orders' },
+              { to: '/general-ledger-entries', text: 'General Ledger Entries' },
             ]"
             :key="link.to"
             :to="link.to"
@@ -131,6 +132,7 @@ const goToLogin = () => {
               { to: '/production-tools', text: 'Production Tools' },
               { to: '/purchase-orders', text: 'Purchase Orders' },
               { to: '/sales-orders', text: 'Sales Orders' },
+              { to: '/general-ledger-entries', text: 'General Ledger Entries' },
             ]"
             :key="link.to"
             :to="link.to"
