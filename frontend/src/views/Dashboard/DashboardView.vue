@@ -142,9 +142,11 @@ const itemsByCategoryOptions = computed(() => {
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2">
           <CardTitle class="text-sm font-medium">Total Orders</CardTitle>
-          <Badge variant="outline">
-            <ArrowUpRight class="h-4 w-4" />
-          </Badge>
+          <RouterLink to="/purchase-orders">
+            <Badge variant="outline" class="cursor-pointer">
+              <ArrowUpRight class="h-4 w-4" />
+            </Badge>
+          </RouterLink>
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">{{ summaryData.totalOrders }}</div>
@@ -155,9 +157,11 @@ const itemsByCategoryOptions = computed(() => {
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2">
           <CardTitle class="text-sm font-medium">Vendors</CardTitle>
-          <Badge variant="outline">
-            <ArrowUpRight class="h-4 w-4" />
-          </Badge>
+          <RouterLink to="/vendors">
+            <Badge variant="outline">
+              <ArrowUpRight class="h-4 w-4" />
+            </Badge>
+          </RouterLink>
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">{{ summaryData.totalVendors }}</div>
@@ -168,9 +172,11 @@ const itemsByCategoryOptions = computed(() => {
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2">
           <CardTitle class="text-sm font-medium">Inventory Items</CardTitle>
-          <Badge variant="outline">
-            <ArrowUpRight class="h-4 w-4" />
-          </Badge>
+          <RouterLink to="/items">
+            <Badge variant="outline">
+              <ArrowUpRight class="h-4 w-4" />
+            </Badge>
+          </RouterLink>
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">{{ summaryData.totalItems }}</div>
@@ -181,9 +187,11 @@ const itemsByCategoryOptions = computed(() => {
       <Card>
         <CardHeader class="flex flex-row items-center justify-between pb-2">
           <CardTitle class="text-sm font-medium">Customers</CardTitle>
-          <Badge variant="outline">
-            <ArrowUpRight class="h-4 w-4" />
-          </Badge>
+          <RouterLink to="/customers">
+            <Badge variant="outline">
+              <ArrowUpRight class="h-4 w-4" />
+            </Badge>
+          </RouterLink>
         </CardHeader>
         <CardContent>
           <div class="text-2xl font-bold">{{ summaryData.totalCustomers }}</div>

@@ -8,7 +8,6 @@ import authService from '@/services/authService'
 
 const router = useRouter()
 const isMobileMenuOpen = ref(false)
-const searchQuery = ref('')
 
 const isAuthenticated = computed(() => authService.isAuthenticated())
 
@@ -77,16 +76,6 @@ const goToLogin = () => {
 
       <div class="flex items-center gap-4">
         <div v-if="isAuthenticated" class="hidden md:flex items-center gap-4">
-          <div class="relative">
-            <SearchIcon
-              class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-            />
-            <Input
-              v-model="searchQuery"
-              placeholder="Search..."
-              class="pl-9 w-[150px] lg:w-[200px]"
-            />
-          </div>
           <Button
             v-if="isAuthenticated"
             variant="ghost"
@@ -142,12 +131,7 @@ const goToLogin = () => {
           >
             {{ link.text }}
           </RouterLink>
-          <div class="relative pt-2">
-            <SearchIcon
-              class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-            />
-            <Input v-model="searchQuery" placeholder="Search..." class="pl-9 w-full" />
-          </div>
+
           <Button variant="outline" class="w-full mt-2 gap-2" @click="handleLogout">
             <LogOutIcon class="h-4 w-4" />
             <span>Logout</span>
