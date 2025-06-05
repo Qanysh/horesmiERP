@@ -31,9 +31,12 @@ const handleSignup = async () => {
     if (response.success) {
       const qrCodeData = response.url
       qrCodeUrl.value = await QRCode.toDataURL(qrCodeData)
+    } else {
+      error.value = response.message || 'Signup failed'
     }
   } catch (err) {
     error.value = err.message
+    console.error('Signup error:', err)
   }
 }
 

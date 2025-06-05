@@ -18,7 +18,7 @@ export const register = async (userData) => {
       email: userData.email,
       company: userData.company,
       password: userData.password,
-      re_password: userData.confirmPassword,
+      re_password: userData.re_password,
     }),
   })
   return await response.json()
