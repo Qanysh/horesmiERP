@@ -26,6 +26,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 
 const props = defineProps({
   vendors: {
@@ -35,27 +42,35 @@ const props = defineProps({
 })
 
 const store = useVendorsStore()
-const isModalOpen = ref(false)
+const isEditModalOpen = ref(false)
+const isDeleteModalOpen = ref(false)
 const selectedVendor = ref(null)
-const archiveFilter = ref('all')
+const vendorToDelete = ref(null)
+const archiveFilter = ref('active')
 const loading = ref(false)
 
 const openEditModal = (vendor) => {
   selectedVendor.value = { ...vendor }
-  isModalOpen.value = true
+  isEditModalOpen.value = true
 }
 
-const handleDelete = async (BIN) => {
-  if (confirm('Are you sure you want to delete this vendor?')) {
-    try {
-      loading.value = true
-      await store.deleteVendor(BIN)
-    } catch (error) {
-      console.error('Delete failed:', error)
-      alert(`Failed to delete vendor: ${error.response?.data?.message || error.message}`)
-    } finally {
-      loading.value = false
-    }
+const openDeleteModal = (vendor) => {
+  vendorToDelete.value = vendor
+  isDeleteModalOpen.value = true
+}
+
+const handleDelete = async () => {
+  if (!vendorToDelete.value) return
+  try {
+    loading.value = true
+    await store.deleteVendor(vendorToDelete.value.BIN)
+    isDeleteModalOpen.value = false
+    vendorToDelete.value = null
+  } catch (error) {
+    console.error('Delete failed:', error)
+    alert(`Failed to delete vendor: ${error.response?.data?.message || error.message}`)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -132,7 +147,7 @@ const filteredVendors = computed(() => {
                     <PencilIcon class="mr-2 h-4 w-4" />
                     Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem @click="handleDelete(vendor.vendorNo)" class="text-red-500">
+                  <DropdownMenuItem @click="openDeleteModal(vendor)" class="text-red-500">
                     <Trash2Icon class="mr-2 h-4 w-4" />
                     Delete
                   </DropdownMenuItem>
@@ -145,9 +160,26 @@ const filteredVendors = computed(() => {
     </div>
 
     <VendorEditModal
-      v-model:open="isModalOpen"
+      v-model:open="isEditModalOpen"
       :vendor="selectedVendor"
       @saved="store.fetchVendors()"
     />
+
+    <Dialog v-model:open="isDeleteModalOpen">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Delete Vendor</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete
+            <span class="font-medium">{{ vendorToDelete?.name || 'this vendor' }}</span
+            >? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="flex justify-end gap-2">
+          <Button variant="outline" @click="isDeleteModalOpen = false">Cancel</Button>
+          <Button variant="destructive" @click="handleDelete" :disabled="loading"> Delete </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

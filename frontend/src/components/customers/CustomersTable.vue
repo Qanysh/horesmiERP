@@ -26,6 +26,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 
 const props = defineProps({
   customers: {
@@ -35,27 +42,35 @@ const props = defineProps({
 })
 
 const store = useCustomersStore()
-const isModalOpen = ref(false)
+const isEditModalOpen = ref(false)
+const isDeleteModalOpen = ref(false)
 const selectedCustomer = ref(null)
-const archiveFilter = ref('all')
+const customerToDelete = ref(null)
+const archiveFilter = ref('active')
 const loading = ref(false)
 
 const openEditModal = (customer) => {
   selectedCustomer.value = { ...customer }
-  isModalOpen.value = true
+  isEditModalOpen.value = true
 }
 
-const handleDelete = async (customer_no) => {
-  if (confirm('Are you sure you want to delete this customer?')) {
-    try {
-      loading.value = true
-      await store.deleteCustomer(customer_no)
-    } catch (error) {
-      console.error('Delete failed:', error)
-      alert(`Failed to delete customer: ${error.response?.data?.message || error.message}`)
-    } finally {
-      loading.value = false
-    }
+const openDeleteModal = (customer) => {
+  customerToDelete.value = customer
+  isDeleteModalOpen.value = true
+}
+
+const handleDelete = async () => {
+  if (!customerToDelete.value) return
+  try {
+    loading.value = true
+    await store.deleteCustomer(customerToDelete.value.customer_no)
+    isDeleteModalOpen.value = false
+    customerToDelete.value = null
+  } catch (error) {
+    console.error('Delete failed:', error)
+    alert(`Failed to delete customer: ${error.response?.data?.message || error.message}`)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -140,10 +155,7 @@ const filteredCustomers = computed(() => {
                     <PencilIcon class="mr-2 h-4 w-4" />
                     Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    @click="handleDelete(customer.customer_no)"
-                    class="text-red-500"
-                  >
+                  <DropdownMenuItem @click="openDeleteModal(customer)" class="text-red-500">
                     <Trash2Icon class="mr-2 h-4 w-4" />
                     Delete
                   </DropdownMenuItem>
@@ -156,9 +168,26 @@ const filteredCustomers = computed(() => {
     </div>
 
     <CustomerEditModal
-      v-model:open="isModalOpen"
+      v-model:open="isEditModalOpen"
       :customer="selectedCustomer"
       @saved="store.fetchCustomers()"
     />
+
+    <Dialog v-model:open="isDeleteModalOpen">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Delete Customer</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete
+            <span class="font-medium">{{ customerToDelete?.name || 'this customer' }}</span
+            >? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="flex justify-end gap-2">
+          <Button variant="outline" @click="isDeleteModalOpen = false">Cancel</Button>
+          <Button variant="destructive" @click="handleDelete" :disabled="loading"> Delete </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

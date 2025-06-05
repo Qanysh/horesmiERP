@@ -38,6 +38,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 
 const props = defineProps({
   salesOrders: {
@@ -50,7 +57,13 @@ const store = useSalesOrdersStore()
 const customersStore = useCustomersStore()
 const isEditModalOpen = ref(false)
 const isViewModalOpen = ref(false)
+const isLineModalOpen = ref(false)
+const isDeleteOrderModalOpen = ref(false)
+const isDeleteLineModalOpen = ref(false)
 const selectedSalesOrder = ref(null)
+const selectedSalesLine = ref(null)
+const orderToDelete = ref(null)
+const lineToDelete = ref(null)
 const archiveFilter = ref('active')
 const loading = ref(false)
 
@@ -72,18 +85,50 @@ const openViewModal = (order) => {
   isViewModalOpen.value = true
 }
 
-const handleDelete = async (no) => {
-  if (confirm('Are you sure you want to archive this sales order?')) {
-    try {
-      loading.value = true
-      await store.deleteSalesOrder(no)
-      await store.fetchSalesOrders()
-    } catch (err) {
-      console.error('Failed to archive sales order:', err)
-      alert(`Failed to archive sales order: ${err.response?.data?.message || err.message}`)
-    } finally {
-      loading.value = false
-    }
+const openLineEditModal = (line, documentNo) => {
+  selectedSalesLine.value = line ? { ...line, documentNo } : { documentNo }
+  isLineModalOpen.value = true
+}
+
+const openDeleteOrderModal = (order) => {
+  orderToDelete.value = order
+  isDeleteOrderModalOpen.value = true
+}
+
+const openDeleteLineModal = (line, order) => {
+  lineToDelete.value = { line, documentNo: order.no }
+  isDeleteLineModalOpen.value = true
+}
+
+const handleDeleteOrder = async () => {
+  if (!orderToDelete.value) return
+  try {
+    loading.value = true
+    await store.deleteSalesOrder(orderToDelete.value.no)
+    await store.fetchSalesOrders()
+    isDeleteOrderModalOpen.value = false
+    orderToDelete.value = null
+  } catch (err) {
+    console.error('Failed to archive sales order:', err)
+    alert(`Failed to archive sales order: ${err.response?.data?.message || err.message}`)
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleDeleteLine = async () => {
+  if (!lineToDelete.value) return
+  try {
+    loading.value = true
+    await store.deleteSalesLine(lineToDelete.value.line.id)
+    await store.fetchSalesLinesByDocumentNo(lineToDelete.value.documentNo)
+    isDeleteLineModalOpen.value = false
+    lineToDelete.value = null
+  } catch (error) {
+    console.error('Delete line failed:', error)
+    alert(`Failed to delete sales line: ${error.response?.data?.message || error.message}`)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -115,29 +160,6 @@ const filteredSalesOrders = computed(() => {
     return true
   })
 })
-
-const isLineModalOpen = ref(false)
-const selectedSalesLine = ref(null)
-
-const openLineEditModal = (line, documentNo) => {
-  selectedSalesLine.value = line ? { ...line, documentNo } : { documentNo }
-  isLineModalOpen.value = true
-}
-
-const handleDeleteLine = async (lineId, documentNo) => {
-  if (confirm('Are you sure you want to delete this sales line?')) {
-    try {
-      loading.value = true
-      await store.deleteSalesLine(lineId)
-      await store.fetchSalesLinesByDocumentNo(documentNo)
-    } catch (error) {
-      console.error('Delete line failed:', error)
-      alert(`Failed to delete sales line: ${error.response?.data?.message || error.message}`)
-    } finally {
-      loading.value = false
-    }
-  }
-}
 
 watch(
   () => store.salesLinesByDocumentNo,
@@ -232,7 +254,7 @@ watch(
                       <PencilIcon class="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem @click="handleDelete(order.no)" class="text-red-500">
+                    <DropdownMenuItem @click="openDeleteOrderModal(order)" class="text-red-500">
                       <Trash2Icon class="mr-2 h-4 w-4" />
                       Archive
                     </DropdownMenuItem>
@@ -291,7 +313,7 @@ watch(
                                 Edit
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                @click="handleDeleteLine(line.id, order.no)"
+                                @click="openDeleteLineModal(line, order)"
                                 class="text-red-500"
                               >
                                 <Trash2Icon class="mr-2 h-4 w-4" />
@@ -316,7 +338,6 @@ watch(
       :salesOrder="selectedSalesOrder"
       @saved="store.fetchSalesOrders()"
     />
-
     <SalesLineEditModal
       v-model:open="isLineModalOpen"
       :sales-line="selectedSalesLine"
@@ -330,7 +351,44 @@ watch(
         }
       "
     />
-
     <SalesOrderViewModal v-model:open="isViewModalOpen" :salesOrder="selectedSalesOrder" />
+
+    <Dialog v-model:open="isDeleteOrderModalOpen">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Archive Sales Order</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to archive
+            <span class="font-medium">{{ orderToDelete?.no || 'this sales order' }}</span
+            >? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="flex justify-end gap-2">
+          <Button variant="outline" @click="isDeleteOrderModalOpen = false">Cancel</Button>
+          <Button variant="destructive" @click="handleDeleteOrder" :disabled="loading">
+            Archive
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    <Dialog v-model:open="isDeleteLineModalOpen">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Delete Sales Line</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete the sales line for
+            <span class="font-medium">{{ lineToDelete?.line.description || 'this item' }}</span
+            >? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="flex justify-end gap-2">
+          <Button variant="outline" @click="isDeleteLineModalOpen = false">Cancel</Button>
+          <Button variant="destructive" @click="handleDeleteLine" :disabled="loading">
+            Delete
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

@@ -26,6 +26,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 
 const props = defineProps({
   items: {
@@ -35,27 +42,35 @@ const props = defineProps({
 })
 
 const store = useItemsStore()
-const isModalOpen = ref(false)
+const isEditModalOpen = ref(false)
+const isDeleteModalOpen = ref(false)
 const selectedItem = ref(null)
-const archiveFilter = ref('all')
+const itemToDelete = ref(null)
+const archiveFilter = ref('active')
 const loading = ref(false)
 
 const openEditModal = (item) => {
   selectedItem.value = { ...item }
-  isModalOpen.value = true
+  isEditModalOpen.value = true
 }
 
-const handleDelete = async (item_no) => {
-  if (confirm('Are you sure you want to delete this item?')) {
-    try {
-      loading.value = true
-      await store.deleteItem(item_no)
-    } catch (error) {
-      console.error('Delete failed:', error)
-      alert(`Failed to delete item: ${error.response?.data?.message || error.message}`)
-    } finally {
-      loading.value = false
-    }
+const openDeleteModal = (item) => {
+  itemToDelete.value = item
+  isDeleteModalOpen.value = true
+}
+
+const handleDelete = async () => {
+  if (!itemToDelete.value) return
+  try {
+    loading.value = true
+    await store.deleteItem(itemToDelete.value.item_no)
+    isDeleteModalOpen.value = false
+    itemToDelete.value = null
+  } catch (error) {
+    console.error('Delete failed:', error)
+    alert(`Failed to delete item: ${error.response?.data?.message || error.message}`)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -76,7 +91,7 @@ const filteredItems = computed(() => {
           <SelectValue placeholder="Filter by status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Orders</SelectItem>
+          <SelectItem value="all">All Items</SelectItem>
           <SelectItem value="active">Active Only</SelectItem>
           <SelectItem value="archived">Archived Only</SelectItem>
         </SelectContent>
@@ -134,7 +149,7 @@ const filteredItems = computed(() => {
                     <PencilIcon class="mr-2 h-4 w-4" />
                     Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem @click="handleDelete(item.item_no)" class="text-red-500">
+                  <DropdownMenuItem @click="openDeleteModal(item)" class="text-red-500">
                     <Trash2Icon class="mr-2 h-4 w-4" />
                     Delete
                   </DropdownMenuItem>
@@ -146,6 +161,27 @@ const filteredItems = computed(() => {
       </Table>
     </div>
 
-    <ItemEditModal v-model:open="isModalOpen" :item="selectedItem" @saved="store.fetchItems()" />
+    <ItemEditModal
+      v-model:open="isEditModalOpen"
+      :item="selectedItem"
+      @saved="store.fetchItems()"
+    />
+
+    <Dialog v-model:open="isDeleteModalOpen">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Delete Item</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete
+            <span class="font-medium">{{ itemToDelete?.description || 'this item' }}</span
+            >? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="flex justify-end gap-2">
+          <Button variant="outline" @click="isDeleteModalOpen = false">Cancel</Button>
+          <Button variant="destructive" @click="handleDelete" :disabled="loading"> Delete </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

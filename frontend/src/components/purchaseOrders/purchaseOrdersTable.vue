@@ -37,6 +37,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 
 const props = defineProps({
   purchaseOrders: {
@@ -50,8 +57,12 @@ const vendorsStore = useVendorsStore()
 const isEditModalOpen = ref(false)
 const isViewModalOpen = ref(false)
 const isLineModalOpen = ref(false)
+const isDeleteOrderModalOpen = ref(false)
+const isDeleteLineModalOpen = ref(false)
 const selectedPurchaseOrder = ref(null)
 const selectedPurchaseLine = ref(null)
+const orderToDelete = ref(null)
+const lineToDelete = ref(null)
 const archiveFilter = ref('active')
 const loading = ref(false)
 
@@ -75,32 +86,44 @@ const openLineEditModal = (line, order) => {
   isLineModalOpen.value = true
 }
 
-const handleDelete = async (no) => {
-  if (confirm('Are you sure you want to archive this purchase order?')) {
-    try {
-      loading.value = true
-      await store.deletePurchaseOrder(no)
-    } catch (error) {
-      console.error('Archive failed:', error)
-      alert(`Failed to archive purchase order: ${error.response?.data?.message || error.message}`)
-    } finally {
-      loading.value = false
-    }
+const openDeleteOrderModal = (order) => {
+  orderToDelete.value = order
+  isDeleteOrderModalOpen.value = true
+}
+
+const openDeleteLineModal = (line, order) => {
+  lineToDelete.value = { line, documentNo: order.no }
+  isDeleteLineModalOpen.value = true
+}
+
+const handleDeleteOrder = async () => {
+  if (!orderToDelete.value) return
+  try {
+    loading.value = true
+    await store.deletePurchaseOrder(orderToDelete.value.no)
+    isDeleteOrderModalOpen.value = false
+    orderToDelete.value = null
+  } catch (error) {
+    console.error('Archive failed:', error)
+    alert(`Failed to archive purchase order: ${error.response?.data?.message || error.message}`)
+  } finally {
+    loading.value = false
   }
 }
 
-const handleDeleteLine = async (lineId, documentNo) => {
-  if (confirm('Are you sure you want to delete this purchase line?')) {
-    try {
-      loading.value = true
-      await store.deletePurchaseLine(lineId)
-      await store.fetchPurchaseLinesByDocumentNo(documentNo)
-    } catch (error) {
-      console.error('Delete line failed:', error)
-      alert(`Failed to delete purchase line: ${error.response?.data?.message || error.message}`)
-    } finally {
-      loading.value = false
-    }
+const handleDeleteLine = async () => {
+  if (!lineToDelete.value) return
+  try {
+    loading.value = true
+    await store.deletePurchaseLine(lineToDelete.value.line.id)
+    await store.fetchPurchaseLinesByDocumentNo(lineToDelete.value.documentNo)
+    isDeleteLineModalOpen.value = false
+    lineToDelete.value = null
+  } catch (error) {
+    console.error('Delete line failed:', error)
+    alert(`Failed to delete purchase line: ${error.response?.data?.message || error.message}`)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -214,7 +237,7 @@ const filteredPurchaseOrders = computed(() => {
                       <PencilIcon class="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
-                    <DropdownMenuItem @click="handleDelete(order.no)" class="text-red-500">
+                    <DropdownMenuItem @click="openDeleteOrderModal(order)" class="text-red-500">
                       <Trash2Icon class="mr-2 h-4 w-4" />
                       Archive
                     </DropdownMenuItem>
@@ -279,7 +302,7 @@ const filteredPurchaseOrders = computed(() => {
                                 Edit
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                @click="handleDeleteLine(line.id, order.no)"
+                                @click="openDeleteLineModal(line, order)"
                                 class="text-red-500"
                               >
                                 <Trash2Icon class="mr-2 h-4 w-4" />
@@ -318,5 +341,43 @@ const filteredPurchaseOrders = computed(() => {
       v-model:open="isViewModalOpen"
       :purchase-order="selectedPurchaseOrder"
     />
+
+    <Dialog v-model:open="isDeleteOrderModalOpen">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Archive Purchase Order</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to archive
+            <span class="font-medium">{{ orderToDelete?.no || 'this purchase order' }}</span
+            >? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="flex justify-end gap-2">
+          <Button variant="outline" @click="isDeleteOrderModalOpen = false">Cancel</Button>
+          <Button variant="destructive" @click="handleDeleteOrder" :disabled="loading">
+            Archive
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+
+    <Dialog v-model:open="isDeleteLineModalOpen">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Delete Purchase Line</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete the purchase line for
+            <span class="font-medium">{{ lineToDelete?.line.description || 'this item' }}</span
+            >? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="flex justify-end gap-2">
+          <Button variant="outline" @click="isDeleteLineModalOpen = false">Cancel</Button>
+          <Button variant="destructive" @click="handleDeleteLine" :disabled="loading">
+            Delete
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

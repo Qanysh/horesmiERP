@@ -26,6 +26,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 
 const props = defineProps({
   productionTools: {
@@ -35,27 +42,35 @@ const props = defineProps({
 })
 
 const store = useProductionToolsStore()
-const isModalOpen = ref(false)
+const isEditModalOpen = ref(false)
+const isDeleteModalOpen = ref(false)
 const selectedProductionTool = ref(null)
-const archiveFilter = ref('all')
+const toolToDelete = ref(null)
+const archiveFilter = ref('active')
 const loading = ref(false)
 
 const openEditModal = (tool) => {
   selectedProductionTool.value = { ...tool }
-  isModalOpen.value = true
+  isEditModalOpen.value = true
 }
 
-const handleDelete = async (tool_no) => {
-  if (confirm('Are you sure you want to delete this production tool?')) {
-    try {
-      loading.value = true
-      await store.deleteProductionTool(tool_no)
-    } catch (error) {
-      console.error('Delete failed:', error)
-      alert(`Failed to delete production tool: ${error.response?.data?.message || error.message}`)
-    } finally {
-      loading.value = false
-    }
+const openDeleteModal = (tool) => {
+  toolToDelete.value = tool
+  isDeleteModalOpen.value = true
+}
+
+const handleDelete = async () => {
+  if (!toolToDelete.value) return
+  try {
+    loading.value = true
+    await store.deleteProductionTool(toolToDelete.value.tool_no)
+    isDeleteModalOpen.value = false
+    toolToDelete.value = null
+  } catch (error) {
+    console.error('Delete failed:', error)
+    alert(`Failed to delete production tool: ${error.response?.data?.message || error.message}`)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -127,7 +142,7 @@ const filteredProductionTools = computed(() => {
                     <PencilIcon class="mr-2 h-4 w-4" />
                     Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem @click="handleDelete(tool.tool_no)" class="text-red-500">
+                  <DropdownMenuItem @click="openDeleteModal(tool)" class="text-red-500">
                     <Trash2Icon class="mr-2 h-4 w-4" />
                     Delete
                   </DropdownMenuItem>
@@ -140,9 +155,26 @@ const filteredProductionTools = computed(() => {
     </div>
 
     <ProductionToolEditModal
-      v-model:open="isModalOpen"
+      v-model:open="isEditModalOpen"
       :productionTool="selectedProductionTool"
       @saved="store.fetchProductionTools()"
     />
+
+    <Dialog v-model:open="isDeleteModalOpen">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Delete Production Tool</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete
+            <span class="font-medium">{{ toolToDelete?.name || 'this production tool' }}</span
+            >? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <div class="flex justify-end gap-2">
+          <Button variant="outline" @click="isDeleteModalOpen = false">Cancel</Button>
+          <Button variant="destructive" @click="handleDelete" :disabled="loading"> Delete </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
