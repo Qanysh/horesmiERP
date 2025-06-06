@@ -1,4 +1,3 @@
-// adminMiddleware.js
 
 module.exports = function () {
     return function (req, res, next) {
@@ -7,7 +6,7 @@ module.exports = function () {
             if (!userRole) {
                 return res.status(403).json({ message: 'No role found. Access denied.' });
             }
-            if (userRole !== 'admin') {
+            if (userRole !== 'manager' || userRole !== 'admin') {
                 return res.status(403).json({ message: 'Access denied. Insufficient role.' });
             }
             next();
