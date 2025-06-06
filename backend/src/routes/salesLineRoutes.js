@@ -3,9 +3,9 @@ const router = express.Router();
 const salesLineController = require('../controllers/salesLineController');
 const salesMiddleware = require('../middlewares/salesMiddleware');
 
-router.get('/', salesMiddleware, salesLineController.getAllSalesLines);
-router.get('/card/:id', salesMiddleware, salesLineController.getSalesLineById);
-router.get('/byDocumentNo/:documentNo', salesMiddleware, salesLineController.getSalesLineByDocumentNoForRouter);
+router.get('/', salesLineController.getAllSalesLines);
+router.get('/card/:id', salesLineController.getSalesLineById);
+router.get('/byDocumentNo/:documentNo', salesLineController.getSalesLineByDocumentNoForRouter);
 
 router.post('/create', salesMiddleware, salesLineController.createSalesLine);
 

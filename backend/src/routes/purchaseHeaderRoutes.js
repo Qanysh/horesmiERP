@@ -3,8 +3,8 @@ const router = express.Router();
 const purchaseHeaderController = require('../controllers/purchaseHeaderController');
 const purchaseMiddleware = require('../middlewares/purchaseMiddleware');
 
-router.get('/', purchaseMiddleware, purchaseHeaderController.getAllPurchaseHeaders);
-router.get('/card/:no', purchaseMiddleware, purchaseHeaderController.getPurchaseHeaderById);
+router.get('/', purchaseHeaderController.getAllPurchaseHeaders);
+router.get('/card/:no', purchaseHeaderController.getPurchaseHeaderById);
 
 router.post('/create', purchaseMiddleware, purchaseHeaderController.createPurchaseHeader);
 

@@ -4,10 +4,10 @@ const productionToolController = require('../controllers/productionToolControlle
 const purchaseMiddleware = require('../middlewares/purchaseMiddleware');
 
 // Get all production tools
-router.get('/', purchaseMiddleware, productionToolController.getAllProductionTools);
+router.get('/', productionToolController.getAllProductionTools);
 
 // Get a single production tool by ID
-router.get('/:tool_no', purchaseMiddleware, productionToolController.getProductionToolById);
+router.get('/:tool_no', productionToolController.getProductionToolById);
 
 // Create a new production tool
 router.post('/create', purchaseMiddleware, productionToolController.createProductionTool);

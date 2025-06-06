@@ -3,8 +3,8 @@ const router = express.Router();
 const vendorController = require('../controllers/vendorController');
 const purchaseMiddleware = require('../middlewares/purchaseMiddleware');
 
-router.get('/', purchaseMiddleware, vendorController.getAllVendors);
-router.get('/card/:BIN', purchaseMiddleware, vendorController.getVendorById);
+router.get('/', vendorController.getAllVendors);
+router.get('/card/:BIN', vendorController.getVendorById);
 
 router.post('/create', purchaseMiddleware, vendorController.createVendor);
 

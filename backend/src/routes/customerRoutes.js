@@ -3,8 +3,8 @@ const router = express.Router();
 const customerController = require('../controllers/customerController');
 const salesMiddleware = require('../middlewares/salesMiddleware');
 
-router.get('/', salesMiddleware, customerController.getAllCustomers);
-router.get('/card/:customer_no', salesMiddleware, customerController.getCustomerById);
+router.get('/', customerController.getAllCustomers);
+router.get('/card/:customer_no', customerController.getCustomerById);
 
 router.post('/create', salesMiddleware, customerController.createCustomer);
 
