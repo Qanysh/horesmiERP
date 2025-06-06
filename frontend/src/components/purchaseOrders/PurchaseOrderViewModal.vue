@@ -50,7 +50,7 @@ const toggleLines = async () => {
 
 const handlePrint = () => {
   if (!props.purchaseOrder?.no) return
-  const url = `http://localhost:3000/api/purchase/printed/${props.purchaseOrder.no}`
+  const url = `http://localhost:3000/api/reports/purchaseOrder/${props.purchaseOrder.no}`
   window.open(url, '_blank')
 }
 
