@@ -2,7 +2,7 @@
 
 module.exports = function (req, res, next) {
     try {
-        const userRole = req.session.role;
+        const userRole = String(req.session.role);
         if (!userRole) {
             return res.status(403).json({ message: 'No role found. Access denied.' });
         }
