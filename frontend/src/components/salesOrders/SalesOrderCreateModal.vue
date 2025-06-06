@@ -33,6 +33,7 @@ const customersStore = useCustomersStore()
 const errorMessage = ref('')
 
 const form = ref({
+  no: '',
   sellToCustomerNo: '',
   sellToCustomerName: '',
   postingDescription: '',
@@ -44,7 +45,7 @@ const form = ref({
   dueDate: new Date().toISOString().split('T')[0],
   orderDate: new Date().toISOString().split('T')[0],
   status: 'Open',
-  currencyCode: 'RUB',
+  currencyCode: 'KZT',
   paymentTermsCode: '',
   paymentMethodCode: '',
   shipmentMethodCode: '',
@@ -73,6 +74,10 @@ const handleCustomerSelect = (value) => {
 
 const handleSubmit = async () => {
   try {
+    if (!form.value.no) {
+      errorMessage.value = 'Order No is required'
+      return
+    }
     if (!form.value.sellToCustomerNo) {
       errorMessage.value = 'Customer is required'
       return
@@ -82,6 +87,25 @@ const handleSubmit = async () => {
       ...form.value,
       dueDate: form.value.dueDate ? `${form.value.dueDate} 19:00:00` : null,
       orderDate: form.value.orderDate ? `${form.value.orderDate} 19:00:00` : null,
+      sellToAddress2: null,
+      sellToCounty: null,
+      sellToPostCode: null,
+      sellToCountryRegionCode: null,
+      sellToContactNo: null,
+      sellToMobilePhoneNo: null,
+      noOfArchivedVersions: null,
+      documentDate: null,
+      postingDate: null,
+      vatReportingDate: null,
+      requestedDeliveryDate: null,
+      promisedDeliveryDate: null,
+      externalDocumentNo: null,
+      salespersonCode: null,
+      campaignNo: null,
+      opportunityNo: null,
+      responsibilityCenter: null,
+      assignedUserId: null,
+      jobQueueStatus: null,
     }
 
     console.log('Creating sales order with payload:', data)
@@ -108,6 +132,11 @@ const handleSubmit = async () => {
       <div v-if="errorMessage" class="text-red-500 text-sm mb-4">{{ errorMessage }}</div>
 
       <div class="grid gap-4 py-4">
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="no" class="text-right font-medium">Order No</label>
+          <Input id="no" v-model="form.no" class="col-span-3" required />
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
           <label for="sellToCustomerNo" class="text-right font-medium">Customer</label>
           <Select

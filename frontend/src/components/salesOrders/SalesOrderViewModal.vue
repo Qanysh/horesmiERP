@@ -2,7 +2,6 @@
 import { ref, watch } from 'vue'
 import { useCustomersStore } from '@/stores/customers'
 import { useSalesOrdersStore } from '@/stores/salesOrders'
-
 import {
   Dialog,
   DialogContent,
@@ -26,13 +25,13 @@ const printing = ref(false)
 
 const getCustomerName = (customerNo) => {
   const customer = customersStore.customers.find((c) => c.customer_no === customerNo)
-  return customer ? `${customer.customer_no} - ${customer.name}` : customerNo
+  return customer ? `${customer.customer_no} - ${customer.name}` : customerNo || 'N/A'
 }
 
 const formatDate = (dateString) => {
-  if (!dateString) return ''
+  if (!dateString) return 'N/A'
   const date = new Date(dateString)
-  return date.toLocaleDateString()
+  return isNaN(date) ? 'N/A' : date.toISOString().split('T')[0]
 }
 
 const toggleLines = async () => {
@@ -40,11 +39,6 @@ const toggleLines = async () => {
   if (showLines.value && props.salesOrder?.no) {
     try {
       await salesOrdersStore.fetchSalesLinesByDocumentNo(props.salesOrder.no)
-      console.log(
-        'Fetched lines in ViewModal for',
-        props.salesOrder.no,
-        salesOrdersStore.salesLinesByDocumentNo[props.salesOrder.no],
-      )
     } catch (error) {
       console.error('Error fetching sales lines:', error)
     }
@@ -70,11 +64,6 @@ watch(
     if (newVal && newVal.no) {
       try {
         await salesOrdersStore.fetchSalesLinesByDocumentNo(newVal.no)
-        console.log(
-          'Initial fetch lines for',
-          newVal.no,
-          salesOrdersStore.salesLinesByDocumentNo[newVal.no],
-        )
       } catch (error) {
         console.error('Error fetching sales lines on mount:', error)
       }
@@ -97,28 +86,35 @@ watch(
           <div>
             <h3 class="font-semibold mb-2">Order Information</h3>
             <div class="space-y-1">
-              <p><span class="font-medium">No:</span> {{ salesOrder.no }}</p>
+              <p><span class="font-medium">Order No:</span> {{ salesOrder.no || 'N/A' }}</p>
               <p>
                 <span class="font-medium">Customer:</span>
                 {{ getCustomerName(salesOrder.sellToCustomerNo) }}
               </p>
               <p>
-                <span class="font-medium">Order Date:</span>
-                {{ formatDate(salesOrder.orderDate) }}
+                <span class="font-medium">Order Date:</span> {{ formatDate(salesOrder.orderDate) }}
               </p>
               <p><span class="font-medium">Due Date:</span> {{ formatDate(salesOrder.dueDate) }}</p>
-              <p><span class="font-medium">Status:</span> {{ salesOrder.status }}</p>
+              <p><span class="font-medium">Status:</span> {{ salesOrder.status || 'N/A' }}</p>
             </div>
           </div>
           <div>
             <h3 class="font-semibold mb-2">Financial Information</h3>
             <div class="space-y-1">
-              <p><span class="font-medium">Currency:</span> {{ salesOrder.currencyCode }}</p>
               <p>
-                <span class="font-medium">Payment Terms:</span> {{ salesOrder.paymentTermsCode }}
+                <span class="font-medium">Currency:</span> {{ salesOrder.currencyCode || 'N/A' }}
               </p>
               <p>
-                <span class="font-medium">Payment Method:</span> {{ salesOrder.paymentMethodCode }}
+                <span class="font-medium">Payment Terms:</span>
+                {{ salesOrder.paymentTermsCode || 'N/A' }}
+              </p>
+              <p>
+                <span class="font-medium">Payment Method:</span>
+                {{ salesOrder.paymentMethodCode || 'N/A' }}
+              </p>
+              <p>
+                <span class="font-medium">Shipment Method:</span>
+                {{ salesOrder.shipmentMethodCode || 'N/A' }}
               </p>
               <p>
                 <span class="font-medium">Your Reference:</span>
@@ -131,26 +127,35 @@ watch(
           <h3 class="font-semibold mb-2">Description</h3>
           <p>{{ salesOrder.postingDescription || 'N/A' }}</p>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <h3 class="font-semibold mb-2">Sell To</h3>
-            <div class="space-y-1">
-              <p>{{ salesOrder.sellToCustomerName }}</p>
-              <p>{{ salesOrder.sellToAddress }}</p>
-              <p>{{ salesOrder.sellToCity }}</p>
-              <p>Contact: {{ salesOrder.sellToContact || 'N/A' }}</p>
-              <p>Phone: {{ salesOrder.sellToPhoneNo }}</p>
-              <p>Email: {{ salesOrder.sellToEmail }}</p>
-            </div>
-          </div>
-          <div>
-            <h3 class="font-semibold mb-2">Ship To</h3>
-            <div class="space-y-1">
-              <p>{{ salesOrder.shipToName || salesOrder.sellToCustomerName }}</p>
-              <p>{{ salesOrder.shipToAddress || salesOrder.sellToAddress }}</p>
-              <p>{{ salesOrder.shipToCity || salesOrder.sellToCity }}</p>
-              <p>Contact: {{ salesOrder.shipToContact || salesOrder.sellToContact || 'N/A' }}</p>
-            </div>
+        <div>
+          <h3 class="font-semibold mb-2">Sell To</h3>
+          <div class="space-y-1">
+            <p>
+              <span class="font-medium">Name:</span> {{ salesOrder.sellToCustomerName || 'N/A' }}
+            </p>
+            <p><span class="font-medium">Address:</span> {{ salesOrder.sellToAddress || 'N/A' }}</p>
+            <p>
+              <span class="font-medium">Address 2:</span> {{ salesOrder.sellToAddress2 || 'N/A' }}
+            </p>
+            <p><span class="font-medium">City:</span> {{ salesOrder.sellToCity || 'N/A' }}</p>
+            <p><span class="font-medium">County:</span> {{ salesOrder.sellToCounty || 'N/A' }}</p>
+            <p>
+              <span class="font-medium">Post Code:</span> {{ salesOrder.sellToPostCode || 'N/A' }}
+            </p>
+            <p>
+              <span class="font-medium">Country/Region:</span>
+              {{ salesOrder.sellToCountryRegionCode || 'N/A' }}
+            </p>
+            <p>
+              <span class="font-medium">Contact No:</span> {{ salesOrder.sellToContactNo || 'N/A' }}
+            </p>
+            <p><span class="font-medium">Contact:</span> {{ salesOrder.sellToContact || 'N/A' }}</p>
+            <p><span class="font-medium">Phone:</span> {{ salesOrder.sellToPhoneNo || 'N/A' }}</p>
+            <p>
+              <span class="font-medium">Mobile Phone:</span>
+              {{ salesOrder.sellToMobilePhoneNo || 'N/A' }}
+            </p>
+            <p><span class="font-medium">Email:</span> {{ salesOrder.sellToEmail || 'N/A' }}</p>
           </div>
         </div>
       </div>
@@ -219,21 +224,23 @@ watch(
                   :key="line.id"
                 >
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ line.lineNo }}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ line.no }}</td>
-                  <td class="px-6 py-4 text-sm text-gray-500">{{ line.description }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ line.quantity }} {{ line.unitOfMeasureCode }}
+                    {{ line.lineNo || 'N/A' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ line.unitPrice }}
+                    {{ line.no || 'N/A' }}
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-500">{{ line.description || 'N/A' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ line.quantity ? `${line.quantity} ${line.unitOfMeasureCode || ''}` : 'N/A' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ line.lineAmount }}
+                    {{ line.unitPrice || 'N/A' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ line.shipmentDate ? formatDate(line.shipmentDate) : '' }}
+                    {{ line.lineAmount || 'N/A' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ formatDate(line.shipmentDate) }}
                   </td>
                 </tr>
               </tbody>

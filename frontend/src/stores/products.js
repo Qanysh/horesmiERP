@@ -12,8 +12,10 @@ export const useProductsStore = defineStore('products', () => {
     loading.value = true
     try {
       products.value = await productsService.getProducts()
+      error.value = null
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to fetch products'
+      console.error(error.value)
     } finally {
       loading.value = false
     }
@@ -23,8 +25,10 @@ export const useProductsStore = defineStore('products', () => {
     loading.value = true
     try {
       currentProduct.value = await productsService.getProductByNo(product_no)
+      error.value = null
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to fetch product'
+      console.error(error.value)
     } finally {
       loading.value = false
     }
@@ -35,8 +39,10 @@ export const useProductsStore = defineStore('products', () => {
     try {
       await productsService.createProduct(data)
       await fetchProducts()
+      error.value = null
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to create product'
+      console.error(error.value)
       throw err
     } finally {
       loading.value = false
@@ -48,8 +54,10 @@ export const useProductsStore = defineStore('products', () => {
     try {
       await productsService.updateProduct(product_no, data)
       await fetchProducts()
+      error.value = null
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to update product'
+      console.error(error.value)
       throw err
     } finally {
       loading.value = false
@@ -61,8 +69,10 @@ export const useProductsStore = defineStore('products', () => {
     try {
       await productsService.deleteProduct(product_no)
       await fetchProducts()
+      error.value = null
     } catch (err) {
-      error.value = err.message || 'Unknown error'
+      error.value = err.response?.data?.message || err.message || 'Failed to delete product'
+      console.error(error.value)
       throw err
     } finally {
       loading.value = false

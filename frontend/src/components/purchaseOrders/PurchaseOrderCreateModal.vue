@@ -48,8 +48,8 @@ const form = ref({
   assignedUserId: '',
   status: 'Open',
   jobQueueStatus: 'Pending',
-  languageCode: 'RU',
-  currencyCode: 'RUB',
+  languageCode: 'KZ',
+  currencyCode: 'KZT',
   pricesIncludingVAT: 1,
   vatBusPostingGroup: 'VAT-RU',
   vendorPostingGroup: 'VPG-01',
@@ -123,8 +123,8 @@ const handleSubmit = async () => {
       assignedUserId: '',
       status: 'Open',
       jobQueueStatus: 'Pending',
-      languageCode: 'RU',
-      currencyCode: 'RUB',
+      languageCode: 'KZ',
+      currencyCode: 'KZT',
       pricesIncludingVAT: 1,
       vatBusPostingGroup: 'VAT-RU',
       vendorPostingGroup: 'VPG-01',
@@ -154,7 +154,7 @@ const handleSubmit = async () => {
 
 <template>
   <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-    <DialogContent class="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+    <DialogContent class="sm:max-w-[1200px] max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Create New Purchase Order</DialogTitle>
         <DialogDescription>Fill in the purchase order details below</DialogDescription>
