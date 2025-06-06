@@ -47,7 +47,7 @@ export default {
   },
 
   async deletePurchaseLine(id) {
-    const response = await api.delete(`/purchaseLines/${id}`)
+    const response = await api.delete(`/purchaseLines/delete/${id}`)
     return response.data
   },
 }

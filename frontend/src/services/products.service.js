@@ -24,7 +24,7 @@ const getProductByNo = async (product_no) => {
 
 const createProduct = async (data) => {
   try {
-    const response = await axios.post(API_URL, data)
+    const response = await axios.post(`${API_URL}/create`, data)
     return response.data
   } catch (error) {
     console.error('Error creating product:', error.response?.data || error.message)
@@ -44,7 +44,7 @@ const updateProduct = async (product_no, data) => {
 
 const deleteProduct = async (product_no) => {
   try {
-    const response = await axios.delete(`${API_URL}/${product_no}`)
+    const response = await axios.delete(`${API_URL}/delete/${product_no}`)
     return response.data
   } catch (error) {
     console.error('Error deleting product:', error.response?.data || error.message)

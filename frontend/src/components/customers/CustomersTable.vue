@@ -139,7 +139,9 @@ const filteredCustomers = computed(() => {
               </Badge>
             </TableCell>
             <TableCell>
-              <Badge :variant="customer.isArchived ? 'destructive' : 'default'">
+              <Badge
+                :class="customer.isArchived ? 'bg-red-500 text-white' : 'bg-green-500 text-white'"
+              >
                 {{ customer.isArchived ? 'Archived' : 'Active' }}
               </Badge>
             </TableCell>

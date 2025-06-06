@@ -131,7 +131,9 @@ const filteredVendors = computed(() => {
             <TableCell>{{ vendor.currencyCode || '-' }}</TableCell>
             <TableCell>{{ vendor.searchName || '-' }}</TableCell>
             <TableCell>
-              <Badge :variant="vendor.isArchived ? 'destructive' : 'default'">
+              <Badge
+                :class="vendor.isArchived ? 'bg-red-500 text-white' : 'bg-green-500 text-white'"
+              >
                 {{ vendor.isArchived ? 'Archived' : 'Active' }}
               </Badge>
             </TableCell>

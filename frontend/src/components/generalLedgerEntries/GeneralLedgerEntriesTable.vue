@@ -44,9 +44,16 @@ const filteredEntries = computed(() => {
 
 const getDocumentTypeBadgeVariant = (documentType) => {
   const type = documentType?.toLowerCase() || ''
-  if (type.includes('purchase')) return 'default'
-  if (type.includes('sale')) return 'secondary'
-  return 'outline'
+
+  if (type.includes('purchase')) {
+    return 'bg-green-500 text-white px-3 py-1 rounded-md'
+  }
+
+  if (type.includes('sale')) {
+    return 'bg-red-500 text-white px-3 py-1 rounded-md'
+  }
+
+  return 'bg-gray-200 text-gray-800 px-3 py-1 rounded-md'
 }
 
 const getDisplayDocumentType = (documentType) => {
@@ -89,7 +96,6 @@ const getDisplayDocumentType = (documentType) => {
             <TableHead>Description</TableHead>
             <TableHead>Account No</TableHead>
             <TableHead>Account Name</TableHead>
-
             <TableHead>Balance</TableHead>
             <TableHead>Quantity</TableHead>
             <TableHead class="text-right w-[50px]">
@@ -109,7 +115,7 @@ const getDisplayDocumentType = (documentType) => {
               entry.postingDate ? new Date(entry.postingDate).toLocaleDateString() : '-'
             }}</TableCell>
             <TableCell>
-              <Badge :variant="getDocumentTypeBadgeVariant(entry.documentType)">
+              <Badge :class="getDocumentTypeBadgeVariant(entry.documentType)">
                 {{ getDisplayDocumentType(entry.documentType) }}
               </Badge>
             </TableCell>

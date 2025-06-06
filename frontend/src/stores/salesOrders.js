@@ -39,7 +39,8 @@ export const useSalesOrdersStore = defineStore('salesOrders', () => {
     loading.value = true
     try {
       const lines = await salesOrdersService.getSalesLinesByDocumentNo(documentNo)
-      salesLinesByDocumentNo.value[documentNo] = Array.isArray(lines) ? lines : []
+      const linesArray = Array.isArray(lines) ? lines : [lines].filter(Boolean)
+      salesLinesByDocumentNo.value[documentNo] = linesArray
       error.value = null
     } catch (err) {
       if (err.response?.status === 404 || err.response?.data?.message.includes('No sales lines')) {

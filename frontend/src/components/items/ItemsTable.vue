@@ -133,7 +133,7 @@ const filteredItems = computed(() => {
             <TableCell>{{ item.vendorNo || '-' }}</TableCell>
             <TableCell>{{ item.itemCategoryCode || '-' }}</TableCell>
             <TableCell>
-              <Badge :variant="item.isArchived ? 'destructive' : 'default'">
+              <Badge :class="item.isArchived ? 'bg-red-500 text-white' : 'bg-green-500 text-white'">
                 {{ item.isArchived ? 'Archived' : 'Active' }}
               </Badge>
             </TableCell>

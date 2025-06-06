@@ -126,8 +126,8 @@ const filteredProductionTools = computed(() => {
             <TableCell>{{ tool.type || '-' }}</TableCell>
             <TableCell>{{ tool.locationCode || '-' }}</TableCell>
             <TableCell>
-              <Badge :variant="tool.isArchived ? 'destructive' : 'default'">
-                {{ tool.isArchived ? 'Archived' : tool.status || 'Active' }}
+              <Badge :class="tool.isArchived ? 'bg-red-500 text-white' : 'bg-green-500 text-white'">
+                {{ tool.isArchived ? 'Archived' : 'Active' }}
               </Badge>
             </TableCell>
             <TableCell class="text-right">

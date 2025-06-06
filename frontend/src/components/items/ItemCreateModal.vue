@@ -66,7 +66,7 @@ const handleSubmit = async () => {
 
 <template>
   <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-    <DialogContent class="sm:max-w-[625px]">
+    <DialogContent class="sm:max-w-[700px] w-full max-h-[80vh] sm:max-h-[800px] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Create New Item</DialogTitle>
         <DialogDescription> Update item details below </DialogDescription>

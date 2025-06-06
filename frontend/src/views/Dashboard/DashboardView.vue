@@ -111,14 +111,14 @@ const monthlyOrderTrendsOptions = computed(() => {
   }
 })
 
-const itemsByCategoryOptions = computed(() => {
-  const categoryCounts = itemsStore.items.reduce((acc, item) => {
-    const category = item.category || 'Uncategorized'
-    acc[category] = (acc[category] || 0) + 1
+const vendorByRegionOptions = computed(() => {
+  const regionCounts = vendorsStore.vendors.reduce((acc, vendor) => {
+    const region = vendor.region || 'Unknown'
+    acc[region] = (acc[region] || 0) + 1
     return acc
   }, {})
 
-  const sortedCategories = Object.entries(categoryCounts)
+  const sortedRegions = Object.entries(regionCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
 
@@ -126,12 +126,12 @@ const itemsByCategoryOptions = computed(() => {
     chart: { type: 'bar', height: 350 },
     plotOptions: { bar: { borderRadius: 4, horizontal: true } },
     dataLabels: { enabled: false },
-    series: [{ name: 'Items', data: sortedCategories.map(([_, count]) => count) }],
+    series: [{ name: 'Vendors', data: sortedRegions.map(([_, count]) => count) }],
     xaxis: {
-      categories: sortedCategories.map(([category, _]) => category),
-      title: { text: 'Number of Items' },
+      categories: sortedRegions.map(([region, _]) => region),
+      title: { text: 'Number of Vendors' },
     },
-    colors: ['#00E396'],
+    colors: ['#775DD0'],
   }
 })
 </script>
@@ -215,7 +215,7 @@ const itemsByCategoryOptions = computed(() => {
         </CardContent>
       </Card>
 
-      <Card class="col-span-1">
+      <Card class="col-span-1 lg:col-span-2">
         <CardHeader>
           <CardTitle>Monthly Order Trends</CardTitle>
         </CardHeader>
@@ -224,20 +224,6 @@ const itemsByCategoryOptions = computed(() => {
             type="line"
             :options="monthlyOrderTrendsOptions"
             :series="monthlyOrderTrendsOptions.series"
-            height="300"
-          />
-        </CardContent>
-      </Card>
-
-      <Card class="col-span-1">
-        <CardHeader>
-          <CardTitle>Top Item Categories</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <VueApexCharts
-            type="bar"
-            :options="itemsByCategoryOptions"
-            :series="itemsByCategoryOptions.series"
             height="300"
           />
         </CardContent>
@@ -261,25 +247,32 @@ const itemsByCategoryOptions = computed(() => {
           <TableHeader>
             <TableRow>
               <TableHead>Order No</TableHead>
-
               <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead class="text-right">Amount</TableHead>
+              <TableHead>Contact Email</TableHead>
+              <TableHead>Currency</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow v-for="order in summaryData.recentOrders" :key="order.no">
               <TableCell class="font-medium">{{ order.no }}</TableCell>
-
               <TableCell>{{
                 order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A'
               }}</TableCell>
               <TableCell>
-                <Badge :variant="order.status === 'Open' ? 'default' : 'secondary'">
+                <Badge
+                  :class="{
+                    'bg-green-500 text-white': order.status === 'Open',
+                    'bg-blue-500 text-white': order.status === 'Released',
+                    'bg-yellow-500 text-white': order.status === 'Pending Approval',
+                    'bg-red-500 text-white': order.status === 'Canceled',
+                  }"
+                >
                   {{ order.status }}
                 </Badge>
               </TableCell>
-              <TableCell class="text-right">{{ order.totalAmount || '0.00' }}</TableCell>
+              <TableCell>{{ order.buyFromContactEmail || 'N/A' }}</TableCell>
+              <TableCell>{{ order.currencyCode || 'N/A' }}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

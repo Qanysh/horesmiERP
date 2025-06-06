@@ -53,7 +53,7 @@ const handleSubmit = async () => {
 
 <template>
   <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-    <DialogContent class="sm:max-w-[625px]">
+    <DialogContent class="sm:max-w-[700px] w-full max-h-[80vh] sm:max-h-[800px] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Create New Customer</DialogTitle>
         <DialogDescription> Update customer details below </DialogDescription>
@@ -64,7 +64,7 @@ const handleSubmit = async () => {
           v-for="field in [
             { id: 'customer_no', label: 'Customer No' },
             { id: 'name', label: 'Name' },
-            { id: 'name2', label: 'Name 2' },
+            { id: 'name2', label: 'Surname' },
             { id: 'responsibility_center', label: 'Responsibility Center' },
             { id: 'location_code', label: 'Location Code' },
             { id: 'country_region_code', label: 'Country Code' },

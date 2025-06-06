@@ -43,17 +43,17 @@ const form = ref({
   description: '',
   description2: '',
   locationCode: '',
-  quantity: '0.00000',
-  reservedQtyBase: '0.00000',
+  quantity: '1',
+  reservedQtyBase: '1',
   unitOfMeasureCode: 'PCS',
-  unitPrice: '0.00',
-  unitCostLCY: '0.00',
-  lineAmount: '0.00',
+  unitPrice: '1',
+  unitCostLCY: '1',
+  lineAmount: '1',
   orderNo: props.documentNo || '',
   jobLineType: '',
   shipmentDate: '',
-  outstandingQuantity: '0.00000',
-  discountPercent: '0.00',
+  outstandingQuantity: '1',
+  discountPercent: '1',
   allowInvoiceDiscount: 1,
 })
 
@@ -68,7 +68,7 @@ const lineAmount = computed(() => {
 watch(
   () => props.salesLine,
   (val) => {
-    if (val) {
+    if (val && !val.isNew) {
       const normalizeDate = (date) => {
         if (!date) return ''
         const parsed = new Date(date)
@@ -111,17 +111,17 @@ watch(
         description: '',
         description2: '',
         locationCode: '',
-        quantity: '0.00000',
-        reservedQtyBase: '0.00000',
+        quantity: '1',
+        reservedQtyBase: '1',
         unitOfMeasureCode: 'PCS',
-        unitPrice: '0.00',
-        unitCostLCY: '0.00',
-        lineAmount: '0.00',
+        unitPrice: '1',
+        unitCostLCY: '1',
+        lineAmount: '1',
         orderNo: props.documentNo || '',
         jobLineType: '',
         shipmentDate: '',
-        outstandingQuantity: '0.00000',
-        discountPercent: '0.00',
+        outstandingQuantity: '1',
+        discountPercent: '1',
         allowInvoiceDiscount: 1,
       }
     }
@@ -155,8 +155,8 @@ const handleSubmit = async () => {
       errorMessage.value = 'Quantity must be greater than 0'
       return
     }
-    if (!form.value.unitPrice || parseFloat(form.value.unitPrice) < 0) {
-      errorMessage.value = 'Unit Price cannot be negative'
+    if (!form.value.unitPrice || parseFloat(form.value.unitPrice) <= 0) {
+      errorMessage.value = 'Unit Price must be greater than 0'
       return
     }
 
@@ -175,9 +175,10 @@ const handleSubmit = async () => {
       outstandingQuantity: parseFloat(form.value.outstandingQuantity).toFixed(5),
       discountPercent: parseFloat(form.value.discountPercent).toFixed(2),
       shipmentDate: formatDate(form.value.shipmentDate),
+      orderNo: form.value.documentNo, // Ensure orderNo matches documentNo
     }
 
-    if (!form.value.id) {
+    if (!props.salesLine || props.salesLine.isNew) {
       delete data.id
       await store.createSalesLine(data)
     } else {
@@ -195,11 +196,14 @@ const handleSubmit = async () => {
 
 <template>
   <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-    <DialogContent class="sm:max-w-[700px] max-h-[90vh] overflow-y-auto p-6">
+    <DialogContent class="sm:max-w-[700px] w-full max-h-[80vh] sm:max-h-[800px] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle>{{ salesLine ? 'Edit Sales Line' : 'Add Sales Line' }}</DialogTitle>
+        <DialogTitle>{{
+          salesLine && !salesLine.isNew ? 'Edit Sales Line' : 'Add Sales Line'
+        }}</DialogTitle>
         <DialogDescription
-          >{{ salesLine ? 'Update' : 'Add' }} sales line details below</DialogDescription
+          >{{ salesLine && !salesLine.isNew ? 'Update' : 'Add' }} sales line details
+          below</DialogDescription
         >
       </DialogHeader>
 

@@ -50,7 +50,7 @@ const toggleLines = async () => {
 
 const handlePrint = () => {
   if (!props.purchaseOrder?.no) return
-  const url = `http://localhost:3000/api/purchase/printed/${props.purchaseOrder.no}`
+  const url = `http://localhost:3000/api/reports/purchaseOrder/${props.purchaseOrder.no}`
   window.open(url, '_blank')
 }
 
@@ -73,7 +73,9 @@ watch(
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
+    <DialogContent
+      class="sm:max-w-[900px] w-full max-h-[80vh] sm:max-h-[900px] overflow-y-auto p-4"
+    >
       <DialogHeader>
         <DialogTitle> Purchase Order Details </DialogTitle>
         <DialogDescription>View all details of this purchase order</DialogDescription>

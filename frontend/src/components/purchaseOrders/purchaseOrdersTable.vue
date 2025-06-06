@@ -185,7 +185,7 @@ const filteredPurchaseOrders = computed(() => {
             <TableHead>Order Date</TableHead>
             <TableHead>Due Date</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Amount</TableHead>
+
             <TableHead>Archive Status</TableHead>
             <TableHead class="text-right w-[100px]">Actions</TableHead>
           </TableRow>
@@ -207,13 +207,22 @@ const filteredPurchaseOrders = computed(() => {
               <TableCell>{{ new Date(order.orderDate).toLocaleDateString() }}</TableCell>
               <TableCell>{{ new Date(order.dueDate).toLocaleDateString() }}</TableCell>
               <TableCell>
-                <Badge :variant="order.status === 'Open' ? 'default' : 'secondary'">
+                <Badge
+                  :class="{
+                    'bg-green-500 text-white': order.status === 'Open',
+                    'bg-blue-500 text-white': order.status === 'Released',
+                    'bg-yellow-500 text-white': order.status === 'Pending Approval',
+                    'bg-red-500 text-white': order.status === 'Canceled',
+                  }"
+                >
                   {{ order.status }}
                 </Badge>
               </TableCell>
-              <TableCell>{{ order.totalAmount || '0.00' }}</TableCell>
+
               <TableCell>
-                <Badge :variant="order.isArchived ? 'destructive' : 'default'">
+                <Badge
+                  :class="order.isArchived ? 'bg-red-500 text-white' : 'bg-green-500 text-white'"
+                >
                   {{ order.isArchived ? 'Archived' : 'Active' }}
                 </Badge>
               </TableCell>
@@ -257,7 +266,7 @@ const filteredPurchaseOrders = computed(() => {
                         <TableHead>Description</TableHead>
                         <TableHead>Quantity</TableHead>
                         <TableHead>Unit Cost</TableHead>
-                        <TableHead>Amount</TableHead>
+
                         <TableHead>Expected Date</TableHead>
                         <TableHead class="text-right">Actions</TableHead>
                       </TableRow>
@@ -281,7 +290,7 @@ const filteredPurchaseOrders = computed(() => {
                         <TableCell>{{ line.description }}</TableCell>
                         <TableCell>{{ line.quantity }} {{ line.unitOfMeasureCode }}</TableCell>
                         <TableCell>{{ line.directUnitCost }}</TableCell>
-                        <TableCell>{{ line.lineAmount }}</TableCell>
+
                         <TableCell>
                           {{
                             line.expectedReceiptDate

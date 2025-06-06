@@ -75,7 +75,9 @@ watch(
 
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
-    <DialogContent class="sm:max-w-[900px]">
+    <DialogContent
+      class="sm:max-w-[900px] w-full max-h-[80vh] sm:max-h-[900px] overflow-y-auto p-4"
+    >
       <DialogHeader>
         <DialogTitle>Sales Order Details</DialogTitle>
         <DialogDescription> View all details of this sales order </DialogDescription>

@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 const props = defineProps(['open'])
 const emit = defineEmits(['update:open', 'saved'])
@@ -210,7 +211,7 @@ const handleSubmit = async () => {
 
 <template>
   <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-    <DialogContent class="sm:max-w-[700px]">
+    <DialogContent class="sm:max-w-[700px] w-full max-h-[80vh] sm:max-h-[800px] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Create New Product</DialogTitle>
         <DialogDescription>Enter product details below</DialogDescription>
@@ -268,7 +269,7 @@ const handleSubmit = async () => {
             id="standardCost"
             v-model="form.standardCost"
             type="number"
-            step="0.01"
+            step="1"
             class="col-span-3"
             :class="{ 'border-red-500': errors.standardCost }"
           />
@@ -282,7 +283,7 @@ const handleSubmit = async () => {
             id="unitCost"
             v-model="form.unitCost"
             type="number"
-            step="0.01"
+            step="1"
             class="col-span-3"
             :class="{ 'border-red-500': errors.unitCost }"
           />
@@ -296,7 +297,7 @@ const handleSubmit = async () => {
             id="lastDirectCost"
             v-model="form.lastDirectCost"
             type="number"
-            step="0.01"
+            step="1"
             class="col-span-3"
             :class="{ 'border-red-500': errors.lastDirectCost }"
           />
@@ -310,7 +311,7 @@ const handleSubmit = async () => {
             id="unitPrice"
             v-model="form.unitPrice"
             type="number"
-            step="0.01"
+            step="1"
             class="col-span-3"
             :class="{ 'border-red-500': errors.unitPrice }"
           />
@@ -352,7 +353,7 @@ const handleSubmit = async () => {
             id="profitPercent"
             v-model="form.profitPercent"
             type="number"
-            step="0.01"
+            step="1"
             class="col-span-3"
             :class="{ 'border-red-500': errors.profitPercent }"
           />
@@ -366,7 +367,7 @@ const handleSubmit = async () => {
             id="overheadRate"
             v-model="form.overheadRate"
             type="number"
-            step="0.01"
+            step="1"
             class="col-span-3"
             :class="{ 'border-red-500': errors.overheadRate }"
           />
@@ -380,7 +381,7 @@ const handleSubmit = async () => {
             id="indirectCostPercent"
             v-model="form.indirectCostPercent"
             type="number"
-            step="0.01"
+            step="1"
             class="col-span-3"
             :class="{ 'border-red-500': errors.indirectCostPercent }"
           />

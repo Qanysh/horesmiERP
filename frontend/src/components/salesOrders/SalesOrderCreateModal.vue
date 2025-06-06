@@ -123,7 +123,7 @@ const handleSubmit = async () => {
 
 <template>
   <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
-    <DialogContent class="sm:max-w-[800px] max-h-[90vh] overflow-y-auto p-6">
+    <DialogContent class="sm:max-w-[700px] w-full max-h-[80vh] sm:max-h-[800px] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Create New Sales Order</DialogTitle>
         <DialogDescription> Fill in the sales order details below </DialogDescription>
@@ -186,9 +186,24 @@ const handleSubmit = async () => {
           <Input id="currencyCode" v-model="form.currencyCode" class="col-span-3" />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="status" class="text-right font-medium">Status</label>
-          <Input id="status" v-model="form.status" class="col-span-3" disabled />
+        <div class="grid grid-cols-1 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+            <label for="status" class="text-right font-medium">Status</label>
+            <Select v-model="form.status" class="col-span-3" :disabled="false">
+              <SelectTrigger class="w-full sm:w-auto">
+                <SelectValue :placeholder="'Select a status'" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Status</SelectLabel>
+                  <SelectItem value="Open">Open</SelectItem>
+                  <SelectItem value="Released">Released</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Canceled">Canceled</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
