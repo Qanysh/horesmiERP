@@ -6,7 +6,7 @@ const authMiddleware = require('../middlewares/authMiddleware');
 
 router.get('/users', authMiddleware, adminMiddleware, adminController.getAllUsers);
 router.get('/users/:id', authMiddleware, adminMiddleware, adminController.getUserById);
-router.put('/users/update/:id', authMiddleware, adminMiddleware, adminController.updateUser);
+router.patch('/users/update/:id', authMiddleware, adminMiddleware, adminController.updateUser);
 router.delete('/users/delete/:id', authMiddleware, adminMiddleware, adminController.deleteUser);
 
 module.exports = router;
