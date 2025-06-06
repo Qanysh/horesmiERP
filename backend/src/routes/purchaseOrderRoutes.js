@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const purchaseOrderController = require('../controllers/purchaseOrderController');
+const purchaseMiddleware = require('../middlewares/purchaseMiddleware');
 
-router.get('/', purchaseOrderController.getAllPurchaseOrders);
-router.get('/card/:no', purchaseOrderController.getPurchaseOrderById);
+router.get('/', purchaseMiddleware, purchaseOrderController.getAllPurchaseOrders);
+router.get('/card/:no', purchaseMiddleware, purchaseOrderController.getPurchaseOrderById);
 
-router.post('/create', purchaseOrderController.createPurchaseOrder);
+router.post('/create', purchaseMiddleware, purchaseOrderController.createPurchaseOrder);
 
-router.get('/update/:no', purchaseOrderController.getPurchaseOrderById);
-router.put('/update/:no', purchaseOrderController.updatePurchaseOrder);
-router.delete('/delete/:no', purchaseOrderController.deletePurchaseOrder);
+router.get('/update/:no', purchaseMiddleware, purchaseOrderController.getPurchaseOrderById);
+router.put('/update/:no', purchaseMiddleware, purchaseOrderController.updatePurchaseOrder);
+router.delete('/delete/:no', purchaseMiddleware, purchaseOrderController.deletePurchaseOrder);
 
 module.exports = router;

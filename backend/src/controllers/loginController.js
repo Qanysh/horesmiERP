@@ -27,7 +27,7 @@ exports.loginUser = async function (req, res) {
                 });
                 if (tokenValidates) {
                     req.session.userId = user[0].id;
-                    req.session.isAdmin = user[0].admin;
+                    req.session.role = user[0].role;
                     req.session.company = user[0].company;
                     res.json({ validated: true })
                 } else {

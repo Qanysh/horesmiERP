@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const salesOrderController = require('../controllers/salesOrderController');
+const salesMiddleware = require('../middlewares/salesMiddleware');
 
-router.get('/', salesOrderController.getAllSalesOrders);
-router.get('/card/:no', salesOrderController.getSalesOrderById);
+router.get('/', salesMiddleware, salesOrderController.getAllSalesOrders);
+router.get('/card/:no', salesMiddleware, salesOrderController.getSalesOrderById);
 
-router.post('/create', salesOrderController.createSalesOrder);
+router.post('/create', salesMiddleware, salesOrderController.createSalesOrder);
 
-router.get('/update/:no', salesOrderController.getSalesOrderById);
-router.put('/update/:no', salesOrderController.updateSalesOrder);
-router.delete('/delete/:no', salesOrderController.deleteSalesOrder);
+router.get('/update/:no', salesMiddleware, salesOrderController.getSalesOrderById);
+router.put('/update/:no', salesMiddleware, salesOrderController.updateSalesOrder);
+router.delete('/delete/:no', salesMiddleware, salesOrderController.deleteSalesOrder);
 
 module.exports = router;
