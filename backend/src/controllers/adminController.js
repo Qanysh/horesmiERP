@@ -36,16 +36,10 @@ exports.getUserById = async function (req, res) {
 };
 
 exports.updateUser = async function (req, res) {
-    const password = req.body.password;
-    const currentDate = new Date();
-
-    const hashed_password = await bcrypt.hash(password, 10);
 
     const updatedUser = {
-        id: req.body.id,
         username: req.body.username,
-        password: hashed_password,
-        updated_at: currentDate,
+        updated_at: new Date(),
         role: req.body.role
     };
 
