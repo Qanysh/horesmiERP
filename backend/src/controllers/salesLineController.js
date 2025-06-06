@@ -53,7 +53,7 @@ exports.getSalesLineByDocumentNoForRouter = async function (req, res) {
         if (!salesLine || salesLine.length === 0) {
             return res.status(404).json({ error: 'SalesLine not found' });
         }
-        res.json(salesLine[0]);
+        res.json(salesLine);
     });
 };
 
