@@ -1,36 +1,28 @@
 import { login as apiLogin, register as apiRegister } from '@/services/authApi'
+import { useAuthStore } from '@/stores/authStore'
 
 const authService = {
   async signup(userData) {
     try {
       const response = await apiRegister(userData)
-      if (response.success) {
-        localStorage.setItem('isAuthenticated', 'true')
-      }
       return response
     } catch (error) {
-      throw new Error('Signup failed')
+      throw new Error(error.message || 'Signup failed')
     }
   },
 
   async login(credentials) {
     try {
       const response = await apiLogin(credentials)
-      if (response.validated) {
-        localStorage.setItem('isAuthenticated', 'true')
-      }
+      const authStore = useAuthStore()
+      authStore.login({
+        ...response.user,
+        token: response.token,
+      })
       return response
     } catch (error) {
-      throw new Error('Login failed')
+      throw new Error(error.message || 'Login failed')
     }
-  },
-
-  logout() {
-    localStorage.removeItem('isAuthenticated')
-  },
-
-  isAuthenticated() {
-    return !!localStorage.getItem('isAuthenticated')
   },
 }
 

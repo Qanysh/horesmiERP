@@ -1,19 +1,23 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SearchIcon, LogOutIcon, MenuIcon, XIcon } from 'lucide-vue-next'
-import authService from '@/services/authService'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = useRouter()
 const isMobileMenuOpen = ref(false)
 
-const isAuthenticated = computed(() => authService.isAuthenticated())
+const auth = useAuthStore()
+const isAuthenticated = computed(() => auth.isAuth)
 
-const handleLogout = () => {
-  authService.logout()
-  router.push('/login')
+onMounted(async () => {
+  await auth.checkAuth()
+})
+
+const handleLogout = async () => {
+  await auth.logout()
   isMobileMenuOpen.value = false
 }
 

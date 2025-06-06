@@ -4,15 +4,21 @@ export const login = async (credentials) => {
   const response = await fetch(`${BASE_URL}/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify(credentials),
   })
-  return await response.json()
+  const data = await response.json()
+  if (!response.ok) {
+    throw new Error(data.message || 'Login failed')
+  }
+  return data
 }
 
 export const register = async (userData) => {
   const response = await fetch(`${BASE_URL}/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify({
       username: userData.username,
       email: userData.email,
@@ -21,5 +27,9 @@ export const register = async (userData) => {
       re_password: userData.re_password,
     }),
   })
-  return await response.json()
+  const data = await response.json()
+  if (!response.ok) {
+    throw new Error(data.message || 'Signup failed')
+  }
+  return data
 }

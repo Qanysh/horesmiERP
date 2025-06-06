@@ -1,28 +1,46 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { isAuthenticated, getUser, clearAuthData, setAuthData } from '../utils/storage'
+import api from '@/services/api'
 
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
-  const user = ref(getUser())
-  const isAuth = ref(isAuthenticated())
+  const user = ref(JSON.parse(localStorage.getItem('user') || null))
+  const isAuth = ref(!!localStorage.getItem('token'))
 
   const currentUser = computed(() => user.value)
   const authenticated = computed(() => isAuth.value)
 
-  function login(userData) {
-    user.value = userData
-    isAuth.value = true
-    setAuthData(userData)
+  async function checkAuth() {
+    try {
+      if (localStorage.getItem('token')) {
+        isAuth.value = true
+        return true
+      }
+      return false
+    } catch (error) {
+      logout()
+      return false
+    }
   }
 
-  function logout() {
-    user.value = null
-    isAuth.value = false
-    clearAuthData()
-    router.push('/login')
-    window.location.reload()
+  async function login(userData) {
+    user.value = userData
+    isAuth.value = true
+    localStorage.setItem('user', JSON.stringify(userData))
+    localStorage.setItem('token', userData.token)
+  }
+
+  async function logout() {
+    try {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      user.value = null
+      isAuth.value = false
+      router.push('/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
   }
 
   return {
@@ -30,6 +48,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuth,
     currentUser,
     authenticated,
+    checkAuth,
     login,
     logout,
   }

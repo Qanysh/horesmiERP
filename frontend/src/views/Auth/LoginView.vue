@@ -19,10 +19,8 @@ const error = ref(null)
 const handleLogin = async () => {
   try {
     error.value = null
-    const response = await authService.login(form.value)
-    if (response.validated) {
-      router.push('/')
-    }
+    await authService.login(form.value)
+    router.push('/')
   } catch (err) {
     error.value = err.message
   }

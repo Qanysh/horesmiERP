@@ -9,7 +9,6 @@ import PurchaseOrdersView from '@/views/PurchaseOrders/PurchaseOrdersView.vue'
 import SalesOrdersView from '@/views/SalesOrders/SalesOrdersView.vue'
 import SignupView from '@/views/Auth/SignupView.vue'
 import LoginView from '@/views/Auth/LoginView.vue'
-import authService from '@/services/authService'
 import ProductsView from '@/views/Product/ProductsView.vue'
 import ProductionToolsView from '@/views/ProductionTools/ProductionToolsView.vue'
 import GeneralLedgerEntriesView from '@/views/GeneralEntries/GeneralLedgerEntriesView.vue'
@@ -145,16 +144,21 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
-  const isAuthenticated = authService.isAuthenticated()
+export function setupRouter(app) {
+  router.beforeEach(async (to, from, next) => {
+    const authStore = useAuthStore()
+    const isAuthenticated = authStore.isAuth
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/login')
-  } else if (['Login', 'Signup'].includes(to.name) && isAuthenticated) {
-    next('/')
-  } else {
-    next()
-  }
-})
+    if (to.meta.requiresAuth && !isAuthenticated) {
+      next('/login')
+    } else if (['Login', 'Signup'].includes(to.name) && isAuthenticated) {
+      next('/')
+    } else {
+      next()
+    }
+  })
+
+  return router
+}
 
 export default router

@@ -1,12 +1,16 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useCustomersStore } from '@/stores/customers'
+import { useAuthStore } from '@/stores/authStore'
 import CustomersTable from '@/components/customers/CustomersTable.vue'
 import CustomerCreateModal from '@/components/customers/CustomerCreateModal.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PlusIcon, SearchIcon } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
+const authStore = useAuthStore()
 const store = useCustomersStore()
 const isCreateModalOpen = ref(false)
 const searchQuery = ref('')

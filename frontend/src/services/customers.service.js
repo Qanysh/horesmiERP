@@ -22,7 +22,6 @@ export default {
   },
 
   async deleteCustomer(customer_no) {
-    console.log('Deleting customer:', customer_no)
     const response = await api.delete(`/customers/delete/${customer_no}`)
     return response.data
   },
