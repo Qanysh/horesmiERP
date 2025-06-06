@@ -153,7 +153,6 @@ exports.updateGeneralLedgerEntry = function (req, res) {
         shortcutDimension6Code: req.body.shortcutDimension6Code,
         shortcutDimension7Code: req.body.shortcutDimension7Code,
         shortcutDimension8Code: req.body.shortcutDimension8Code,
-        created_at: req.body.created_at,
         updated_at: new Date()
     };
 
