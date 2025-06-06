@@ -43,11 +43,11 @@ exports.updateUser = async function (req, res) {
         role: req.body.role
     };
 
-    if (!req.body.id) {
+    if (!req.params.id) {
         return res.status(400).json({ error: 'User ID is missing' });
     }
 
-    User.updateUser(req.body.id, updatedUser, (err, result) => {
+    User.updateUser(req.params.id, updatedUser, (err, result) => {
         if (err) {
             console.error('Error updating user:', err);
             return res.status(500).json({ error: 'Failed to update user' });
