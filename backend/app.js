@@ -30,7 +30,10 @@ app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", // Разрешаем запросы с этого домена
+  credentials: true, // Разрешаем отправку куки
+}));
 
 app.use(
   session({
@@ -39,7 +42,8 @@ app.use(
     saveUninitialized: true, // Сохранять пустые сессии
     cookie: {
       secure: false, // Установите true, если используете HTTPS
-      maxAge: 60000,
+      maxAge: 60000000000000,
+      sameSite: "lax"
     },
   })
 );
