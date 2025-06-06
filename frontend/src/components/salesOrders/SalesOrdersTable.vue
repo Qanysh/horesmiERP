@@ -220,7 +220,10 @@ watch(
                 </Button>
               </TableCell>
               <TableCell class="font-medium">{{ order.no }}</TableCell>
-              <TableCell>{{ getCustomerName(order.sellToCustomerNo) }}</TableCell>
+              <TableCell
+                >{{ order.sellToCustomerNo }} -
+                {{ getCustomerName(order.sellToCustomerNo) }}</TableCell
+              >
               <TableCell>{{ new Date(order.orderDate).toLocaleDateString() }}</TableCell>
               <TableCell>{{ new Date(order.dueDate).toLocaleDateString() }}</TableCell>
               <TableCell>

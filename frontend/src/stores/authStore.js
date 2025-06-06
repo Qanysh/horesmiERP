@@ -5,29 +5,43 @@ import api from '@/services/api'
 
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
-  const user = ref(JSON.parse(localStorage.getItem('user') || null))
+  const user = ref(JSON.parse(localStorage.getItem('user')) || null)
   const isAuth = ref(!!localStorage.getItem('token'))
 
   const currentUser = computed(() => user.value)
   const authenticated = computed(() => isAuth.value)
+  const userRole = computed(() => user.value?.role || '')
 
   async function checkAuth() {
     try {
-      if (localStorage.getItem('token')) {
+      const token = localStorage.getItem('token')
+      const storedUser = localStorage.getItem('user')
+      if (token && storedUser) {
+        user.value = JSON.parse(storedUser)
         isAuth.value = true
+        const response = await api.get('/admin/users')
+        user.value = response.data
+        localStorage.setItem('user', JSON.stringify(response.data))
         return true
       }
       return false
     } catch (error) {
+      console.error('Check auth error:', error)
       logout()
       return false
     }
   }
 
   async function login(userData) {
-    user.value = userData
+    user.value = {
+      id: userData.id,
+      username: userData.username,
+      email: userData.email,
+      company: userData.company,
+      role: userData.role || 'user',
+    }
     isAuth.value = true
-    localStorage.setItem('user', JSON.stringify(userData))
+    localStorage.setItem('user', JSON.stringify(user.value))
     localStorage.setItem('token', userData.token)
   }
 
@@ -48,6 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuth,
     currentUser,
     authenticated,
+    userRole,
     checkAuth,
     login,
     logout,

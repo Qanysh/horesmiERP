@@ -19,12 +19,10 @@ const form = ref({
   customer_no: '',
   name: '',
   name2: '',
-  responsibility_center: '',
   location_code: '',
   country_region_code: '',
   phone_no: '',
   contact: '',
-  salesperson_code: '',
   credit_limit_lcy: '',
 })
 
@@ -37,12 +35,10 @@ const handleSubmit = async () => {
       customer_no: '',
       name: '',
       name2: '',
-      responsibility_center: '',
       location_code: '',
       country_region_code: '',
       phone_no: '',
       contact: '',
-      salesperson_code: '',
       credit_limit_lcy: '',
     }
   } catch (error) {
@@ -65,12 +61,10 @@ const handleSubmit = async () => {
             { id: 'customer_no', label: 'Customer No' },
             { id: 'name', label: 'Name' },
             { id: 'name2', label: 'Surname' },
-            { id: 'responsibility_center', label: 'Responsibility Center' },
             { id: 'location_code', label: 'Location Code' },
             { id: 'country_region_code', label: 'Country Code' },
             { id: 'phone_no', label: 'Phone' },
             { id: 'contact', label: 'Contact' },
-            { id: 'salesperson_code', label: 'Salesperson' },
             { id: 'credit_limit_lcy', label: 'Credit Limit' },
           ]"
           :key="field.id"

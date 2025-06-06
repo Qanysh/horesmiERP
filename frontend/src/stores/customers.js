@@ -3,13 +3,11 @@ import customersService from '@/services/customers.service'
 import { ref } from 'vue'
 
 export const useCustomersStore = defineStore('customers', () => {
-  // Состояние
   const customers = ref([])
   const currentCustomer = ref(null)
   const loading = ref(false)
   const error = ref(null)
 
-  // Действия
   const fetchCustomers = async () => {
     loading.value = true
     try {

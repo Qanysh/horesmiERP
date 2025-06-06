@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
+import { useModalStore } from '@/stores/useModalStore'
 
 const api = axios.create({
   baseURL: 'http://localhost:3000/api',
@@ -17,7 +18,8 @@ api.interceptors.response.use(
     }
 
     if (status === 403) {
-      alert('Access denied. Insufficient role.')
+      const modal = useModalStore()
+      modal.openAccessDenied()
     }
 
     return Promise.reject(error)

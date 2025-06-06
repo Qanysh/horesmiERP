@@ -12,6 +12,7 @@ import LoginView from '@/views/Auth/LoginView.vue'
 import ProductsView from '@/views/Product/ProductsView.vue'
 import ProductionToolsView from '@/views/ProductionTools/ProductionToolsView.vue'
 import GeneralLedgerEntriesView from '@/views/GeneralEntries/GeneralLedgerEntriesView.vue'
+import UsersView from '@/views/Admin/UsersView.vue'
 
 const routes = [
   {
@@ -134,6 +135,21 @@ const routes = [
         name: 'General Ledger Entries',
         component: GeneralLedgerEntriesView,
         meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/admin/users',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'AdminUsers',
+        component: UsersView,
+        meta: {
+          requiresAuth: true,
+          requiredRole: 'admin',
+        },
       },
     ],
   },

@@ -1,7 +1,7 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import { useSalesOrdersStore } from '@/stores/salesOrders'
-import { useItemsStore } from '@/stores/items'
+import { useCustomersStore } from '@/stores/customers'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -20,175 +20,122 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import { Loader2Icon } from 'lucide-vue-next'
 
 const props = defineProps({
   open: Boolean,
-  salesLine: Object,
-  documentNo: String,
+  salesOrder: Object,
 })
 
 const emit = defineEmits(['update:open', 'saved', 'error'])
 const store = useSalesOrdersStore()
-const itemsStore = useItemsStore()
+const customersStore = useCustomersStore()
 const errorMessage = ref('')
 
 const form = ref({
-  documentType: 'Order',
-  documentNo: props.documentNo || '',
-  sellToCustomerNo: '',
-  lineNo: '',
-  type: 'Item',
   no: '',
-  variantCode: '',
-  description: '',
-  description2: '',
-  locationCode: '',
-  quantity: '1',
-  reservedQtyBase: '1',
-  unitOfMeasureCode: 'PCS',
-  unitPrice: '1',
-  unitCostLCY: '1',
-  lineAmount: '1',
-  orderNo: props.documentNo || '',
-  jobLineType: '',
-  shipmentDate: '',
-  outstandingQuantity: '1',
-  discountPercent: '1',
-  allowInvoiceDiscount: 1,
-})
-
-itemsStore.fetchItems()
-
-const lineAmount = computed(() => {
-  const quantity = parseFloat(form.value.quantity) || 0
-  const price = parseFloat(form.value.unitPrice) || 0
-  return (quantity * price).toFixed(2)
+  sellToCustomerNo: '',
+  sellToCustomerName: '',
+  postingDescription: '',
+  sellToAddress: '',
+  sellToCity: '',
+  sellToContact: '',
+  sellToPhoneNo: '',
+  sellToEmail: '',
+  dueDate: '',
+  orderDate: '',
+  status: 'Open',
+  currencyCode: 'KZT',
+  paymentTermsCode: '',
+  paymentMethodCode: '',
+  shipmentMethodCode: '',
+  yourReference: '',
 })
 
 watch(
-  () => props.salesLine,
-  (val) => {
-    if (val && !val.isNew) {
-      const normalizeDate = (date) => {
-        if (!date) return ''
-        const parsed = new Date(date)
-        return isNaN(parsed) ? '' : parsed.toISOString().split('T')[0]
-      }
+  () => props.salesOrder,
+  (newVal) => {
+    if (newVal) {
       form.value = {
-        ...val,
-        documentType: val.documentType || 'Order',
-        documentNo: val.documentNo || props.documentNo,
-        sellToCustomerNo: val.sellToCustomerNo || '',
-        lineNo: val.lineNo || '',
-        type: val.type || 'Item',
-        no: val.no || '',
-        variantCode: val.variantCode || '',
-        description: val.description || '',
-        description2: val.description2 || '',
-        locationCode: val.locationCode || '',
-        quantity: parseFloat(val.quantity || '0').toFixed(5),
-        reservedQtyBase: parseFloat(val.reservedQtyBase || '0').toFixed(5),
-        unitOfMeasureCode: val.unitOfMeasureCode || 'PCS',
-        unitPrice: parseFloat(val.unitPrice || '0').toFixed(2),
-        unitCostLCY: parseFloat(val.unitCostLCY || '0').toFixed(2),
-        lineAmount: parseFloat(val.lineAmount || '0').toFixed(2),
-        orderNo: val.orderNo || props.documentNo,
-        jobLineType: val.jobLineType || '',
-        shipmentDate: normalizeDate(val.shipmentDate),
-        outstandingQuantity: parseFloat(val.outstandingQuantity || '0').toFixed(5),
-        discountPercent: parseFloat(val.discountPercent || '0').toFixed(2),
-        allowInvoiceDiscount: val.allowInvoiceDiscount || 1,
-      }
-    } else {
-      form.value = {
-        documentType: 'Order',
-        documentNo: props.documentNo || '',
-        sellToCustomerNo: '',
-        lineNo: '',
-        type: 'Item',
-        no: '',
-        variantCode: '',
-        description: '',
-        description2: '',
-        locationCode: '',
-        quantity: '1',
-        reservedQtyBase: '1',
-        unitOfMeasureCode: 'PCS',
-        unitPrice: '1',
-        unitCostLCY: '1',
-        lineAmount: '1',
-        orderNo: props.documentNo || '',
-        jobLineType: '',
-        shipmentDate: '',
-        outstandingQuantity: '1',
-        discountPercent: '1',
-        allowInvoiceDiscount: 1,
+        no: newVal.no || '',
+        sellToCustomerNo: newVal.sellToCustomerNo || '',
+        sellToCustomerName: newVal.sellToCustomerName || '',
+        postingDescription: newVal.postingDescription || '',
+        sellToAddress: newVal.sellToAddress || '',
+        sellToCity: newVal.sellToCity || '',
+        sellToContact: newVal.sellToContact || '',
+        sellToPhoneNo: newVal.sellToPhoneNo || '',
+        sellToEmail: newVal.sellToEmail || '',
+        dueDate: newVal.dueDate ? new Date(newVal.dueDate).toISOString().split('T')[0] : '',
+        orderDate: newVal.orderDate ? new Date(newVal.orderDate).toISOString().split('T')[0] : '',
+        status: newVal.status || 'Open',
+        currencyCode: newVal.currencyCode || 'KZT',
+        paymentTermsCode: newVal.paymentTermsCode || '',
+        paymentMethodCode: newVal.paymentMethodCode || '',
+        shipmentMethodCode: newVal.shipmentMethodCode || '',
+        yourReference: newVal.yourReference || '',
       }
     }
   },
   { immediate: true },
 )
 
-watch(
-  () => props.documentNo,
-  (val) => {
-    form.value.documentNo = val
-    form.value.orderNo = val
-  },
-)
+const handleCustomerSelect = (value) => {
+  form.value.sellToCustomerNo = value
+  const customer = customersStore.customers.find((c) => c.customer_no === value)
+  if (customer) {
+    form.value.sellToCustomerName = customer.name || ''
+    form.value.sellToAddress = customer.address || ''
+    form.value.sellToCity = customer.city || ''
+    form.value.sellToPhoneNo = customer.phone_no || ''
+    form.value.sellToEmail = customer.email || ''
+  }
+}
 
 const handleSubmit = async () => {
   try {
-    if (!form.value.documentNo) {
-      errorMessage.value = 'Document No is required'
-      return
-    }
     if (!form.value.no) {
-      errorMessage.value = 'Item No is required'
+      errorMessage.value = 'Order No is required'
       return
     }
-    if (!form.value.lineNo) {
-      errorMessage.value = 'Line No is required'
+    if (!form.value.sellToCustomerNo) {
+      errorMessage.value = 'Customer is required'
       return
-    }
-    if (!form.value.quantity || parseFloat(form.value.quantity) <= 0) {
-      errorMessage.value = 'Quantity must be greater than 0'
-      return
-    }
-    if (!form.value.unitPrice || parseFloat(form.value.unitPrice) <= 0) {
-      errorMessage.value = 'Unit Price must be greater than 0'
-      return
-    }
-
-    const formatDate = (date) => {
-      if (!date) return null
-      return `${date} 19:00:00`
     }
 
     const data = {
       ...form.value,
-      quantity: parseFloat(form.value.quantity).toFixed(5),
-      reservedQtyBase: parseFloat(form.value.reservedQtyBase).toFixed(5),
-      unitPrice: parseFloat(form.value.unitPrice).toFixed(2),
-      unitCostLCY: parseFloat(form.value.unitCostLCY).toFixed(2),
-      lineAmount: parseFloat(lineAmount.value).toFixed(2),
-      outstandingQuantity: parseFloat(form.value.outstandingQuantity).toFixed(5),
-      discountPercent: parseFloat(form.value.discountPercent).toFixed(2),
-      shipmentDate: formatDate(form.value.shipmentDate),
-      orderNo: form.value.documentNo, // Ensure orderNo matches documentNo
+      dueDate: form.value.dueDate ? `${form.value.dueDate} 19:00:00` : null,
+      orderDate: form.value.orderDate ? `${form.value.orderDate} 19:00:00` : null,
+      sellToAddress2: null,
+      sellToCounty: null,
+      sellToPostCode: null,
+      sellToCountryRegionCode: null,
+      sellToContactNo: null,
+      sellToMobilePhoneNo: null,
+      noOfArchivedVersions: null,
+      documentDate: null,
+      postingDate: null,
+      vatReportingDate: null,
+      requestedDeliveryDate: null,
+      promisedDeliveryDate: null,
+      externalDocumentNo: null,
+      salespersonCode: null,
+      campaignNo: null,
+      opportunityNo: null,
+      responsibilityCenter: null,
+      assignedUserId: null,
+      jobQueueStatus: null,
     }
 
-    if (!props.salesLine || props.salesLine.isNew) {
-      delete data.id
-      await store.createSalesLine(data)
-    } else {
-      await store.updateSalesLine(form.value.id, data)
-    }
+    await store.updateSalesOrder(form.value.no, data)
     emit('saved')
     emit('update:open', false)
     errorMessage.value = ''
   } catch (error) {
-    errorMessage.value = error.response?.data?.message || 'Failed to save sales line'
+    errorMessage.value = error.response?.data?.message || 'Failed to update sales order'
+    console.error('Sales order update error:', errorMessage.value)
     emit('error', errorMessage.value)
   }
 }
@@ -198,43 +145,41 @@ const handleSubmit = async () => {
   <Dialog :open="open" @update:open="(val) => emit('update:open', val)">
     <DialogContent class="sm:max-w-[700px] w-full max-h-[80vh] sm:max-h-[800px] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle>{{
-          salesLine && !salesLine.isNew ? 'Edit Sales Line' : 'Add Sales Line'
-        }}</DialogTitle>
-        <DialogDescription
-          >{{ salesLine && !salesLine.isNew ? 'Update' : 'Add' }} sales line details
-          below</DialogDescription
-        >
+        <DialogTitle>Edit Sales Order</DialogTitle>
+        <DialogDescription>Update the sales order details below</DialogDescription>
       </DialogHeader>
 
-      <div v-if="errorMessage" class="text-red-500 text-sm mb-4">
-        {{ errorMessage }}
-      </div>
+      <div v-if="errorMessage" class="text-red-500 text-sm mb-4">{{ errorMessage }}</div>
 
       <div class="grid gap-4 py-4">
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="no" class="text-right font-medium">Item No</label>
-          <Select v-model="form.no" class="col-span-3" :disabled="itemsStore.loading">
+          <label for="no" class="text-right font-medium">Order No</label>
+          <Input id="no" v-model="form.no" class="col-span-3" required disabled />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="sellToCustomerNo" class="text-right font-medium">Customer</label>
+          <Select
+            v-model="form.sellToCustomerNo"
+            @update:modelValue="handleCustomerSelect"
+            class="col-span-3"
+          >
             <SelectTrigger>
-              <SelectValue
-                :placeholder="
-                  itemsStore.loading
-                    ? 'Loading items...'
-                    : itemsStore.error
-                      ? 'Failed to load items'
-                      : 'Select an item'
-                "
-              />
+              <SelectValue placeholder="Select a customer" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Items</SelectLabel>
+                <SelectLabel>Customers</SelectLabel>
+                <div v-if="customersStore.loading" class="flex justify-center py-2">
+                  <Loader2Icon class="h-4 w-4 animate-spin" />
+                </div>
                 <SelectItem
-                  v-for="item in itemsStore.items"
-                  :key="item.item_no"
-                  :value="item.item_no"
+                  v-else
+                  v-for="customer in customersStore.customers"
+                  :key="customer.customer_no"
+                  :value="customer.customer_no"
                 >
-                  {{ item.item_no }} - {{ item.description }}
+                  {{ customer.customer_no }} - {{ customer.name }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -242,85 +187,79 @@ const handleSubmit = async () => {
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="lineNo" class="text-right font-medium">Line No</label>
-          <Input id="lineNo" v-model="form.lineNo" class="col-span-3" required />
+          <label for="orderDate" class="text-right font-medium">Order Date</label>
+          <Input id="orderDate" v-model="form.orderDate" type="date" class="col-span-3" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="quantity" class="text-right font-medium">Quantity</label>
-          <Input id="quantity" v-model="form.quantity" type="number" class="col-span-3" required />
+          <label for="dueDate" class="text-right font-medium">Due Date</label>
+          <Input id="dueDate" v-model="form.dueDate" type="date" class="col-span-3" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="unitPrice" class="text-right font-medium">Unit Price</label>
-          <Input
-            id="unitPrice"
-            v-model="form.unitPrice"
-            type="number"
-            class="col-span-3"
-            required
-          />
+          <label for="postingDescription" class="text-right font-medium">Description</label>
+          <Textarea id="postingDescription" v-model="form.postingDescription" class="col-span-3" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="unitOfMeasureCode" class="text-right font-medium">UOM</label>
-          <Input id="unitOfMeasureCode" v-model="form.unitOfMeasureCode" class="col-span-3" />
+          <label for="currencyCode" class="text-right font-medium">Currency</label>
+          <Input id="currencyCode" v-model="form.currencyCode" class="col-span-3" />
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+            <label for="status" class="text-right font-medium">Status</label>
+            <Select v-model="form.status" class="col-span-3" :disabled="false">
+              <SelectTrigger class="w-full sm:w-auto">
+                <SelectValue :placeholder="'Select a status'" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Status</SelectLabel>
+                  <SelectItem value="Open">Open</SelectItem>
+                  <SelectItem value="Released">Released</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Canceled">Canceled</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="shipmentDate" class="text-right font-medium">Shipment Date</label>
-          <Input id="shipmentDate" v-model="form.shipmentDate" type="date" class="col-span-3" />
+          <label for="paymentTermsCode" class="text-right font-medium">Payment Terms</label>
+          <Input id="paymentTermsCode" v-model="form.paymentTermsCode" class="col-span-3" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="variantCode" class="text-right font-medium">Variant Code</label>
-          <Input id="variantCode" v-model="form.variantCode" class="col-span-3" />
+          <label for="paymentMethodCode" class="text-right font-medium">Payment Method</label>
+          <Input id="paymentMethodCode" v-model="form.paymentMethodCode" class="col-span-3" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="locationCode" class="text-right font-medium">Location Code</label>
-          <Input id="locationCode" v-model="form.locationCode" class="col-span-3" />
+          <label for="sellToAddress" class="text-right font-medium">Address</label>
+          <Input id="sellToAddress" v-model="form.sellToAddress" class="col-span-3" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="discountPercent" class="text-right font-medium">Discount %</label>
-          <Input
-            id="discountPercent"
-            v-model="form.discountPercent"
-            type="number"
-            class="col-span-3"
-          />
+          <label for="sellToCity" class="text-right font-medium">City</label>
+          <Input id="sellToCity" v-model="form.sellToCity" class="col-span-3" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="unitCostLCY" class="text-right font-medium">Unit Cost LCY</label>
-          <Input id="unitCostLCY" v-model="form.unitCostLCY" type="number" class="col-span-3" />
+          <label for="sellToPhoneNo" class="text-right font-medium">Phone</label>
+          <Input id="sellToPhoneNo" v-model="form.sellToPhoneNo" class="col-span-3" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="description" class="text-right font-medium">Description</label>
-          <Input id="description" v-model="form.description" class="col-span-3" />
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="description2" class="text-right font-medium">Description 2</label>
-          <Input id="description2" v-model="form.description2" class="col-span-3" />
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="jobLineType" class="text-right font-medium">Job Line Type</label>
-          <Input id="jobLineType" v-model="form.jobLineType" class="col-span-3" />
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label class="text-right font-medium">Line Amount</label>
-          <div class="col-span-3 text-sm">{{ lineAmount }}</div>
+          <label for="sellToEmail" class="text-right font-medium">Email</label>
+          <Input id="sellToEmail" v-model="form.sellToEmail" class="col-span-3" />
         </div>
       </div>
 
       <div class="flex justify-end gap-2">
         <Button variant="outline" @click="emit('update:open', false)">Cancel</Button>
-        <Button @click="handleSubmit" :disabled="itemsStore.loading">Save</Button>
+        <Button @click="handleSubmit" :disabled="customersStore.loading">Save</Button>
       </div>
     </DialogContent>
   </Dialog>
