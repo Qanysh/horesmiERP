@@ -1,109 +1,160 @@
-// router/index.js
-import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "@/pages/home/views/HomeView.vue";
-import Customers from "@/pages/customers/views/CustomersView.vue";
-import Vendors from "@/pages/vendors/views/VendorsView.vue";
-import Items from "@/pages/items/views/ItemsView.vue";
-import Users from "@/views/Users/Users.vue";
-import Signup from "@/pages/auth/views/SignupView.vue";
-import Login from "@/pages/auth/views/LoginView.vue";
-import PurchaseOrdersView from "@/pages/purchaseOrders/views/PurchaseOrdersView.vue";
-import PurchaseHeadersView from "@/pages/purchaseHeaders/views/PurchaseHeadersView.vue";
-import SalesView from "@/pages/salesOrders/views/SalesOrdersView.vue";
-import GeneralLedgerEntriesView from "@/pages/generalLedgerEntries/views/GeneralLedgerEntriesView.vue";
-import NotFound from "@/pages/notFound/NotFoundView.vue";
-import { useAuthStore } from "@/pages/auth/stores/authStore";
-import { isAuthenticated, getUser } from "@/pages/auth/utils/storage";
+import { createRouter, createWebHistory } from 'vue-router'
+import AppLayout from '@/components/layout/AppLayout.vue'
+import HomeView from '@/views/HomeView.vue'
+import DashboardView from '@/views/Dashboard/DashboardView.vue'
+import CustomersView from '@/views/Customers/CustomersView.vue'
+import VendorsView from '@/views/Vendors/VendorsView.vue'
+import ItemsView from '@/views/Items/ItemsView.vue'
+import PurchaseOrdersView from '@/views/PurchaseOrders/PurchaseOrdersView.vue'
+import SalesOrdersView from '@/views/SalesOrders/SalesOrdersView.vue'
+import SignupView from '@/views/Auth/SignupView.vue'
+import LoginView from '@/views/Auth/LoginView.vue'
+import authService from '@/services/authService'
+import ProductsView from '@/views/Product/ProductsView.vue'
+import ProductionToolsView from '@/views/ProductionTools/ProductionToolsView.vue'
+import GeneralLedgerEntriesView from '@/views/GeneralEntries/GeneralLedgerEntriesView.vue'
+
+const routes = [
+  {
+    path: '/signup',
+    name: 'Signup',
+    component: SignupView,
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginView,
+  },
+  {
+    path: '/',
+    name: 'Home',
+    component: HomeView,
+  },
+  {
+    path: '/dashboard',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'Dashboard',
+        component: DashboardView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/customers',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'Customers',
+        component: CustomersView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/vendors',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'Vendors',
+        component: VendorsView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/items',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'Items',
+        component: ItemsView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/purchase-orders',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'PurchaseOrders',
+        component: PurchaseOrdersView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/sales-orders',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'SalesOrders',
+        component: SalesOrdersView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/products',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'Products',
+        component: ProductsView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/production-tools',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'ProductionTools',
+        component: ProductionToolsView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/general-ledger-entries',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'General Ledger Entries',
+        component: GeneralLedgerEntriesView,
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: "/:pathMatch(.*)*",
-      name: "NotFound",
-      component: NotFound,
-      meta: { hideLayout: true },
-    },
-    {
-      path: "/",
-      name: "home",
-      component: HomeView,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: "/customers",
-      name: "customers",
-      component: Customers,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: "/vendors",
-      name: "vendors",
-      component: Vendors,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: "/items",
-      name: "items",
-      component: Items,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: "/users",
-      name: "users",
-      component: Users,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: "/purchaseHeaders",
-      name: "purchaseHeaders",
-      component: PurchaseHeadersView,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: "/sales",
-      name: "sales",
-      component: SalesView,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: "/ledger",
-      name: "ledger",
-      component: GeneralLedgerEntriesView,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: "/signup",
-      name: "signup",
-      component: Signup,
-      meta: { hideLayout: true, requiresGuest: true },
-    },
-    {
-      path: "/login",
-      name: "login",
-      component: Login,
-      meta: { hideLayout: true, requiresGuest: true },
-    },
-  ],
-});
+  history: createWebHistory(),
+  routes,
+})
 
-export function setupRouter(app) {
-  router.beforeEach((to, from, next) => {
-    const authStore = useAuthStore();
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = authService.isAuthenticated()
 
-    authStore.isAuth = isAuthenticated();
-    authStore.user = getUser();
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next('/login')
+  } else if (['Login', 'Signup'].includes(to.name) && isAuthenticated) {
+    next('/')
+  } else {
+    next()
+  }
+})
 
-    if (to.meta.requiresAuth && !authStore.authenticated) {
-      next("/login");
-    } else if (to.meta.requiresGuest && authStore.authenticated) {
-      next("/");
-    } else {
-      next();
-    }
-  });
-
-  return router;
-}
-
-export default router;
+export default router
