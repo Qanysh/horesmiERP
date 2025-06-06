@@ -86,8 +86,15 @@ const openViewModal = (order) => {
 }
 
 const openLineEditModal = (line, documentNo) => {
+  console.log('Opening line edit modal for documentNo:', documentNo, 'line:', line)
+  if (!documentNo) {
+    console.error('DocumentNo is undefined!')
+    return
+  }
   selectedSalesLine.value = line ? { ...line, documentNo } : { documentNo, isNew: true }
+  console.log('selectedSalesLine:', selectedSalesLine.value)
   isLineModalOpen.value = true
+  console.log('isLineModalOpen:', isLineModalOpen.value)
 }
 
 const openDeleteOrderModal = (order) => {

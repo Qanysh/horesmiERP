@@ -124,12 +124,12 @@ const filteredCustomers = computed(() => {
           </TableRow>
           <TableRow v-for="customer in filteredCustomers" :key="customer.customer_no">
             <TableCell class="font-medium">{{ customer.customer_no || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.name || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.name2 || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.location_code || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.country_region_code || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.phone_no || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.contact || '-' }}</TableCell>
+            <TableCell>{{ customer.name || '-' }}</TableCell>
+            <TableCell>{{ customer.name2 || '-' }}</TableCell>
+            <TableCell>{{ customer.location_code || '-' }}</TableCell>
+            <TableCell>{{ customer.country_region_code || '-' }}</TableCell>
+            <TableCell>{{ customer.phone_no || '-' }}</TableCell>
+            <TableCell>{{ customer.contact || '-' }}</TableCell>
             <TableCell>
               <Badge variant="outline">
                 {{ customer.credit_limit_lcy || '0.00' }}
