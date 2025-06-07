@@ -16,22 +16,23 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const token = localStorage.getItem('token')
       const storedUser = localStorage.getItem('user')
+
       if (token && storedUser) {
         user.value = JSON.parse(storedUser)
         isAuth.value = true
-        const response = await api.get('/admin/users')
-        user.value = response.data
-        localStorage.setItem('user', JSON.stringify(response.data))
         return true
       }
+
+      isAuth.value = false
+      user.value = null
       return false
     } catch (error) {
       console.error('Check auth error:', error)
-      logout()
+      isAuth.value = false
+      user.value = null
       return false
     }
   }
-
   async function login(userData) {
     user.value = {
       id: userData.id,

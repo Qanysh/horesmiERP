@@ -163,18 +163,31 @@ const router = createRouter({
 export function setupRouter(app) {
   router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
-    const isAuthenticated = authStore.isAuth
 
-    if (to.meta.requiresAuth && !isAuthenticated) {
-      next('/login')
-    } else if (['Login', 'Signup'].includes(to.name) && isAuthenticated) {
-      next('/')
-    } else {
+    const publicRoutes = ['/', '/login', '/signup']
+
+    if (publicRoutes.includes(to.path)) {
+      return next()
+    }
+
+    try {
+      const isAuthenticated = await authStore.checkAuth()
+
+      if (!isAuthenticated) {
+        return next('/login')
+      }
+
+      if (to.meta.requiredRole && authStore.userRole !== to.meta.requiredRole) {
+        return next('/dashboard')
+      }
+
       next()
+    } catch (error) {
+      console.error('Router error:', error)
+      next('/login')
     }
   })
 
   return router
 }
-
 export default router

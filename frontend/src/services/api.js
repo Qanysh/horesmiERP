@@ -1,20 +1,31 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 import { useModalStore } from '@/stores/useModalStore'
+import router from '@/router'
 
 const api = axios.create({
   baseURL: 'http://localhost:3000/api',
   withCredentials: true,
 })
 
+api.interceptors.request.use(async (config) => {
+  const authStore = useAuthStore()
+  if (!authStore.isAuth && !['/auth/login', '/auth/signup'].includes(config.url)) {
+    router.push('/login')
+    return Promise.reject(new Error('Not authenticated'))
+  }
+  return config
+})
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status
+    const authStore = useAuthStore()
 
     if (status === 401) {
-      const authStore = useAuthStore()
       authStore.logout()
+      router.push('/login')
     }
 
     if (status === 403) {
