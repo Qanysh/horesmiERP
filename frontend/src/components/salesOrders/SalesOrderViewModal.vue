@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import { useCustomersStore } from '@/stores/customers'
 import { useSalesOrdersStore } from '@/stores/salesOrders'
+
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,16 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { ChevronDownIcon, ChevronRightIcon, Loader2Icon } from 'lucide-vue-next'
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  FileTextIcon,
+  DollarSignIcon,
+  TruckIcon,
+  UsersIcon,
+  Loader2Icon,
+  BoxIcon,
+} from 'lucide-vue-next'
 
 const customersStore = useCustomersStore()
 const salesOrdersStore = useSalesOrdersStore()
@@ -22,6 +32,7 @@ const props = defineProps({
 const emit = defineEmits(['update:open'])
 const showLines = ref(false)
 const printing = ref(false)
+const errorMessage = ref('')
 
 const getCustomerName = (customerNo) => {
   const customer = customersStore.customers.find((c) => c.customer_no === customerNo)
@@ -29,9 +40,9 @@ const getCustomerName = (customerNo) => {
 }
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
+  if (!dateString) return ''
   const date = new Date(dateString)
-  return isNaN(date) ? 'N/A' : date.toISOString().split('T')[0]
+  return isNaN(date) ? '' : date.toLocaleDateString()
 }
 
 const toggleLines = async () => {
@@ -39,7 +50,9 @@ const toggleLines = async () => {
   if (showLines.value && props.salesOrder?.no) {
     try {
       await salesOrdersStore.fetchSalesLinesByDocumentNo(props.salesOrder.no)
+      errorMessage.value = ''
     } catch (error) {
+      errorMessage.value = error.response?.data?.message || 'Failed to load sales lines'
       console.error('Error fetching sales lines:', error)
     }
   }
@@ -52,6 +65,7 @@ const handlePrint = async () => {
     const url = `http://localhost:3000/api/reports/salesOrder/${props.salesOrder.no}`
     window.open(url, '_blank')
   } catch (error) {
+    errorMessage.value = 'Failed to generate print document'
     console.error('Error printing sales order:', error)
   } finally {
     printing.value = false
@@ -64,8 +78,10 @@ watch(
     if (newVal && newVal.no) {
       try {
         await salesOrdersStore.fetchSalesLinesByDocumentNo(newVal.no)
+        errorMessage.value = ''
       } catch (error) {
-        console.error('Error fetching sales lines on mount:', error)
+        errorMessage.value = error.response?.data?.message || 'Failed to load sales lines'
+        console.error('Error fetching sales lines:', error)
       }
     }
   },
@@ -76,111 +92,93 @@ watch(
 <template>
   <Dialog :open="open" @update:open="$emit('update:open', $event)">
     <DialogContent
-      class="sm:max-w-[900px] w-full max-h-[80vh] sm:max-h-[900px] overflow-y-auto p-4"
+      class="sm:max-w-[900px] w-full max-h-[80vh] sm:max-h-[800px] overflow-y-auto p-6 bg-white border border-gray-300 rounded-lg shadow-md"
     >
       <DialogHeader>
-        <DialogTitle>Sales Order Details</DialogTitle>
-        <DialogDescription> View all details of this sales order </DialogDescription>
+        <DialogTitle class="text-xl font-semibold text-black">Sales Order Details</DialogTitle>
+        <DialogDescription class="text-sm text-gray-500"
+          >View all details of this sales order</DialogDescription
+        >
       </DialogHeader>
 
-      <div v-if="salesOrder" class="grid gap-4 py-4">
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <h3 class="font-semibold mb-2">Order Information</h3>
-            <div class="space-y-1">
-              <p><span class="font-medium">Order No:</span> {{ salesOrder.no || 'N/A' }}</p>
-              <p>
-                <span class="font-medium">Customer:</span>
-                {{ getCustomerName(salesOrder.sellToCustomerNo) }}
-              </p>
-              <p>
-                <span class="font-medium">Order Date:</span> {{ formatDate(salesOrder.orderDate) }}
-              </p>
-              <p><span class="font-medium">Due Date:</span> {{ formatDate(salesOrder.dueDate) }}</p>
-              <p><span class="font-medium">Status:</span> {{ salesOrder.status || 'N/A' }}</p>
-            </div>
+      <div v-if="errorMessage" class="text-red-500 text-sm mb-4">
+        {{ errorMessage }}
+      </div>
+
+      <div v-if="salesOrder" class="grid gap-6 py-4">
+        <!-- Order Information Section -->
+        <div class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm">
+          <div class="flex items-center space-x-3 text-gray-700">
+            <FileTextIcon class="h-6 w-6 text-gray-600" />
+            <h3 class="font-semibold text-lg">Order Information</h3>
           </div>
-          <div>
-            <h3 class="font-semibold mb-2">Financial Information</h3>
-            <div class="space-y-1">
-              <p>
-                <span class="font-medium">Currency:</span> {{ salesOrder.currencyCode || 'N/A' }}
-              </p>
-              <p>
-                <span class="font-medium">Payment Terms:</span>
-                {{ salesOrder.paymentTermsCode || 'N/A' }}
-              </p>
-              <p>
-                <span class="font-medium">Payment Method:</span>
-                {{ salesOrder.paymentMethodCode || 'N/A' }}
-              </p>
-              <p>
-                <span class="font-medium">Shipment Method:</span>
-                {{ salesOrder.shipmentMethodCode || 'N/A' }}
-              </p>
-              <p>
-                <span class="font-medium">Your Reference:</span>
-                {{ salesOrder.yourReference || 'N/A' }}
-              </p>
-            </div>
+          <div class="space-y-2 mt-2">
+            <p><span class="font-medium">No:</span> {{ salesOrder.no || 'N/A' }}</p>
+            <p>
+              <span class="font-medium">Customer:</span>
+              {{ getCustomerName(salesOrder.sellToCustomerNo) }}
+            </p>
+            <p>
+              <span class="font-medium">Order Date:</span> {{ formatDate(salesOrder.orderDate) }}
+            </p>
+            <p><span class="font-medium">Due Date:</span> {{ formatDate(salesOrder.dueDate) }}</p>
+            <p><span class="font-medium">Status:</span> {{ salesOrder.status || 'N/A' }}</p>
           </div>
         </div>
-        <div>
-          <h3 class="font-semibold mb-2">Description</h3>
-          <p>{{ salesOrder.postingDescription || 'N/A' }}</p>
+
+        <!-- Financial Information Section -->
+
+        <div class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm">
+          <div class="flex items-center space-x-3 text-gray-700">
+            <BoxIcon class="h-6 w-6 text-gray-600" />
+            <h3 class="font-semibold text-lg">Description</h3>
+          </div>
+          <p class="text-gray-700 mt-2">{{ salesOrder.postingDescription }}</p>
         </div>
-        <div>
-          <h3 class="font-semibold mb-2">Sell To</h3>
-          <div class="space-y-1">
-            <p>
-              <span class="font-medium">Name:</span> {{ salesOrder.sellToCustomerName || 'N/A' }}
-            </p>
-            <p><span class="font-medium">Address:</span> {{ salesOrder.sellToAddress || 'N/A' }}</p>
-            <p>
-              <span class="font-medium">Address 2:</span> {{ salesOrder.sellToAddress2 || 'N/A' }}
-            </p>
-            <p><span class="font-medium">City:</span> {{ salesOrder.sellToCity || 'N/A' }}</p>
-            <p><span class="font-medium">County:</span> {{ salesOrder.sellToCounty || 'N/A' }}</p>
-            <p>
-              <span class="font-medium">Post Code:</span> {{ salesOrder.sellToPostCode || 'N/A' }}
-            </p>
-            <p>
-              <span class="font-medium">Country/Region:</span>
-              {{ salesOrder.sellToCountryRegionCode || 'N/A' }}
-            </p>
-            <p>
-              <span class="font-medium">Contact No:</span> {{ salesOrder.sellToContactNo || 'N/A' }}
-            </p>
-            <p><span class="font-medium">Contact:</span> {{ salesOrder.sellToContact || 'N/A' }}</p>
-            <p><span class="font-medium">Phone:</span> {{ salesOrder.sellToPhoneNo || 'N/A' }}</p>
-            <p>
-              <span class="font-medium">Mobile Phone:</span>
-              {{ salesOrder.sellToMobilePhoneNo || 'N/A' }}
-            </p>
-            <p><span class="font-medium">Email:</span> {{ salesOrder.sellToEmail || 'N/A' }}</p>
+
+        <!-- Customer Details Section -->
+        <div class="grid grid-cols-1 gap-4">
+          <div class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm">
+            <div class="flex items-center space-x-3 text-gray-700">
+              <UsersIcon class="h-6 w-6 text-gray-600" />
+              <h3 class="font-semibold text-lg">Customer Details</h3>
+            </div>
+            <div class="space-y-2 mt-2">
+              <p>
+                <span class="font-medium">Name:</span> {{ salesOrder.sellToCustomerName || 'N/A' }}
+              </p>
+              <p>
+                <span class="font-medium">Address:</span> {{ salesOrder.sellToAddress || 'N/A' }}
+              </p>
+              <p><span class="font-medium">City:</span> {{ salesOrder.sellToCity || 'N/A' }}</p>
+              <p><span class="font-medium">Phone:</span> {{ salesOrder.sellToPhoneNo || 'N/A' }}</p>
+              <p><span class="font-medium">Email:</span> {{ salesOrder.sellToEmail || 'N/A' }}</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="mt-4">
-        <Button variant="ghost" class="flex items-center gap-2" @click="toggleLines">
+      <!-- Toggle Sales Lines -->
+      <div class="mt-6">
+        <Button
+          variant="ghost"
+          class="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+          @click="toggleLines"
+        >
           <span>Sales Lines</span>
           <ChevronRightIcon v-if="!showLines" class="h-4 w-4" />
           <ChevronDownIcon v-else class="h-4 w-4" />
         </Button>
 
-        <div v-if="showLines" class="mt-2 border rounded-lg p-4 max-h-[300px] overflow-y-auto">
-          <div
-            v-if="salesOrdersStore.salesLinesByDocumentNo[salesOrder?.no]?.length === 0"
-            class="text-sm text-gray-500"
-          >
-            No sales lines found
+        <div
+          v-if="showLines"
+          class="mt-2 border rounded-lg p-4 max-h-[300px] overflow-y-auto bg-white shadow-sm"
+        >
+          <div v-if="errorMessage" class="text-red-500 text-sm mb-4">
+            {{ errorMessage }}
           </div>
-          <div v-else-if="salesOrdersStore.loading" class="flex justify-center py-4">
-            <Loader2Icon class="h-6 w-6 animate-spin text-gray-500" />
-          </div>
-          <div v-else class="overflow-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+          <div class="overflow-auto">
+            <table class="min-w-full divide-y divide-gray-300">
               <thead class="bg-gray-50">
                 <tr>
                   <th
@@ -220,7 +218,21 @@ watch(
                   </th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
+              <tbody class="bg-white divide-y divide-gray-300">
+                <tr
+                  v-if="
+                    !Array.isArray(salesOrdersStore.salesLinesByDocumentNo[salesOrder?.no]) ||
+                    salesOrdersStore.salesLinesByDocumentNo[salesOrder?.no]?.length === 0
+                  "
+                >
+                  <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
+                    {{
+                      salesOrdersStore.loading
+                        ? 'Loading sales lines...'
+                        : errorMessage || 'No sales lines found'
+                    }}
+                  </td>
+                </tr>
                 <tr
                   v-for="line in salesOrdersStore.salesLinesByDocumentNo[salesOrder?.no] || []"
                   :key="line.id"
@@ -242,7 +254,7 @@ watch(
                     {{ line.lineAmount || 'N/A' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {{ formatDate(line.shipmentDate) }}
+                    {{ line.shipmentDate ? formatDate(line.shipmentDate) : '' }}
                   </td>
                 </tr>
               </tbody>
@@ -251,12 +263,22 @@ watch(
         </div>
       </div>
 
-      <div class="flex justify-end gap-2">
-        <Button @click="handlePrint" :disabled="printing">
+      <!-- Actions -->
+      <div class="flex justify-end gap-2 mt-6">
+        <Button
+          @click="handlePrint"
+          :disabled="printing"
+          class="bg-gray-800 text-white hover:bg-gray-700 transition-all duration-300"
+        >
           <Loader2Icon v-if="printing" class="h-4 w-4 animate-spin mr-2" />
           Post & Print
         </Button>
-        <Button variant="outline" @click="emit('update:open', false)"> Close </Button>
+        <Button
+          variant="outline"
+          @click="emit('update:open', false)"
+          class="hover:bg-gray-200 transition-all duration-300"
+          >Close</Button
+        >
       </div>
     </DialogContent>
   </Dialog>

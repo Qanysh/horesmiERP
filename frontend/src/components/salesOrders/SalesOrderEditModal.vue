@@ -201,11 +201,6 @@ const handleSubmit = async () => {
           <Textarea id="postingDescription" v-model="form.postingDescription" class="col-span-3" />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="currencyCode" class="text-right font-medium">Currency</label>
-          <Input id="currencyCode" v-model="form.currencyCode" class="col-span-3" />
-        </div>
-
         <div class="grid grid-cols-1 gap-4">
           <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
             <label for="status" class="text-right font-medium">Status</label>
@@ -224,16 +219,6 @@ const handleSubmit = async () => {
               </SelectContent>
             </Select>
           </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="paymentTermsCode" class="text-right font-medium">Payment Terms</label>
-          <Input id="paymentTermsCode" v-model="form.paymentTermsCode" class="col-span-3" />
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="paymentMethodCode" class="text-right font-medium">Payment Method</label>
-          <Input id="paymentMethodCode" v-model="form.paymentMethodCode" class="col-span-3" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">

@@ -38,18 +38,37 @@ const form = ref({
   sellToCustomerName: '',
   postingDescription: '',
   sellToAddress: '',
+  sellToAddress2: null,
   sellToCity: '',
+  sellToCounty: null,
+  sellToPostCode: null,
+  sellToCountryRegionCode: null,
   sellToContact: '',
   sellToPhoneNo: '',
+  sellToMobilePhoneNo: null,
   sellToEmail: '',
   dueDate: new Date().toISOString().split('T')[0],
   orderDate: new Date().toISOString().split('T')[0],
+  documentDate: null,
+  postingDate: null,
+  vatReportingDate: null,
+  requestedDeliveryDate: null,
+  promisedDeliveryDate: null,
+  externalDocumentNo: null,
+  yourReference: '',
+  salespersonCode: null,
+  campaignNo: null,
+  opportunityNo: null,
+  responsibilityCenter: null,
+  assignedUserId: null,
+  jobQueueStatus: null,
   status: 'Open',
   currencyCode: 'KZT',
   paymentTermsCode: '',
   paymentMethodCode: '',
   shipmentMethodCode: '',
-  yourReference: '',
+  noOfArchivedVersions: null,
+  isArchived: 0,
 })
 
 onMounted(async () => {
@@ -87,25 +106,6 @@ const handleSubmit = async () => {
       ...form.value,
       dueDate: form.value.dueDate ? `${form.value.dueDate} 19:00:00` : null,
       orderDate: form.value.orderDate ? `${form.value.orderDate} 19:00:00` : null,
-      sellToAddress2: null,
-      sellToCounty: null,
-      sellToPostCode: null,
-      sellToCountryRegionCode: null,
-      sellToContactNo: null,
-      sellToMobilePhoneNo: null,
-      noOfArchivedVersions: null,
-      documentDate: null,
-      postingDate: null,
-      vatReportingDate: null,
-      requestedDeliveryDate: null,
-      promisedDeliveryDate: null,
-      externalDocumentNo: null,
-      salespersonCode: null,
-      campaignNo: null,
-      opportunityNo: null,
-      responsibilityCenter: null,
-      assignedUserId: null,
-      jobQueueStatus: null,
     }
 
     console.log('Creating sales order with payload:', data)
@@ -181,11 +181,6 @@ const handleSubmit = async () => {
           <Textarea id="postingDescription" v-model="form.postingDescription" class="col-span-3" />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="currencyCode" class="text-right font-medium">Currency</label>
-          <Input id="currencyCode" v-model="form.currencyCode" class="col-span-3" />
-        </div>
-
         <div class="grid grid-cols-1 gap-4">
           <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
             <label for="status" class="text-right font-medium">Status</label>
@@ -204,16 +199,6 @@ const handleSubmit = async () => {
               </SelectContent>
             </Select>
           </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="paymentTermsCode" class="text-right font-medium">Payment Terms</label>
-          <Input id="paymentTermsCode" v-model="form.paymentTermsCode" class="col-span-3" />
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
-          <label for="paymentMethodCode" class="text-right font-medium">Payment Method</label>
-          <Input id="paymentMethodCode" v-model="form.paymentMethodCode" class="col-span-3" />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
