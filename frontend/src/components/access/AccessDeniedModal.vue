@@ -7,7 +7,13 @@ const modal = useModalStore()
 
 function goHome() {
   modal.closeAccessDenied()
-  router.push('/')
+  const currentPath = router.currentRoute.value.fullPath
+
+  if (currentPath === '/admin/users') {
+    router.push('/')
+  } else {
+    router.push(currentPath)
+  }
 }
 </script>
 
@@ -29,7 +35,7 @@ function goHome() {
             @click="goHome"
             class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
           >
-            Go to Home
+            Go Back
           </button>
         </div>
       </div>
