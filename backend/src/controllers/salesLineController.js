@@ -297,3 +297,44 @@ exports.deleteSalesLine = function (req, res) {
         res.json({ message: 'SalesLine deleted successfully' });
     });
 };
+
+exports.createManySalesLines = function (req, res) {
+    const lines = req.body; // Ожидается массив объектов salesLine
+
+    if (!Array.isArray(lines) || lines.length === 0) {
+        return res.status(400).json({ error: 'Request body must be a non-empty array' });
+    }
+
+    let created = [];
+    let errors = [];
+
+    Promise.all(lines.map(line => {
+        return new Promise((resolve) => {
+            if (!line.no || !line.lineNo || !line.orderNo) {
+                errors.push({ line, error: 'Missing required fields' });
+                return resolve();
+            }
+            SalesLine.createSalesLine(
+                {
+                    ...line,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                },
+                (err, result) => {
+                    if (err) {
+                        errors.push({ line, error: err.message });
+                    } else {
+                        created.push(line);
+                    }
+                    resolve();
+                }
+            );
+        });
+    })).then(() => {
+        res.status(201).json({
+            message: 'Batch sales line creation finished',
+            created,
+            errors
+        });
+    });
+};

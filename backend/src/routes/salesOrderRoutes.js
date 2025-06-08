@@ -3,6 +3,7 @@ const router = express.Router();
 const salesOrderController = require('../controllers/salesOrderController');
 const salesMiddleware = require('../middlewares/salesMiddleware');
 
+router.post('/batch', salesOrderController.createManySalesOrders);
 router.get('/', salesOrderController.getAllSalesOrders);
 router.get('/card/:no', salesOrderController.getSalesOrderById);
 

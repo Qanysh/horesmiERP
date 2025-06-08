@@ -62,6 +62,48 @@ exports.createProductionTool = function (req, res) {
     });
 };
 
+// Создание нескольких новых записей
+exports.createManyProductionTools = function (req, res) {
+    const tools = req.body; // Ожидается массив объектов productionTool
+
+    if (!Array.isArray(tools) || tools.length === 0) {
+        return res.status(400).json({ error: 'Request body must be a non-empty array' });
+    }
+
+    let created = [];
+    let errors = [];
+
+    Promise.all(tools.map(tool => {
+        return new Promise((resolve) => {
+            if (!tool.tool_no || !tool.name || !tool.type) {
+                errors.push({ tool, error: 'Missing required fields' });
+                return resolve();
+            }
+            ProductionTool.createProductionTool(
+                {
+                    ...tool,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                },
+                (err, result) => {
+                    if (err) {
+                        errors.push({ tool, error: err.message });
+                    } else {
+                        created.push(tool);
+                    }
+                    resolve();
+                }
+            );
+        });
+    })).then(() => {
+        res.status(201).json({
+            message: 'Batch production tool creation finished',
+            created,
+            errors
+        });
+    });
+};
+
 // Обновление записи
 exports.updateProductionTool = function (req, res) {
     const updatedProductionTool = {

@@ -3,6 +3,7 @@ const router = express.Router();
 const productController = require('../controllers/productController');
 const salesMiddleware = require('../middlewares/salesMiddleware');
 
+router.post('/batch', productController.createManyProducts);
 router.get('/', productController.getAllProducts);
 router.get('/card/:product_no', productController.getProductById);
 router.get('/:product_no', productController.getProductById);

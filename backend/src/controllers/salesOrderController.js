@@ -143,3 +143,44 @@ exports.deleteSalesOrder = function (req, res) {
         res.json({ message: 'SalesOrder deleted successfully' });
     });
 };
+
+exports.createManySalesOrders = function (req, res) {
+    const orders = req.body; // Ожидается массив объектов salesOrder
+
+    if (!Array.isArray(orders) || orders.length === 0) {
+        return res.status(400).json({ error: 'Request body must be a non-empty array' });
+    }
+
+    let created = [];
+    let errors = [];
+
+    Promise.all(orders.map(order => {
+        return new Promise((resolve) => {
+            if (!order.no || !order.sellToCustomerNo) {
+                errors.push({ order, error: 'Missing required fields' });
+                return resolve();
+            }
+            SalesOrder.createSalesOrder(
+                {
+                    ...order,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                },
+                (err, result) => {
+                    if (err) {
+                        errors.push({ order, error: err.message });
+                    } else {
+                        created.push(order);
+                    }
+                    resolve();
+                }
+            );
+        });
+    })).then(() => {
+        res.status(201).json({
+            message: 'Batch sales order creation finished',
+            created,
+            errors
+        });
+    });
+};

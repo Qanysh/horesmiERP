@@ -125,6 +125,48 @@ exports.createProduct = function (req, res) {
     });
 };
 
+// Создание нескольких записей
+exports.createManyProducts = function (req, res) {
+    const products = req.body; // Ожидается массив объектов product
+
+    if (!Array.isArray(products) || products.length === 0) {
+        return res.status(400).json({ error: 'Request body must be a non-empty array' });
+    }
+
+    let created = [];
+    let errors = [];
+
+    Promise.all(products.map(product => {
+        return new Promise((resolve) => {
+            if (!product.product_no || !product.description || !product.type) {
+                errors.push({ product, error: 'Missing required fields' });
+                return resolve();
+            }
+            Product.createProduct(
+                {
+                    ...product,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                },
+                (err, result) => {
+                    if (err) {
+                        errors.push({ product, error: err.message });
+                    } else {
+                        created.push(product);
+                    }
+                    resolve();
+                }
+            );
+        });
+    })).then(() => {
+        res.status(201).json({
+            message: 'Batch product creation finished',
+            created,
+            errors
+        });
+    });
+};
+
 // Обновление записи
 exports.updateProduct = function (req, res) {
     const updatedProduct = {

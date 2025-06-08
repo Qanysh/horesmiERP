@@ -328,3 +328,44 @@ exports.deletePurchaseLine = function (req, res) {
         res.json({ message: 'PurchaseLine deleted successfully' });
     });
 };
+
+exports.createManyPurchaseLines = function (req, res) {
+    const lines = req.body; // Ожидается массив объектов purchaseLine
+
+    if (!Array.isArray(lines) || lines.length === 0) {
+        return res.status(400).json({ error: 'Request body must be a non-empty array' });
+    }
+
+    let created = [];
+    let errors = [];
+
+    Promise.all(lines.map(line => {
+        return new Promise((resolve) => {
+            if (!line.no || !line.lineNo) {
+                errors.push({ line, error: 'Missing required fields' });
+                return resolve();
+            }
+            PurchaseLine.createPurchaseLine(
+                {
+                    ...line,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                },
+                (err, result) => {
+                    if (err) {
+                        errors.push({ line, error: err.message });
+                    } else {
+                        created.push(line);
+                    }
+                    resolve();
+                }
+            );
+        });
+    })).then(() => {
+        res.status(201).json({
+            message: 'Batch purchase line creation finished',
+            created,
+            errors
+        });
+    });
+};

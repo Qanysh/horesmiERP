@@ -139,3 +139,44 @@ exports.deleteVendor = function (req, res) {
         res.json({ message: 'Vendor deleted successfully' });
     });
 };
+
+exports.createManyVendors = function (req, res) {
+    const vendors = req.body; // Ожидается массив объектов vendor
+
+    if (!Array.isArray(vendors) || vendors.length === 0) {
+        return res.status(400).json({ error: 'Request body must be a non-empty array' });
+    }
+
+    let created = [];
+    let errors = [];
+
+    Promise.all(vendors.map(vendor => {
+        return new Promise((resolve) => {
+            if (!vendor.BIN || !vendor.name) {
+                errors.push({ vendor, error: 'Missing required fields' });
+                return resolve();
+            }
+            Vendor.createVendor(
+                {
+                    ...vendor,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                },
+                (err, result) => {
+                    if (err) {
+                        errors.push({ vendor, error: err.message });
+                    } else {
+                        created.push(vendor);
+                    }
+                    resolve();
+                }
+            );
+        });
+    })).then(() => {
+        res.status(201).json({
+            message: 'Batch vendor creation finished',
+            created,
+            errors
+        });
+    });
+};

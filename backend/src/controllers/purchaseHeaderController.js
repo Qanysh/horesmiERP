@@ -231,3 +231,44 @@ exports.deletePurchaseHeader = function (req, res) {
         res.json({ message: 'PurchaseHeader deleted successfully' });
     });
 };
+
+exports.createManyPurchaseHeaders = function (req, res) {
+    const headers = req.body; // Ожидается массив объектов purchaseHeader
+
+    if (!Array.isArray(headers) || headers.length === 0) {
+        return res.status(400).json({ error: 'Request body must be a non-empty array' });
+    }
+
+    let created = [];
+    let errors = [];
+
+    Promise.all(headers.map(header => {
+        return new Promise((resolve) => {
+            if (!header.no || !header.vendorNo) {
+                errors.push({ header, error: 'Missing required fields' });
+                return resolve();
+            }
+            PurchaseHeader.createPurchaseHeader(
+                {
+                    ...header,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                },
+                (err, result) => {
+                    if (err) {
+                        errors.push({ header, error: err.message });
+                    } else {
+                        created.push(header);
+                    }
+                    resolve();
+                }
+            );
+        });
+    })).then(() => {
+        res.status(201).json({
+            message: 'Batch purchase header creation finished',
+            created,
+            errors
+        });
+    });
+};

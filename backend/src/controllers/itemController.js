@@ -171,3 +171,45 @@ exports.deleteItem = function (req, res) {
         res.json({ message: 'Item deleted successfully' });
     });
 };
+
+// Создание нескольких записей
+exports.createManyItems = function (req, res) {
+    const items = req.body; // Ожидается массив объектов item
+
+    if (!Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: 'Request body must be a non-empty array' });
+    }
+
+    let created = [];
+    let errors = [];
+
+    Promise.all(items.map(item => {
+        return new Promise((resolve) => {
+            if (!item.item_no || !item.description) {
+                errors.push({ item, error: 'Missing required fields' });
+                return resolve();
+            }
+            Item.createItem(
+                {
+                    ...item,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                },
+                (err, result) => {
+                    if (err) {
+                        errors.push({ item, error: err.message });
+                    } else {
+                        created.push(item);
+                    }
+                    resolve();
+                }
+            );
+        });
+    })).then(() => {
+        res.status(201).json({
+            message: 'Batch item creation finished',
+            created,
+            errors
+        });
+    });
+};

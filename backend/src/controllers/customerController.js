@@ -152,3 +152,45 @@ exports.deleteCustomer = function (req, res) {
         res.json({ message: 'Customer deleted successfully' });
     });
 };
+
+exports.createManyCustomers = function (req, res) {
+    const customers = req.body; // Ожидается массив объектов клиентов
+
+    if (!Array.isArray(customers) || customers.length === 0) {
+        return res.status(400).json({ error: 'Request body must be a non-empty array' });
+    }
+
+    let created = [];
+    let errors = [];
+
+    // Используем Promise.all для параллельного создания
+    Promise.all(customers.map(customer => {
+        return new Promise((resolve) => {
+            if (!customer.customer_no || !customer.name) {
+                errors.push({ customer, error: 'Missing required fields' });
+                return resolve();
+            }
+            Customer.createCustomer(
+                {
+                    ...customer,
+                    created_at: new Date(),
+                    updated_at: new Date()
+                },
+                (err, result) => {
+                    if (err) {
+                        errors.push({ customer, error: err.message });
+                    } else {
+                        created.push(customer);
+                    }
+                    resolve();
+                }
+            );
+        });
+    })).then(() => {
+        res.status(201).json({
+            message: 'Batch customer creation finished',
+            created,
+            errors
+        });
+    });
+};
