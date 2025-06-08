@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog'
 
 const store = useCustomersStore()
+
 const props = defineProps({
   open: Boolean,
   customer: Object,

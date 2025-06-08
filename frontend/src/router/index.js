@@ -163,7 +163,6 @@ const router = createRouter({
 export function setupRouter(app) {
   router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
-
     const publicRoutes = ['/', '/login', '/signup']
 
     if (publicRoutes.includes(to.path)) {
@@ -177,8 +176,9 @@ export function setupRouter(app) {
         return next('/login')
       }
 
+      // Если маршрут требует админских прав, проверяем роль
       if (to.meta.requiredRole && authStore.userRole !== to.meta.requiredRole) {
-        return next('/dashboard')
+        return next('/dashboard') // Или на страницу с ошибкой доступа
       }
 
       next()

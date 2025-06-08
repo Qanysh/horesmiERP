@@ -15,10 +15,14 @@ export const useAuthStore = defineStore('auth', () => {
   async function checkAuth() {
     try {
       const token = localStorage.getItem('token')
-      const storedUser = localStorage.getItem('user')
+      if (!token) {
+        isAuth.value = false
+        user.value = null
+        return false
+      }
 
-      if (token && storedUser) {
-        user.value = JSON.parse(storedUser)
+      const role = await fetchUserRole()
+      if (role) {
         isAuth.value = true
         return true
       }
@@ -33,6 +37,7 @@ export const useAuthStore = defineStore('auth', () => {
       return false
     }
   }
+
   async function login(userData) {
     user.value = {
       id: userData.id,
@@ -58,6 +63,20 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function fetchUserRole() {
+    try {
+      const response = await api.get('/admin/users/role')
+      if (response.data.role) {
+        user.value.role = response.data.role
+        localStorage.setItem('user', JSON.stringify(user.value))
+      }
+      return response.data.role
+    } catch (error) {
+      console.error('Failed to fetch user role:', error)
+      return null
+    }
+  }
+
   return {
     user,
     isAuth,
@@ -67,5 +86,6 @@ export const useAuthStore = defineStore('auth', () => {
     checkAuth,
     login,
     logout,
+    fetchUserRole,
   }
 })
