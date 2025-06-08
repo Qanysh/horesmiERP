@@ -2,6 +2,8 @@
 import { ref, watch, computed } from 'vue'
 import { useSalesOrdersStore } from '@/stores/salesOrders'
 import { useItemsStore } from '@/stores/items'
+import { useProductsStore } from '@/stores/products'
+import { useProductionToolsStore } from '@/stores/productionTools'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -30,6 +32,8 @@ const props = defineProps({
 const emit = defineEmits(['update:open', 'saved', 'error'])
 const store = useSalesOrdersStore()
 const itemsStore = useItemsStore()
+const productsStore = useProductsStore()
+const productionToolsStore = useProductionToolsStore()
 const errorMessage = ref('')
 
 const form = ref({
@@ -37,6 +41,7 @@ const form = ref({
   documentNo: props.documentNo || '',
   sellToCustomerNo: '',
   lineNo: '',
+  itemType: 'Item',
   type: 'Item',
   no: '',
   variantCode: '',
@@ -57,25 +62,25 @@ const form = ref({
   allowInvoiceDiscount: 1,
 })
 
-itemsStore.fetchItems()
-
-const lineAmount = computed(() => {
-  const quantity = parseFloat(form.value.quantity) || 0
-  const price = parseFloat(form.value.unitPrice) || 0
-  return (quantity * price).toFixed(2)
-})
-
 watch(
   () => props.salesLine,
   (val) => {
+    const normalizeDate = (date) => {
+      if (!date) return ''
+      const parsed = new Date(date)
+      return isNaN(parsed) ? '' : parsed.toISOString().split('T')[0]
+    }
+
     if (val && !val.isNew) {
-      const normalizeDate = (date) => {
-        if (!date) return ''
-        const parsed = new Date(date)
-        return isNaN(parsed) ? '' : parsed.toISOString().split('T')[0]
+      let itemType = 'Item'
+      if (val.no) {
+        if (val.no.startsWith('P')) itemType = 'Product'
+        else if (val.no.startsWith('T')) itemType = 'ProductionTool'
       }
+
       form.value = {
         ...val,
+        itemType,
         documentType: val.documentType || 'Order',
         documentNo: val.documentNo || props.documentNo,
         sellToCustomerNo: val.sellToCustomerNo || '',
@@ -101,6 +106,7 @@ watch(
       }
     } else {
       form.value = {
+        itemType: 'Item',
         documentType: 'Order',
         documentNo: props.documentNo || '',
         sellToCustomerNo: '',
@@ -136,6 +142,35 @@ watch(
     form.value.orderNo = val
   },
 )
+
+const lineAmount = computed(() => {
+  const quantity = parseFloat(form.value.quantity) || 0
+  const price = parseFloat(form.value.unitPrice) || 0
+  return (quantity * price).toFixed(2)
+})
+
+const getCurrentStore = computed(() => {
+  switch (form.value.itemType) {
+    case 'Product':
+      return {
+        items: productsStore.products,
+        loading: productsStore.loading,
+        error: productsStore.error,
+      }
+    case 'ProductionTool':
+      return {
+        items: productionToolsStore.productionTools,
+        loading: productionToolsStore.loading,
+        error: productionToolsStore.error,
+      }
+    default:
+      return {
+        items: itemsStore.items,
+        loading: itemsStore.loading,
+        error: itemsStore.error,
+      }
+  }
+})
 
 const handleSubmit = async () => {
   try {
@@ -175,7 +210,7 @@ const handleSubmit = async () => {
       outstandingQuantity: parseFloat(form.value.outstandingQuantity).toFixed(5),
       discountPercent: parseFloat(form.value.discountPercent).toFixed(2),
       shipmentDate: formatDate(form.value.shipmentDate),
-      orderNo: form.value.documentNo, // Ensure orderNo matches documentNo
+      orderNo: form.value.documentNo,
     }
 
     if (!props.salesLine || props.salesLine.isNew) {
@@ -192,6 +227,18 @@ const handleSubmit = async () => {
     emit('error', errorMessage.value)
   }
 }
+
+watch(
+  () => props.open,
+  (val) => {
+    if (val) {
+      itemsStore.fetchItems()
+      productsStore.fetchProducts()
+      productionToolsStore.fetchProductionTools()
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -213,28 +260,44 @@ const handleSubmit = async () => {
 
       <div class="grid gap-4 py-4">
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
+          <label for="itemType" class="text-right font-medium">Item Type</label>
+          <Select v-model="form.itemType" class="col-span-3">
+            <SelectTrigger>
+              <SelectValue placeholder="Select item type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Item Types</SelectLabel>
+                <SelectItem value="Item">Item</SelectItem>
+                <SelectItem value="Product">Product</SelectItem>
+                <SelectItem value="ProductionTool">Production Tool</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
           <label for="no" class="text-right font-medium">Item No</label>
-          <Select v-model="form.no" class="col-span-3" :disabled="itemsStore.loading">
+          <Select v-model="form.no" class="col-span-3" :disabled="getCurrentStore.loading">
             <SelectTrigger>
               <SelectValue
                 :placeholder="
-                  itemsStore.loading
-                    ? 'Loading items...'
-                    : itemsStore.error
-                      ? 'Failed to load items'
-                      : 'Select an item'
+                  getCurrentStore.loading
+                    ? `Loading ${form.itemType.toLowerCase()}s...`
+                    : getCurrentStore.error
+                      ? `Failed to load ${form.itemType.toLowerCase()}s`
+                      : `Select a ${form.itemType.toLowerCase()}`
                 "
               />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Items</SelectLabel>
+                <SelectLabel>{{ form.itemType }}s</SelectLabel>
                 <SelectItem
-                  v-for="item in itemsStore.items"
-                  :key="item.item_no"
-                  :value="item.item_no"
+                  v-for="item in getCurrentStore.items"
+                  :key="item.item_no || item.product_no || item.tool_no"
+                  :value="item.item_no || item.product_no || item.tool_no"
                 >
-                  {{ item.item_no }} - {{ item.description }}
+                  {{ item.item_no || item.product_no || item.tool_no }} - {{ item.description }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>

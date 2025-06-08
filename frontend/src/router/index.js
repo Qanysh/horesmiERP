@@ -12,6 +12,7 @@ import LoginView from '@/views/Auth/LoginView.vue'
 import ProductsView from '@/views/Product/ProductsView.vue'
 import ProductionToolsView from '@/views/ProductionTools/ProductionToolsView.vue'
 import GeneralLedgerEntriesView from '@/views/GeneralEntries/GeneralLedgerEntriesView.vue'
+import UsersView from '@/views/Admin/UsersView.vue'
 
 const routes = [
   {
@@ -137,6 +138,21 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/admin/users',
+    component: AppLayout,
+    children: [
+      {
+        path: '',
+        name: 'AdminUsers',
+        component: UsersView,
+        meta: {
+          requiresAuth: true,
+          requiredRole: 'admin',
+        },
+      },
+    ],
+  },
 ]
 
 const router = createRouter({
@@ -147,18 +163,31 @@ const router = createRouter({
 export function setupRouter(app) {
   router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore()
-    const isAuthenticated = authStore.isAuth
+    const publicRoutes = ['/', '/login', '/signup']
 
-    if (to.meta.requiresAuth && !isAuthenticated) {
-      next('/login')
-    } else if (['Login', 'Signup'].includes(to.name) && isAuthenticated) {
-      next('/')
-    } else {
+    if (publicRoutes.includes(to.path)) {
+      return next()
+    }
+
+    try {
+      const isAuthenticated = await authStore.checkAuth()
+
+      if (!isAuthenticated) {
+        return next('/login')
+      }
+
+      // Если маршрут требует админских прав, проверяем роль
+      if (to.meta.requiredRole && authStore.userRole !== to.meta.requiredRole) {
+        return next('/dashboard') // Или на страницу с ошибкой доступа
+      }
+
       next()
+    } catch (error) {
+      console.error('Router error:', error)
+      next('/login')
     }
   })
 
   return router
 }
-
 export default router

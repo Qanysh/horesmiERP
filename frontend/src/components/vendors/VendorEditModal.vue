@@ -22,7 +22,6 @@ const emit = defineEmits(['update:open', 'saved'])
 const form = ref({
   BIN: '',
   name: '',
-  responsibilityCenter: '',
   locationCode: '',
   phoneNo: '',
   contact: '',
@@ -39,7 +38,6 @@ watch(
       form.value = {
         BIN: '',
         name: '',
-        responsibilityCenter: '',
         locationCode: '',
         phoneNo: '',
         contact: '',
@@ -79,7 +77,6 @@ const handleSubmit = async () => {
           v-for="field in [
             { id: 'BIN', label: 'Vendor No' },
             { id: 'name', label: 'Name' },
-            { id: 'responsibilityCenter', label: 'Responsibility Center' },
             { id: 'locationCode', label: 'Location Code' },
             { id: 'phoneNo', label: 'Phone' },
             { id: 'contact', label: 'Contact' },

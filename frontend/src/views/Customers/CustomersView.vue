@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useCustomersStore } from '@/stores/customers'
+import { useLazyCustomersStore } from '@/stores/lazyStores'
 import { useAuthStore } from '@/stores/authStore'
 import CustomersTable from '@/components/customers/CustomersTable.vue'
 import CustomerCreateModal from '@/components/customers/CustomerCreateModal.vue'
@@ -11,28 +11,49 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const store = useCustomersStore()
+const store = ref(null)
 const isCreateModalOpen = ref(false)
 const searchQuery = ref('')
+const isLoading = ref(false)
+const error = ref(null)
+
+onMounted(async () => {
+  try {
+    if (!authStore.isAuth) {
+      router.push('/login')
+      return
+    }
+
+    isLoading.value = true
+    store.value = await useLazyCustomersStore()
+
+    if (store.value) {
+      await store.value.fetchCustomers()
+    }
+  } catch (err) {
+    error.value = err.message || 'Failed to load customers'
+    console.error('Error loading customers:', err)
+  } finally {
+    isLoading.value = false
+  }
+})
 
 const filteredCustomers = computed(() => {
-  if (!searchQuery.value.trim()) return store.customers
+  if (!store.value || !store.value.customers) return []
+  if (!searchQuery.value.trim()) return store.value.customers
+
   const query = searchQuery.value.trim().toLowerCase()
-  return store.customers.filter((customer) => {
+  return store.value.customers.filter((customer) => {
     return (
       (customer.name || '').toLowerCase().includes(query) ||
       (customer.name2 || '').toLowerCase().includes(query)
     )
   })
 })
-
-onMounted(() => {
-  store.fetchCustomers()
-})
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div v-if="store" class="space-y-6">
     <div class="flex justify-between items-center">
       <h2 class="text-2xl font-bold">Customers</h2>
       <Button @click="isCreateModalOpen = true">

@@ -107,7 +107,6 @@ const filteredVendors = computed(() => {
           <TableRow class="hover:bg-transparent">
             <TableHead class="w-[100px]">Vendor BIN</TableHead>
             <TableHead>Name</TableHead>
-            <TableHead>Responsibility Center</TableHead>
             <TableHead>Location Code</TableHead>
             <TableHead>Phone</TableHead>
             <TableHead>Contact</TableHead>
@@ -124,7 +123,6 @@ const filteredVendors = computed(() => {
           <TableRow v-for="vendor in filteredVendors" :key="vendor.BIN">
             <TableCell class="font-medium">{{ vendor.BIN || '-' }}</TableCell>
             <TableCell>{{ vendor.name || '-' }}</TableCell>
-            <TableCell>{{ vendor.responsibilityCenter || '-' }}</TableCell>
             <TableCell>{{ vendor.locationCode || '-' }}</TableCell>
             <TableCell>{{ vendor.phoneNo || '-' }}</TableCell>
             <TableCell>{{ vendor.contact || '-' }}</TableCell>

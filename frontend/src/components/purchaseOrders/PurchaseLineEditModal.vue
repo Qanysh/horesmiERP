@@ -294,31 +294,12 @@ const getCurrentStore = computed(() => {
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">
           <label for="no" class="text-right font-medium">Item No</label>
-          <Select v-model="form.no" class="col-span-3" :disabled="getCurrentStore.loading">
-            <SelectTrigger>
-              <SelectValue
-                :placeholder="
-                  getCurrentStore.loading
-                    ? `Loading ${form.itemType.toLowerCase()}s...`
-                    : getCurrentStore.error
-                      ? `Failed to load ${form.itemType.toLowerCase()}s`
-                      : `Select a ${form.itemType.toLowerCase()}`
-                "
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>{{ form.itemType }}s</SelectLabel>
-                <SelectItem
-                  v-for="item in getCurrentStore.items"
-                  :key="item.item_no || item.product_no || item.tool_no"
-                  :value="item.item_no || item.product_no || item.tool_no"
-                >
-                  {{ item.item_no || item.product_no || item.tool_no }} - {{ item.description }}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <Input
+            id="no"
+            v-model="form.no"
+            class="col-span-3"
+            placeholder="Enter item number manually"
+          />
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-4">

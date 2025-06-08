@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { SearchIcon, LogOutIcon, MenuIcon, XIcon } from 'lucide-vue-next'
+import { SearchIcon, LogOutIcon, MenuIcon, XIcon, UserIcon } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/authStore'
 
 const router = useRouter()
@@ -11,6 +11,7 @@ const isMobileMenuOpen = ref(false)
 
 const auth = useAuthStore()
 const isAuthenticated = computed(() => auth.isAuth)
+const isAdmin = computed(() => auth.userRole === 'admin')
 
 onMounted(async () => {
   await auth.checkAuth()
@@ -27,6 +28,11 @@ const goToSignup = () => {
 
 const goToLogin = () => {
   router.push('/login')
+}
+
+const goToAdmin = () => {
+  router.push('/admin/users')
+  isMobileMenuOpen.value = false
 }
 </script>
 
@@ -80,13 +86,10 @@ const goToLogin = () => {
 
       <div class="flex items-center gap-4">
         <div v-if="isAuthenticated" class="hidden md:flex items-center gap-4">
-          <Button
-            v-if="isAuthenticated"
-            variant="ghost"
-            size="icon"
-            title="Logout"
-            @click="handleLogout"
-          >
+          <Button v-if="isAdmin" variant="ghost" size="icon" title="Admin Panel" @click="goToAdmin">
+            <UserIcon class="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" title="Logout" @click="handleLogout">
             <LogOutIcon class="h-5 w-5" />
           </Button>
         </div>
@@ -135,7 +138,10 @@ const goToLogin = () => {
           >
             {{ link.text }}
           </RouterLink>
-
+          <Button v-if="isAdmin" variant="outline" class="w-full mt-2 gap-2" @click="goToAdmin">
+            <UserIcon class="h-4 w-4" />
+            <span>Admin Panel</span>
+          </Button>
           <Button variant="outline" class="w-full mt-2 gap-2" @click="handleLogout">
             <LogOutIcon class="h-4 w-4" />
             <span>Logout</span>

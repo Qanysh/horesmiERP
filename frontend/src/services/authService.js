@@ -15,10 +15,14 @@ const authService = {
     try {
       const response = await apiLogin(credentials)
       const authStore = useAuthStore()
+
       authStore.login({
         ...response.user,
         token: response.token,
       })
+
+      await authStore.fetchUserRole()
+
       return response
     } catch (error) {
       throw new Error(error.message || 'Login failed')

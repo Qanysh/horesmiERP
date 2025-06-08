@@ -108,12 +108,11 @@ const filteredCustomers = computed(() => {
             <TableHead class="w-[100px]">No</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Surname</TableHead>
-            <TableHead>Responsibility Center</TableHead>
+
             <TableHead>Location Code</TableHead>
             <TableHead>Country Region Code</TableHead>
             <TableHead>Phone</TableHead>
             <TableHead>Contact</TableHead>
-            <TableHead>Salesperson Code</TableHead>
             <TableHead>Credit Limit</TableHead>
             <TableHead>Status</TableHead>
             <TableHead class="text-right">Actions</TableHead>
@@ -125,14 +124,12 @@ const filteredCustomers = computed(() => {
           </TableRow>
           <TableRow v-for="customer in filteredCustomers" :key="customer.customer_no">
             <TableCell class="font-medium">{{ customer.customer_no || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.name || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.name2 || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.responsibility_center || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.location_code || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.country_region_code || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.phone_no || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.contact || '-' }}</TableCell>
-            <TableCell class="font-medium">{{ customer.salesperson_code || '-' }}</TableCell>
+            <TableCell>{{ customer.name || '-' }}</TableCell>
+            <TableCell>{{ customer.name2 || '-' }}</TableCell>
+            <TableCell>{{ customer.location_code || '-' }}</TableCell>
+            <TableCell>{{ customer.country_region_code || '-' }}</TableCell>
+            <TableCell>{{ customer.phone_no || '-' }}</TableCell>
+            <TableCell>{{ customer.contact || '-' }}</TableCell>
             <TableCell>
               <Badge variant="outline">
                 {{ customer.credit_limit_lcy || '0.00' }}

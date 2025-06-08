@@ -203,7 +203,7 @@ const filteredPurchaseOrders = computed(() => {
                 </Button>
               </TableCell>
               <TableCell class="font-medium">{{ order.no }}</TableCell>
-              <TableCell>{{ getVendorName(order.vendorNo) }}</TableCell>
+              <TableCell>{{ order.vendorNo }} - {{ getVendorName(order.vendorNo) }}</TableCell>
               <TableCell>{{ new Date(order.orderDate).toLocaleDateString() }}</TableCell>
               <TableCell>{{ new Date(order.dueDate).toLocaleDateString() }}</TableCell>
               <TableCell>
