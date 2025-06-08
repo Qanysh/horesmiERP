@@ -2,6 +2,8 @@ const PurchaseLine = require('../models/purchaseLine');
 const Item = require('../models/item');
 const GeneralLedgerEntry = require('../models/generalLedgerEntry');
 const GeneralLedgerEntryController = require('./generalLedgerEntryController');
+const Product = require('../models/product');
+const ProductionTool = require('../models/productionTool');
 
 exports.getAllPurchaseLines = async function (req, res) {
     try {
@@ -103,7 +105,7 @@ exports.createPurchaseLine = function (req, res) {
         updated_at: new Date()
     };
 
-    if (!newPurchaseLine.no || !newPurchaseLine.lineNo || !newPurchaseLine.orderNo) {
+    if (!newPurchaseLine.no || !newPurchaseLine.lineNo) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -115,74 +117,151 @@ exports.createPurchaseLine = function (req, res) {
 
         const itemNo = req.body.no;
         const qty = Number(req.body.quantity) || 0;
+        const type = req.body.type; // 'Product', 'Item', 'ProductionTool'
 
-        Item.getItemById(itemNo, (err, items) => {
-            if (err) {
-                console.error('Error fetching item:', err);
-                return res.status(500).json({ error: 'Failed to fetch item' });
-            }
+        const afterLedger = () => {
+            res.status(201).json({ message: 'PurchaseLine and item processed, ledger entry created', purchaseLine: newPurchaseLine });
+        };
 
-            const afterLedger = () => {
-                res.status(201).json({ message: 'PurchaseLine and item processed, ledger entry created', purchaseLine: newPurchaseLine });
-            };
-
-            const createLedgerEntry = () => {
-                GeneralLedgerEntry.getLastEntryNo((err, lastentryNo) => {
-                    if (err) {
-                        console.error('Error fetching last entryNo:', err);
-                        return res.status(500).json({ error: 'Failed to fetch last entryNo' });
-                    }
-                    const nextEntryNo = lastentryNo ? Number(lastentryNo) + 1 : 1;
-                    const generalLedgerEntry = {
-                        entryNo: nextEntryNo,
-                        documentType: 'Purchase',
-                        documentNo: newPurchaseLine.documentNo,
-                        quantity: newPurchaseLine.quantity,
-                        amount: -Math.abs(Number(newPurchaseLine.lineAmount)),
-                        postingDate: new Date(),
-                        description: newPurchaseLine.description,
-                        created_at: new Date(),
-                        updated_at: new Date()
-                    };
-                    GeneralLedgerEntry.createGeneralLedgerEntry(generalLedgerEntry, (err) => {
-                        if (err) {
-                            console.error('Error creating general ledger entry:', err);
-                        }
-                        afterLedger();
-                    });
-                });
-            };
-
-            if (items && items.length > 0) {
-                const item = items[0];
-                const newInventory = Number(item.inventory || 0) + qty;
-                Item.updateItem(itemNo, { ...item, inventory: newInventory, updated_at: new Date() }, (err) => {
-                    if (err) {
-                        console.error('Error updating item inventory:', err);
-                        return res.status(500).json({ error: 'Failed to update item inventory' });
-                    }
-                    createLedgerEntry();
-                });
-            } else {
-                const newItem = {
-                    item_no: itemNo,
-                    description: req.body.description,
-                    description2: req.body.description2,
-                    type: req.body.type,
-                    inventory: qty,
-                    baseUnitOfMeasure: req.body.unitOfMeasureCode,
+        const createLedgerEntry = () => {
+            GeneralLedgerEntry.getLastEntryNo((err, lastentryNo) => {
+                if (err) {
+                    console.error('Error fetching last entryNo:', err);
+                    return res.status(500).json({ error: 'Failed to fetch last entryNo' });
+                }
+                const nextEntryNo = lastentryNo ? Number(lastentryNo) + 1 : 1;
+                const generalLedgerEntry = {
+                    entryNo: nextEntryNo,
+                    documentType: 'Purchase',
+                    documentNo: newPurchaseLine.documentNo,
+                    quantity: newPurchaseLine.quantity,
+                    amount: -Math.abs(Number(newPurchaseLine.lineAmount)),
+                    postingDate: new Date(),
+                    description: newPurchaseLine.description,
                     created_at: new Date(),
                     updated_at: new Date()
                 };
-                Item.createItem(newItem, (err) => {
+                GeneralLedgerEntry.createGeneralLedgerEntry(generalLedgerEntry, (err) => {
                     if (err) {
-                        console.error('Error creating item:', err);
-                        return res.status(500).json({ error: 'Failed to create item' });
+                        console.error('Error creating general ledger entry:', err);
                     }
-                    createLedgerEntry();
+                    afterLedger();
                 });
-            }
-        });
+            });
+        };
+
+        // --- Обработка по типу ---
+        if (type === 'Product') {
+            Product.getProductById(itemNo, (err, products) => {
+                if (err) {
+                    console.error('Error fetching product:', err);
+                    return res.status(500).json({ error: 'Failed to fetch product' });
+                }
+                if (products && products.length > 0) {
+                    const product = products[0];
+                    const newInventory = Number(product.inventory || 0) + qty;
+                    Product.updateProduct(itemNo, { ...product, inventory: newInventory, updated_at: new Date() }, (err) => {
+                        if (err) {
+                            console.error('Error updating product inventory:', err);
+                            return res.status(500).json({ error: 'Failed to update product inventory' });
+                        }
+                        createLedgerEntry();
+                    });
+                } else {
+                    // Создать новый продукт
+                    const newProduct = {
+                        product_no: itemNo,
+                        description: req.body.description,
+                        description2: req.body.description2,
+                        type: req.body.type,
+                        inventory: qty,
+                        baseUnitOfMeasure: req.body.unitOfMeasureCode,
+                        created_at: new Date(),
+                        updated_at: new Date()
+                    };
+                    Product.createProduct(newProduct, (err) => {
+                        if (err) {
+                            console.error('Error creating product:', err);
+                            return res.status(500).json({ error: 'Failed to create product' });
+                        }
+                        createLedgerEntry();
+                    });
+                }
+            });
+        } else if (type === 'ProductionTool') {
+            ProductionTool.getProductionToolById(itemNo, (err, tools) => {
+                if (err) {
+                    console.error('Error fetching production tool:', err);
+                    return res.status(500).json({ error: 'Failed to fetch production tool' });
+                }
+                if (tools && tools.length > 0) {
+                    // Можно обновить статус или количество, если нужно
+                    ProductionTool.updateProductionTool(itemNo, { ...tools[0], status: 'Available', updated_at: new Date() }, (err) => {
+                        if (err) {
+                            console.error('Error updating production tool:', err);
+                            return res.status(500).json({ error: 'Failed to update production tool' });
+                        }
+                        createLedgerEntry();
+                    });
+                } else {
+                    // Создать новый инструмент
+                    const newTool = {
+                        tool_no: itemNo,
+                        name: req.body.description,
+                        description: req.body.description2,
+                        type: req.body.type,
+                        locationCode: req.body.locationCode,
+                        status: 'Available',
+                        isArchived: false,
+                        created_at: new Date(),
+                        updated_at: new Date()
+                    };
+                    ProductionTool.createProductionTool(newTool, (err) => {
+                        if (err) {
+                            console.error('Error creating production tool:', err);
+                            return res.status(500).json({ error: 'Failed to create production tool' });
+                        }
+                        createLedgerEntry();
+                    });
+                }
+            });
+        } else { // По умолчанию — Item
+            Item.getItemById(itemNo, (err, items) => {
+                if (err) {
+                    console.error('Error fetching item:', err);
+                    return res.status(500).json({ error: 'Failed to fetch item' });
+                }
+                if (items && items.length > 0) {
+                    const item = items[0];
+                    const newInventory = Number(item.inventory || 0) + qty;
+                    Item.updateItem(itemNo, { ...item, inventory: newInventory, updated_at: new Date() }, (err) => {
+                        if (err) {
+                            console.error('Error updating item inventory:', err);
+                            return res.status(500).json({ error: 'Failed to update item inventory' });
+                        }
+                        createLedgerEntry();
+                    });
+                } else {
+                    const newItem = {
+                        item_no: itemNo,
+                        description: req.body.description,
+                        description2: req.body.description2,
+                        type: req.body.type,
+                        inventory: qty,
+                        baseUnitOfMeasure: req.body.unitOfMeasureCode,
+                        created_at: new Date(),
+                        updated_at: new Date()
+                    };
+                    Item.createItem(newItem, (err) => {
+                        if (err) {
+                            console.error('Error creating item:', err);
+                            return res.status(500).json({ error: 'Failed to create item' });
+                        }
+                        createLedgerEntry();
+                    });
+                }
+            });
+        }
     });
 };
 

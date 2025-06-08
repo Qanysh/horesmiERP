@@ -35,6 +35,19 @@ exports.getUserById = async function (req, res) {
     }
 };
 
+exports.getCurrentUserRole = async function (req, res) {
+    try {
+        const userRole = req.session.role;
+        if (!userRole) {
+            return res.status(404).json({ error: 'User role not found' });
+        }
+        res.json({ role: userRole });
+    } catch (err) {
+        console.error('Error fetching user role:', err);
+        res.status(500).json({ error: 'Failed to fetch user role' });
+    }
+};
+
 exports.updateUser = async function (req, res) {
 
     const updatedUser = {
