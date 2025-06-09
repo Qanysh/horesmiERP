@@ -176,15 +176,17 @@ export function setupRouter(app) {
         return next('/login')
       }
 
-      // Если маршрут требует админских прав, проверяем роль
-      if (to.meta.requiredRole && authStore.userRole !== to.meta.requiredRole) {
-        return next('/dashboard') // Или на страницу с ошибкой доступа
+      if (to.meta.requiredRole) {
+        const userRole = await authStore.fetchUserRole()
+        if (userRole !== to.meta.requiredRole) {
+          return next('/dashboard')
+        }
       }
 
       next()
     } catch (error) {
       console.error('Router error:', error)
-      next('/login')
+      return next('/login')
     }
   })
 
