@@ -24,14 +24,14 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-const port = 3000;
+const port = 5000;
 
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "http://localhost:5173", // Разрешаем запросы с этого домена
+  origin: "http://localhost:8080", // Разрешаем запросы с этого домена
   credentials: true, // Разрешаем отправку куки
 }));
 
