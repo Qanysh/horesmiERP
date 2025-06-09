@@ -31,7 +31,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "http//185.129.51.179/", // Разрешаем запросы с этого домена
+  origin: "http://localhost:5173", // Разрешаем запросы с этого домена
   credentials: true, // Разрешаем отправку куки
 }));
 

@@ -4,7 +4,7 @@ import { useModalStore } from '@/stores/useModalStore'
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http//185.129.51.179/api',
+  baseURL: 'http://localhost:3000/api/',
   withCredentials: true,
 })
 
