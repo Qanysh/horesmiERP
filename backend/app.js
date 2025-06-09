@@ -24,7 +24,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-const port = 5000;
+const port = 3000;
 
 app.set("view engine", "ejs");
 
