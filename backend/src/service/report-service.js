@@ -294,11 +294,10 @@ async function generalLedgerReportPdf(entries, dataCallback, endCallback) {
         doc.fontSize(9).font('DejaVu-Bold');
         let y = 90;
         doc.text('Date', 50, y);
-        doc.text('Type', 110, y);
-        doc.text('Doc No.', 170, y);
-        doc.text('Item No.', 240, y);
-        doc.text('Description', 310, y);
-        doc.text('Qty', 420, y, { width: 40, align: 'right' });
+        doc.text('Type', 115, y);
+        doc.text('Doc No.', 190, y);
+        doc.text('Description', 270, y);
+        doc.text('Qty', 400, y, { width: 40, align: 'right' });
         doc.text('Amount', 470, y, { width: 70, align: 'right' });
         y += 20;
         doc.moveTo(50, y).lineTo(540, y).stroke();
@@ -314,10 +313,9 @@ async function generalLedgerReportPdf(entries, dataCallback, endCallback) {
                 y = 50;
                 doc.fontSize(9).font('DejaVu-Bold');
                 doc.text('Date', 50, y);
-                doc.text('Type', 110, y);
-                doc.text('Doc No.', 170, y);
-                doc.text('Item No.', 240, y);
-                doc.text('Description', 310, y);
+                doc.text('Type', 115, y);
+                doc.text('Doc No.', 190, y);
+                doc.text('Description', 275, y);
                 doc.text('Qty', 420, y, { width: 40, align: 'right' });
                 doc.text('Amount', 470, y, { width: 70, align: 'right' });
                 y += 20;
@@ -326,11 +324,10 @@ async function generalLedgerReportPdf(entries, dataCallback, endCallback) {
                 doc.font('DejaVu');
             }
             doc.text(formatDate(entry.postingDate), 50, y);
-            doc.text(entry.documentType || '', 110, y);
-            doc.text(entry.documentNo || '', 170, y);
-            doc.text(entry.itemNo || '', 240, y);
-            doc.text(entry.description || '', 310, y, { width: 100 });
-            doc.text(entry.quantity != null ? entry.quantity : '', 420, y, { width: 40, align: 'right' });
+            doc.text(entry.documentType || '', 115, y);
+            doc.text(entry.documentNo || '', 190, y);
+            doc.text(entry.description || '', 260, y, { width: 100 });
+            doc.text(entry.quantity != null ? entry.quantity : '', 400, y, { width: 40, align: 'right' });
             doc.text(entry.amount != null && !isNaN(Number(entry.amount)) ? Number(entry.amount).toFixed(2) : '', 470, y, { width: 70, align: 'right' });
             // Суммируем для итогов
             if (entry.documentType === 'Purchase') totalPurchase += Number(entry.amount) || 0;
@@ -377,11 +374,10 @@ async function generalLedgerReportPdfSales(entries, dataCallback, endCallback) {
         doc.fontSize(9).font('DejaVu-Bold');
         let y = 90;
         doc.text('Date', 50, y);
-        doc.text('Type', 110, y);
-        doc.text('Doc No.', 170, y);
-        doc.text('Item No.', 240, y);
-        doc.text('Description', 310, y);
-        doc.text('Qty', 420, y, { width: 40, align: 'right' });
+        doc.text('Type', 115, y);
+        doc.text('Doc No.', 190, y);
+        doc.text('Description', 270, y);
+        doc.text('Qty', 400, y, { width: 40, align: 'right' });
         doc.text('Amount', 470, y, { width: 70, align: 'right' });
         y += 20;
         doc.moveTo(50, y).lineTo(540, y).stroke();
@@ -396,10 +392,9 @@ async function generalLedgerReportPdfSales(entries, dataCallback, endCallback) {
                 y = 50;
                 doc.fontSize(9).font('DejaVu-Bold');
                 doc.text('Date', 50, y);
-                doc.text('Type', 110, y);
-                doc.text('Doc No.', 170, y);
-                doc.text('Item No.', 240, y);
-                doc.text('Description', 310, y);
+                doc.text('Type', 115, y);
+                doc.text('Doc No.', 190, y);
+                doc.text('Description', 275, y);
                 doc.text('Qty', 420, y, { width: 40, align: 'right' });
                 doc.text('Amount', 470, y, { width: 70, align: 'right' });
                 y += 20;
@@ -410,11 +405,10 @@ async function generalLedgerReportPdfSales(entries, dataCallback, endCallback) {
             }
             if (entry.documentType === 'Sale') {
                 doc.text(formatDate(entry.postingDate), 50, y);
-                doc.text(entry.documentType || '', 110, y);
-                doc.text(entry.documentNo || '', 170, y);
-                doc.text(entry.itemNo || '', 240, y);
-                doc.text(entry.description || '', 310, y, { width: 100 });
-                doc.text(entry.quantity != null ? entry.quantity : '', 420, y, { width: 40, align: 'right' });
+                doc.text(entry.documentType || '', 115, y);
+                doc.text(entry.documentNo || '', 190, y);
+                doc.text(entry.description || '', 270, y, { width: 100 });
+                doc.text(entry.quantity != null ? entry.quantity : '', 400, y, { width: 40, align: 'right' });
                 doc.text(entry.amount != null ? Number(entry.amount).toFixed(2) : '', 470, y, { width: 70, align: 'right' });
                 // Суммируем для итогов
                 totalSale += Number(entry.amount) || 0;
@@ -455,11 +449,10 @@ async function generalLedgerReportPdfPurchase(entries, dataCallback, endCallback
         doc.fontSize(9).font('DejaVu-Bold');
         let y = 90;
         doc.text('Date', 50, y);
-        doc.text('Type', 110, y);
-        doc.text('Doc No.', 170, y);
-        doc.text('Item No.', 240, y);
-        doc.text('Description', 310, y);
-        doc.text('Qty', 420, y, { width: 40, align: 'right' });
+        doc.text('Type', 115, y);
+        doc.text('Doc No.', 190, y);
+        doc.text('Description', 270, y);
+        doc.text('Qty', 400, y, { width: 40, align: 'right' });
         doc.text('Amount', 470, y, { width: 70, align: 'right' });
         y += 20;
         doc.moveTo(50, y).lineTo(540, y).stroke();
@@ -474,11 +467,10 @@ async function generalLedgerReportPdfPurchase(entries, dataCallback, endCallback
                 y = 50;
                 doc.fontSize(9).font('DejaVu-Bold');
                 doc.text('Date', 50, y);
-                doc.text('Type', 110, y);
-                doc.text('Doc No.', 170, y);
-                doc.text('Item No.', 240, y);
-                doc.text('Description', 310, y);
-                doc.text('Qty', 420, y, { width: 40, align: 'right' });
+                doc.text('Type', 115, y);
+                doc.text('Doc No.', 190, y);
+                doc.text('Description', 270, y);
+                doc.text('Qty', 400, y, { width: 40, align: 'right' });
                 doc.text('Amount', 470, y, { width: 70, align: 'right' });
                 y += 20;
                 doc.moveTo(50, y).lineTo(540, y).stroke();
@@ -487,11 +479,10 @@ async function generalLedgerReportPdfPurchase(entries, dataCallback, endCallback
             }
             if (entry.documentType === 'Purchase') {
                 doc.text(formatDate(entry.postingDate), 50, y);
-                doc.text(entry.documentType || '', 110, y);
-                doc.text(entry.documentNo || '', 170, y);
-                doc.text(entry.itemNo || '', 240, y);
-                doc.text(entry.description || '', 310, y, { width: 100 });
-                doc.text(entry.quantity != null ? entry.quantity : '', 420, y, { width: 40, align: 'right' });
+                doc.text(entry.documentType || '', 115, y);
+                doc.text(entry.documentNo || '', 190, y);
+                doc.text(entry.description || '', 270, y, { width: 100 });
+                doc.text(entry.quantity != null ? entry.quantity : '', 400, y, { width: 40, align: 'right' });
                 doc.text(entry.amount != null ? Number(entry.amount).toFixed(2) : '', 470, y, { width: 70, align: 'right' });
                 // Суммируем для итогов
                 totalPurchase += Number(entry.amount) || 0;

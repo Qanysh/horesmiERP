@@ -514,15 +514,7 @@ const handleSubmit = async () => {
             </Select>
           </div>
         </div>
-
-        <!-- Payment Terms -->
-        <div class="grid grid-cols-1 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="paymentTermsCode" class="text-right">Payment Terms</label>
-            <Input id="paymentTermsCode" v-model="form.paymentTermsCode" class="col-span-3" />
-          </div>
-        </div>
-
+        
         <!-- Payment Method -->
         <div class="grid grid-cols-1 gap-4">
           <div class="grid grid-cols-4 items-center gap-4">
@@ -544,38 +536,6 @@ const handleSubmit = async () => {
           <div class="grid grid-cols-4 items-center gap-4">
             <label for="vendorPostingGroup" class="text-right">Vendor Posting Group</label>
             <Input id="vendorPostingGroup" v-model="form.vendorPostingGroup" class="col-span-3" />
-          </div>
-        </div>
-
-        <!-- Remit To Name -->
-        <div class="grid grid-cols-1 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="remitToName" class="text-right">Remit To Name</label>
-            <Input id="remitToName" v-model="form.remitToName" class="col-span-3" />
-          </div>
-        </div>
-
-        <!-- Remit To Address -->
-        <div class="grid grid-cols-1 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="remitToAddress" class="text-right">Remit To Address</label>
-            <Input id="remitToAddress" v-model="form.remitToAddress" class="col-span-3" />
-          </div>
-        </div>
-
-        <!-- Remit To City -->
-        <div class="grid grid-cols-1 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="remitToCity" class="text-right">Remit To City</label>
-            <Input id="remitToCity" v-model="form.remitToCity" class="col-span-3" />
-          </div>
-        </div>
-
-        <!-- Remit To Post Code -->
-        <div class="grid grid-cols-1 gap-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <label for="remitToPostCode" class="text-right">Remit To Post Code</label>
-            <Input id="remitToPostCode" v-model="form.remitToPostCode" class="col-span-3" />
           </div>
         </div>
       </div>

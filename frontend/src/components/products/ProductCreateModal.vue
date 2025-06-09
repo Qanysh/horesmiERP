@@ -263,20 +263,7 @@ const handleSubmit = async () => {
             {{ errors.inventory }}
           </div>
         </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <label for="standardCost" class="text-right">Standard Cost</label>
-          <Input
-            id="standardCost"
-            v-model="form.standardCost"
-            type="number"
-            step="1"
-            class="col-span-3"
-            :class="{ 'border-red-500': errors.standardCost }"
-          />
-          <div v-if="errors.standardCost" class="col-span-3 col-start-2 text-red-500 text-sm">
-            {{ errors.standardCost }}
-          </div>
-        </div>
+       
         <div class="grid grid-cols-4 items-center gap-4">
           <label for="unitCost" class="text-right">Unit Cost</label>
           <Input
@@ -305,20 +292,7 @@ const handleSubmit = async () => {
             {{ errors.lastDirectCost }}
           </div>
         </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <label for="unitPrice" class="text-right">Unit Price</label>
-          <Input
-            id="unitPrice"
-            v-model="form.unitPrice"
-            type="number"
-            step="1"
-            class="col-span-3"
-            :class="{ 'border-red-500': errors.unitPrice }"
-          />
-          <div v-if="errors.unitPrice" class="col-span-3 col-start-2 text-red-500 text-sm">
-            {{ errors.unitPrice }}
-          </div>
-        </div>
+       
         <div class="grid grid-cols-4 items-center gap-4">
           <label for="vendorNo" class="text-right">Vendor</label>
           <Select v-model="form.vendorNo">
@@ -343,10 +317,7 @@ const handleSubmit = async () => {
           <label for="productCategoryCode" class="text-right">Category Code</label>
           <Input id="productCategoryCode" v-model="form.productCategoryCode" class="col-span-3" />
         </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <label for="searchDescription" class="text-right">Search Description</label>
-          <Input id="searchDescription" v-model="form.searchDescription" class="col-span-3" />
-        </div>
+
         <div class="grid grid-cols-4 items-center gap-4">
           <label for="profitPercent" class="text-right">Profit Percent</label>
           <Input
@@ -361,37 +332,8 @@ const handleSubmit = async () => {
             {{ errors.profitPercent }}
           </div>
         </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <label for="overheadRate" class="text-right">Overhead Rate</label>
-          <Input
-            id="overheadRate"
-            v-model="form.overheadRate"
-            type="number"
-            step="1"
-            class="col-span-3"
-            :class="{ 'border-red-500': errors.overheadRate }"
-          />
-          <div v-if="errors.overheadRate" class="col-span-3 col-start-2 text-red-500 text-sm">
-            {{ errors.overheadRate }}
-          </div>
-        </div>
-        <div class="grid grid-cols-4 items-center gap-4">
-          <label for="indirectCostPercent" class="text-right">Indirect Cost Percent</label>
-          <Input
-            id="indirectCostPercent"
-            v-model="form.indirectCostPercent"
-            type="number"
-            step="1"
-            class="col-span-3"
-            :class="{ 'border-red-500': errors.indirectCostPercent }"
-          />
-          <div
-            v-if="errors.indirectCostPercent"
-            class="col-span-3 col-start-2 text-red-500 text-sm"
-          >
-            {{ errors.indirectCostPercent }}
-          </div>
-        </div>
+        
+        
       </div>
 
       <div class="flex justify-end gap-2">

@@ -147,7 +147,6 @@ watch(
         </div>
 
         <!-- Buy From Section -->
-        <div class="grid grid-cols-2 gap-4">
           <div class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm">
             <div class="flex items-center space-x-3 text-gray-700">
               <UsersIcon class="h-6 w-6 text-gray-600" />
@@ -161,22 +160,6 @@ watch(
               <p>Phone: {{ purchaseOrder.buyFromContactPhoneNo }}</p>
               <p>Email: {{ purchaseOrder.buyFromContactEmail }}</p>
             </div>
-          </div>
-
-          <!-- Receipt Section -->
-          <div class="bg-white p-4 rounded-lg border border-gray-300 shadow-sm">
-            <div class="flex items-center space-x-3 text-gray-700">
-              <UsersIcon class="h-6 w-6 text-gray-600" />
-              <h3 class="font-semibold text-lg">Receipt</h3>
-            </div>
-            <div class="space-y-2 mt-2">
-              <p>Remit To Name: {{ purchaseOrder.remitToName }}</p>
-              <p>Remit To Address: {{ purchaseOrder.remitToAddress }}</p>
-              <p>Remit To City: {{ purchaseOrder.remitToCity }}</p>
-              <p>Post Code: {{ purchaseOrder.remitToPostCode }}</p>
-              <p>Country: {{ purchaseOrder.remitToCountryRegionCode }}</p>
-            </div>
-          </div>
         </div>
       </div>
 
