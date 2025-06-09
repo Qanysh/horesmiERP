@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
+import { clearAuthData } from '@/utils/storage'
 
 export const useAuthStore = defineStore('auth', () => {
   const router = useRouter()
@@ -15,25 +16,41 @@ export const useAuthStore = defineStore('auth', () => {
   async function checkAuth() {
     try {
       const token = localStorage.getItem('token')
+      const publicRoutes = ['/login', '/signup', '/']
+      const isPublicRoute = publicRoutes.includes(router.currentRoute.value.path)
+
       if (!token) {
         isAuth.value = false
         user.value = null
+        clearAuthData()
         return false
       }
 
-      const role = await fetchUserRole()
-      if (role) {
-        isAuth.value = true
+      // For public routes, allow access without further validation
+      if (isPublicRoute) {
         return true
       }
 
-      isAuth.value = false
-      user.value = null
-      return false
+      // Validate token by attempting to fetch user role
+      const role = await fetchUserRole()
+      if (!role) {
+        isAuth.value = false
+        user.value = null
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        clearAuthData()
+        return false
+      }
+
+      isAuth.value = true
+      return true
     } catch (error) {
       console.error('Check auth error:', error)
       isAuth.value = false
       user.value = null
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      clearAuthData()
       return false
     }
   }
@@ -55,6 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
+      clearAuthData()
       user.value = null
       isAuth.value = false
       router.push('/login')
@@ -69,8 +87,9 @@ export const useAuthStore = defineStore('auth', () => {
       if (response.data.role) {
         user.value.role = response.data.role
         localStorage.setItem('user', JSON.stringify(user.value))
+        return response.data.role
       }
-      return response.data.role
+      return null
     } catch (error) {
       console.error('Failed to fetch user role:', error)
       return null
