@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { usePurchaseOrdersStore } from '@/stores/purchaseOrders'
-import PurchaseOrdersTable from '@/components/purchaseOrders/PurchaseOrdersTable.vue'
+import PurchaseOrdersTable from '@/components/purchaseOrders/purchaseOrdersTable.vue'
 import PurchaseOrderCreateModal from '@/components/purchaseOrders/PurchaseOrderCreateModal.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

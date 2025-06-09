@@ -31,7 +31,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors({
-  origin: "http://localhost:5173", // Разрешаем запросы с этого домена
+  origin: "http//185.129.51.179/", // Разрешаем запросы с этого домена
   credentials: true, // Разрешаем отправку куки
 }));
 
@@ -68,7 +68,6 @@ app.use("/api/productionTools", productionToolRoutes);
 app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
-  res.redirect("http://localhost:5173/");
 });
 
 app.listen(port, "0.0.0.0", () => {

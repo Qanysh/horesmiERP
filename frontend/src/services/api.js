@@ -1,10 +1,10 @@
-import axios from 'axios'
+import router from '@/router'
 import { useAuthStore } from '@/stores/authStore'
 import { useModalStore } from '@/stores/useModalStore'
-import router from '@/router'
+import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: 'http//185.129.51.179/api',
   withCredentials: true,
 })
 
